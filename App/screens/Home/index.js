@@ -13,6 +13,7 @@ import Building from '../../asset/svgs/Building.svg'
 import { route } from '../../Routes';
 import { useRoute } from '@react-navigation/native';
 import PickupAlert from '../../components/PickupAlert'
+import database from '@react-native-firebase/database';
 const arrDummy = [
     {
         id: '234',
@@ -40,7 +41,6 @@ const index = ({ navigation }) => {
     const parameter = useRoute();
     const param = parameter?.params;
 
-
     const PickupAlertNext = () => {
         setReadyForPickup(false)
         navigation.navigate(route.ViewDetails, { requireButtonType: 'arrival' })
@@ -48,15 +48,45 @@ const index = ({ navigation }) => {
     const closePickupAlert = () => {
         setReadyForPickup(false)
     }
-    useEffect(() => {
-        console.log("satrttttt",param?.jobAcceptanceStatus);
-        // return () => setReadyForPickup(false)
-    }, [])
+    // useEffect(() => {
+    //     // Push data to Firebase
+    //     const pushData = async () => {
+    //         try {
+    //             const ref = database().ref('messages'); // Reference to the "messages" node in the database
+    //             const newMessageRef = ref.push(); // Generate a new unique key for the message
+
+    //             const messageData = {
+    //                 text: 'Hello, Firebase!',
+    //                 timestamp: Date.now(),
+    //             };
+
+    //             await newMessageRef.set(messageData); // Set the message data under the generated key
+    //             console.log('Data pushed successfully');
+    //         } catch (error) {
+    //             console.error('Error pushing data:', error);
+    //         }
+    //     };
+
+    //     pushData(); // Invoke the function to push data when the component mounts
+
+    //     // Retrieve data from Firebase
+    //     const fetchData = async () => {
+    //         try {
+    //             const snapshot = await database().ref('messages').once('value');
+    //             const data = snapshot.val();
+    //             console.log('Fetched data:', data);
+    //         } catch (error) {
+    //             console.error('Error fetching data:', error);
+    //         }
+    //     };
+
+    //     fetchData(); // Invoke the function to fetch data when the component mounts
+    // }, []);
+
     return (
         <Block>
-
             <RoundTop width={'100%'} height={500} style={{ marginTop: -50 }} />
-            {readyForPickup&&<PickupAlert PickupAlertNext={PickupAlertNext} closeButton={closePickupAlert} title={`Let's start with pickups`} description={'On next screen, you will see Pickup Navigates. You can start delivering only when you have picked all the orders.'} />}
+            {readyForPickup && <PickupAlert PickupAlertNext={PickupAlertNext} closeButton={closePickupAlert} title={`Let's start with pickups`} description={'On next screen, you will see Pickup Navigates. You can start delivering only when you have picked all the orders.'} />}
 
             {/* Shift Card */}
             <ScrollView showsVerticalScrollIndicator={false} style={styles.ScrollView}>
@@ -66,7 +96,6 @@ const index = ({ navigation }) => {
                         <View style={styles.MainCardContainer}>
 
                             {/* Card Header */}
-
                             <View style={styles.CardHeader}>
                                 <View style={styles.Icon}>
                                     <Carton />
@@ -128,15 +157,16 @@ const index = ({ navigation }) => {
                             </View>
                             {/* detail floating button */}
                             <CustomButton title={param?.jobAcceptanceStatus ? 'Start Working' : 'View Details'} onPress={() => {
-                                if(param?.jobAcceptanceStatus){
+                                if (param?.jobAcceptanceStatus) {
                                     setReadyForPickup(true)
                                 }
-                                else{
-                                    navigation.navigate(route.ViewDetails)}
+                                else {
+                                    navigation.navigate(route.ViewDetails)
                                 }
-                                
-                                
-                                } buttonStyle={styles.ViewDetailsBtn} textStyle={styles.BtnText} />
+                            }
+
+
+                            } buttonStyle={styles.ViewDetailsBtn} textStyle={styles.BtnText} />
                         </View>
                     </View>
                 ))}

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { color } from '../../utils/colors'
 import Location from '../../asset/svgIcons/Location.svg'
 import CustomButton from '../CustomButton'
@@ -7,12 +7,23 @@ import CustomText from '../CustomText'
 import Navigate from '../../asset/svgIcons/navigation.svg'
 import Clockreport from '../../asset/svgIcons/clockReport.svg'
 import ClockConfirmArrival from '../../asset/svgIcons/clockConfirmArrival'
+import ClockConfirmArrivalwhite from '../../asset/svgIcons/clockConfirmArrivalwhite.svg'
 import ConfirmDeparture from '../../asset/svgIcons/ConfirmDeparture.svg'
 import PackageDetail from '../../asset/svgIcons/PackageDetail.svg'
-
-const index = ({ data, navigation, requireButtonType }) => {
+import { route } from '../../Routes'
+import { useNavigation } from '@react-navigation/native'
+import CustomAlert from '../../components/CustomAlert'
+const index = ({ data, requireButtonType, openDelayModal, hours, mins, confirmDeparture }) => {
+    const navigation = useNavigation()
+    const checkDelayedTime = (hours != null || mins != null) ? true : false
+    const [showAlert, setShowAlert] = useState(false)
+    const closeSuccessErrorAlert = () => {
+        setShowAlert(false)
+    }
+   
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
+            {showAlert && <CustomAlert closeSuccessErrorAlert={closeSuccessErrorAlert} buttonText="OK" alertType="error" Title={"ERROR"} description={"Please set delayed time first......under development/only for screen testing"} />}
             {
                 data?.map(() => (
                     <View style={{ width: '95%', backgroundColor: color.white, alignSelf: 'center', borderRadius: 4, marginVertical: 10 }}>
@@ -83,16 +94,24 @@ const index = ({ data, navigation, requireButtonType }) => {
                             </CustomText>
                         </View>
 
-                        {/* Extra buttons depending on screens requirement */}
+                        {/* Extra buttons depending on screens requirement {arrival buttons} */}
                         {requireButtonType == 'arrival' && <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 10 }}>
-                            <CustomButton buttonStyle={{ backgroundColor: color.errorRed, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.white, marginHorizontal: 10 }} icon={<Clockreport />} title={'Report Delay'} />
-                            <CustomButton buttonStyle={{ backgroundColor: color.white, borderWidth: 2.5, borderColor: color.successGreen, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.successGreen, marginHorizontal: 10 }} icon={<ClockConfirmArrival />} title={'Confirm Arrival'} />
+                            <CustomButton onPress={() => openDelayModal(true)} buttonStyle={{ backgroundColor: color.errorRed, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.white, marginHorizontal: 10 }} icon={<Clockreport />} title={'Report Delay'} />
+                            <CustomButton onPress={() => {
+                                if (checkDelayedTime) {
+                                    navigation.navigate(route.PackageDetails)
+                                } else {
+                                    setShowAlert(true)
+                                }
+                            }
+                            }
+                                buttonStyle={{ backgroundColor: (checkDelayedTime ? color.successGreen : color.white), borderWidth: 2.5, borderColor: color.successGreen, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: (checkDelayedTime ? color.white : color.successGreen), marginHorizontal: 10 }} icon={(checkDelayedTime ? <ClockConfirmArrivalwhite /> : <ClockConfirmArrival />)} title={'Confirm Arrival'} />
                         </View>}
 
-                        {/* OR */}
+                        {/* Confirm departure button*/}
                         {requireButtonType == 'departure' && <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', marginVertical: 10 }}>
-                            <CustomButton buttonStyle={{ backgroundColor: color.appLightBlue, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.white, marginHorizontal: 10 }} icon={<PackageDetail />} title={'Packages Detail'} />
-                            <CustomButton buttonStyle={{ backgroundColor: color.white, borderWidth: 2.5, borderColor: color.successGreen, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.successGreen, marginHorizontal: 10 }} icon={<ConfirmDeparture />} title={'Confirm Departure'} />
+                            <CustomButton onPress={()=>navigation.navigate(route.PackageDetails)} buttonStyle={{ backgroundColor: color.appLightBlue, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.white, marginHorizontal: 10 }} icon={<PackageDetail />} title={'Packages Detail'} />
+                            <CustomButton onPress={()=>confirmDeparture()} buttonStyle={{ backgroundColor: color.white, borderWidth: 2.5, borderColor: color.successGreen, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 40, width: '48%' }} textStyle={{ fontWeight: '600', fontSize: 11, color: color.successGreen, marginHorizontal: 10 }} icon={<ConfirmDeparture />} title={'Confirm Departure'} />
                         </View>}
                     </View>
                 ))

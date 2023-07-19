@@ -11,7 +11,7 @@ const index = ({ closeButton,description,title,PickupAlertNext }) => {
         <LinearGradient
             start={{ x: 0.0, y: 0.25 }}
             end={{ x: 0.5, y: 1.0 }}
-            style={{ position: 'absolute', width: '85%', height: dimensions / 2 * 0.75, alignSelf: 'center', borderRadius: 10, marginTop: dimensions / 2 * 0.35,zIndex:999 }}
+            style={{ position: 'absolute', width: '85%', height: dimensions / 2 * 0.75, alignSelf: 'center', borderRadius: 10, marginTop: dimensions / 2 * 0.55,zIndex:999 }}
             locations={[0, 0.1, 0.8, 0.85, 1]}
             colors={['#0095EA', '#0095EA', '#1B4160', '#1B4160']}>
 

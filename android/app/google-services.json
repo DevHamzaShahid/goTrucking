@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "550508924197",
+    "project_id": "gotrucking-b3785",
+    "storage_bucket": "gotrucking-b3785.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:550508924197:android:3b3371ed7b032094825ecc",
+        "android_client_info": {
+          "package_name": "com.gotrucking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "550508924197-92gs5k8lfm7r1k71sgiiljat1nsjen75.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsnnapVl-hZ7hE-kmG-8fJHcr_yM3-9EM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "550508924197-92gs5k8lfm7r1k71sgiiljat1nsjen75.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "550508924197-bd1h7rlfadub81c0od5r2dbpviqbe796.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.goTrucking"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
