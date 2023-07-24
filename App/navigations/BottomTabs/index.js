@@ -1,13 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Earnings from '../../screens/Earnings';
-import MyRoutes from '../../screens/MyRoutes';
-import Profile from '../../screens/Profile';
 import { HomeStack } from '../HomeStack';
-import { Image, View } from 'react-native';
 import { color } from '../../utils/colors';
-import Icon from 'react-native-vector-icons/Ionicons'
-import RouteStack from '../RouteStack'
+import RouteStack from '../RouteStack';
+import EarningStack from '../EarningStack';
+import ProfileStack from '../ProfileStack';
 // svgIcons
 import HomeWhite from '../../asset/svgIcons/Home White.svg'
 import HomeFaded from '../../asset/svgIcons/Home Faded.svg'
@@ -20,9 +17,9 @@ import ProfileFaded from '../../asset/svgIcons/My Profile Faded.svg'
 import { useIsFocused } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
-const iconSize=24
+const iconSize = 24
 export function MyTabs() {
-    
+
     return (
         <Tab.Navigator
             screenOptions={{
@@ -42,20 +39,20 @@ export function MyTabs() {
                 tabBarIcon: ({ focused, color, size }) => {
                     const isFocused = useIsFocused()
                     if (isFocused) {
-                        return (<HomeWhite height={iconSize} width={iconSize}/>)
+                        return (<HomeWhite height={iconSize} width={iconSize} />)
                     }
                     else {
-                        return (<HomeFaded height={iconSize} width={iconSize}/>)
+                        return (<HomeFaded height={iconSize} width={iconSize} />)
                     }
                 },
             }} />
-            <Tab.Screen name="Earnings" component={Earnings}
+            <Tab.Screen name="EarningStack" component={EarningStack}
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ focused, color, size }) => {
                         const isFocused = useIsFocused()
                         if (isFocused) {
-                            return (<EarningWhite height={iconSize} width={iconSize}/>)
+                            return (<EarningWhite height={iconSize} width={iconSize} />)
                         }
                         else {
                             return (<EarningFaded height={iconSize} width={iconSize} />)
@@ -77,7 +74,7 @@ export function MyTabs() {
                     },
                 }}
             />
-            <Tab.Screen name="Profile" component={Profile}
+            <Tab.Screen name="ProfileStack" component={ProfileStack}
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ focused, color, size }) => {

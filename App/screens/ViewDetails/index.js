@@ -132,8 +132,8 @@ const index = ({ navigation }) => {
             {/* bottom buttons */}
             {(param?.requireButtonType == 'arrival' || param?.requireButtonType == 'departure') ||
                 <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 20 }}>
-                    <CustomButton onPress={() => navigation.navigate('Home', { jobAcceptanceStatus: true })} title={'Accept All'} buttonStyle={{ backgroundColor: color.appBlue, height: 40, borderRadius: 50 }} textStyle={{ color: color.white, marginHorizontal: 12, fontWeight: '600' }} />
-                    <CustomButton onPress={() => navigation.navigate('Home', { jobAcceptanceStatus: false })} title={"Reject Job"} buttonStyle={{ backgroundColor: color.white, borderWidth: 1.5, borderColor: color.appBlue, height: 40, borderRadius: 50 }} textStyle={{ color: color.appBlue, marginHorizontal: 12, fontWeight: '600' }} />
+                    <CustomButton onPress={() => navigation.navigate('Home', { jobAcceptanceStatus: true })} title={'Accept'} buttonStyle={{ backgroundColor: color.appBlue, height: 40, borderRadius: 50 }} textStyle={{ color: color.white, marginHorizontal: 12, fontWeight: '600' }} />
+                    <CustomButton onPress={() => navigation.navigate('Home', { jobAcceptanceStatus: false })} title={"Reject"} buttonStyle={{ backgroundColor: color.white, borderWidth: 1.5, borderColor: color.appBlue, height: 40, borderRadius: 50 }} textStyle={{ color: color.appBlue, marginHorizontal: 12, fontWeight: '600' }} />
                 </View>}
         </Block>
     )

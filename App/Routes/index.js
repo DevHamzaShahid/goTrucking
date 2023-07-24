@@ -3,5 +3,7 @@ export const route = {
     ViewDetails: "ViewDetails",
     PackageDetails: "PackageDetails",
     MyRoutes: "MyRoutes",
-    Receipt: "Receipt"
+    Receipt: "Receipt",
+    MyProfile: "MyProfile",
+    EditProfile: "EditProfile"
 }

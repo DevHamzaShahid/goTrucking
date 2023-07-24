@@ -1,6 +1,9 @@
-import { combineReducers } from "redux";
-import { userLoginReducer } from "./auth";
+import {combineReducers} from 'redux';
+import {GetProfile, UpdateProfile, UploadPhoto, userLoginReducer} from './auth';
 
 export default combineReducers({
-    user: userLoginReducer
-})
+  user: userLoginReducer,
+  getProfile: GetProfile,
+  updateProfile: UpdateProfile,
+  uploadPhoto: UploadPhoto,
+});
