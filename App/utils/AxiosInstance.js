@@ -10,7 +10,7 @@ export const Axios = axios.create({
 // Add a request interceptor
 Axios.interceptors.request.use(
   request => {
-    const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0ODlmMmRlN2Q4MDdiMWE1MGEyM2RlYSIsImlhdCI6MTY4OTg1MzAzNn0.8UOUYNw1mgwRnUN_tLaGLF7x9rlozWcKtWq1yboKCpg"
+    const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YmQ3Njc0NmI5ZTZlMDAyMTM5NWRmNyIsImlhdCI6MTY5MDI2NjA2OX0.Lc749CylwXQJPjyOMl1FO-Wt6Soe0mHoDCxfRtgmviI"
     // const AUTH_TOKEN =
     //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDVjMjY5NjE5YzdkMDAyMzZlZjczNSIsImlhdCI6MTY2NTU3MjA3NX0.Qgqp2N9mweDuoQBiFG17baQAbQJ7x2Q-HOWU0SEl6yo';
     console.log(request);

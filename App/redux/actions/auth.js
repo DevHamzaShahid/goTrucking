@@ -78,29 +78,25 @@ export const updateProfile = obj => async dispatch => {
 };
 
 //Upload photo
-export const uploadPhoto = (photo) => async dispatch => {
-    try {
-      dispatch({
-        type: UPLOAD_PHOTO_REQUEST,
-      });
-      const {data} = await axios.post(
-        `${config.SERVER_IP}api/upload`,
-        photo, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-      );
-      console.log('upload>>>>', data);
-      dispatch({
-        type: UPLOAD_PHOTO_SUCCESS,
-        payload: data,
-      });
-    } catch (error) {
-      dispatch({
-        type: UPLOAD_PHOTO_FAILED,
-        payload: error.message,
-      });
-    }
-  };
-
+export const uploadPhoto = photo => async dispatch => {
+  try {
+    dispatch({
+      type: UPLOAD_PHOTO_REQUEST,
+    });
+    const {data} = await axios.post(`${config.SERVER_IP}api/upload`, photo, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('upload>>>>', data);
+    dispatch({
+      type: UPLOAD_PHOTO_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: UPLOAD_PHOTO_FAILED,
+      payload: error.message,
+    });
+  }
+};
