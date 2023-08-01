@@ -11,22 +11,23 @@ import Profile from '../../asset/svgs/ProfileImagee.svg';
 import Carton from '../../asset/svgIcons/carton.svg';
 import Building from '../../asset/svgs/Building.svg';
 import {route} from '../../Routes';
-import {useRoute} from '@react-navigation/native';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import PickupAlert from '../../components/PickupAlert';
 import database from '@react-native-firebase/database';
 import {useDispatch, useSelector} from 'react-redux';
 import {getProfile} from '../../redux/actions/auth';
 import CustomActivityIndicator from '../../components/CustomLoader';
-import {getAllShifts} from '../../redux/actions/getShifts';
+import {getAllShifts, getSingleShift} from '../../redux/actions/getShifts';
+import {acceptOrRejectJob} from '../../redux/actions/acceptOrRejectJob';
 
 const Index = React.memo(({navigation}) => {
   // hitApis/dispatch
-
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getProfile());
     dispatch(getAllShifts());
-  }, []);
+  }, [isFocused]);
 
   //selectors
 
@@ -42,18 +43,44 @@ const Index = React.memo(({navigation}) => {
 
   const {data: allShifts} = truckingState?.getAllShifts?.data || [];
   const {loading: getAllShiftsLoader} = truckingState?.getAllShifts || {};
+  //get acceptrejectjob status
+  const {data} = truckingState?.acceptOrRejectJob?.data || [];
 
   const [readyForPickup, setReadyForPickup] = useState(false);
+  const [shipmentId, setShipmentId] = useState('');
   const parameter = useRoute();
   const param = parameter?.params;
+
   const PickupAlertNext = () => {
+    dispatch(acceptOrRejectJob({id: shipmentId, status: 'start'}));
+    // active single shifts again to get its response to next screen where currently navigating
+    // dispatch(getSingleShift(shipmentId));
+    navigation.navigate(route.MyRoutes, {
+      requireButtonType: 'arrival',
+      shipmentId,
+    });
     setReadyForPickup(false);
-    navigation.navigate(route.MyRoutes, {requireButtonType: 'arrival'});
   };
   const closePickupAlert = () => {
     setReadyForPickup(false);
   };
-
+  const onClickViewDetails = _id => {
+    dispatch(getSingleShift(_id));
+    navigation.navigate(route.ViewDetails, {shiftId: _id});
+    // send shift id to get single shift packages
+  };
+  const onClickShipmentButton = item => {
+    if (item.status == 'accept') {
+      setReadyForPickup(true);
+      setShipmentId(item._id);
+    } else if (item.status == 'assign') {
+      onClickViewDetails(item._id);
+    } else if (item.status == 'start') {
+      //   onClickViewDetails(item._id);
+      setReadyForPickup(true);
+      setShipmentId(item._id);
+    }
+  };
   return (
     <Block>
       {(getProfileLoader || getAllShiftsLoader) && <CustomActivityIndicator />}
@@ -165,14 +192,15 @@ const Index = React.memo(({navigation}) => {
               {/* detail floating button */}
               <CustomButton
                 title={
-                  param?.jobAcceptanceStatus ? 'Start Working' : 'View Details'
+                  (item.status == 'accept' && 'Start Working') ||
+                  (item.status == 'assign' && 'View Details') ||
+                  (item.status == 'reject' && 'Rejected') ||
+                  (item.status == 'start' && 'Picking Up')||
+                  (item.status == 'delivering' && 'Delivering')||
+                  (item.status == 'delivered' && 'Delivered')
                 }
                 onPress={() => {
-                  if (param?.jobAcceptanceStatus) {
-                    setReadyForPickup(true);
-                  } else {
-                    navigation.navigate(route.ViewDetails);
-                  }
+                  onClickShipmentButton(item);
                 }}
                 buttonStyle={styles.ViewDetailsBtn}
                 textStyle={styles.BtnText}

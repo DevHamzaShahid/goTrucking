@@ -20,7 +20,7 @@ const index = ({ setShowDeliveredAlert }) => {
                 <CustomText size={15} style={{ color: color.black, fontWeight: '500', marginVertical: 10, textAlign: 'center', paddingHorizontal: 20 }}>Congrats! you successfully delivered this Order.</CustomText>
                 <CustomButton title={"Continue"} onPress={() => {
                     setShowDeliveredAlert(false)
-                    navigation.navigate(route.MyRoutes)
+                    navigation.navigate(route.Home)
                 }} textStyle={{ fontSize: 18, fontWeight: '500', color: color.white }} buttonStyle={{ height: 35, borderRadius: 25, width: '60%', marginVertical: 20 }} />
             </View>
         </View>

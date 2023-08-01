@@ -41,7 +41,7 @@ const index = ({
           }
         />
       )}
-      {data?.map(() => (
+      {data?.map((item) => (
         <View
           style={{
             width: '95%',
@@ -166,7 +166,7 @@ const index = ({
               <CustomText
                 size={13}
                 style={{color: color.appBlue, fontWeight: '600'}}>
-                4
+                {item.packageCount}
               </CustomText>
             </View>
             <View
@@ -184,7 +184,7 @@ const index = ({
               <CustomText
                 size={13}
                 style={{color: color.appBlue, fontWeight: '600'}}>
-                200 Kg
+                {item.totalPackageWeight} Kg
               </CustomText>
             </View>
           </View>

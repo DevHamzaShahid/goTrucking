@@ -468,6 +468,8 @@ PODS:
     - React-jsi (= 0.72.1)
     - React-logger (= 0.72.1)
     - React-perflogger (= 0.72.1)
+  - ReactNativeGetLocation (3.0.1):
+    - React-Core
   - RNCAsyncStorage (1.19.0):
     - React-Core
   - RNFBApp (18.2.0):
@@ -548,6 +550,7 @@ DEPENDENCIES:
   - React-runtimescheduler (from `../node_modules/react-native/ReactCommon/react/renderer/runtimescheduler`)
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - ReactNativeGetLocation (from `../node_modules/react-native-get-location`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
@@ -664,6 +667,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/utils"
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  ReactNativeGetLocation:
+    :path: "../node_modules/react-native-get-location"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
   RNFBApp:
@@ -746,6 +751,7 @@ SPEC CHECKSUMS:
   React-runtimescheduler: c98b3844157360d8f1bb72ad6a6fe4fc76db9fab
   React-utils: 4324c58d17bcbcb8c49fe7f8c14b4f61d5dd4a42
   ReactCommon: 8a3eb76006efc3d29535d348c03783f58a84847a
+  ReactNativeGetLocation: d8e41c5d499fd26f308502405cadb1f59e6179d6
   RNCAsyncStorage: 4b98ac3c64efa4e35c1197cb0c5ca5e9f5d4c666
   RNFBApp: 9a54c7fd5a1c33684a862b51b9c00914a358061c
   RNFBAuth: e467cbc872eb8d73e48516b1429dcec19bad0292

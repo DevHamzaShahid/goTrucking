@@ -46,7 +46,7 @@ export function MyTabs() {
                     }
                 },
             }} />
-            <Tab.Screen name="EarningStack" component={EarningStack}
+            {/* <Tab.Screen name="EarningStack" component={EarningStack}
                 options={{
                     headerShown: false,
                     tabBarIcon: ({ focused, color, size }) => {
@@ -59,7 +59,7 @@ export function MyTabs() {
                         }
                     },
                 }}
-            />
+            /> */}
             <Tab.Screen name="My Routes" component={RouteStack}
                 options={{
                     headerShown: false,

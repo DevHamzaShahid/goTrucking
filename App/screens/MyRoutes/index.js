@@ -5,10 +5,11 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Image,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Block from '../../components/Block';
-import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from 'react-native-maps';
 import {color} from '../../utils/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MapBackBtn from '../../asset/svgIcons/mapBackBtn.svg';
@@ -23,7 +24,7 @@ import MapNavigate from '../../asset/svgIcons/mapNavigate.svg';
 import FormText from '../../components/FormText';
 import {route} from '../../Routes';
 import Card from '../../components/Card';
-import {useRoute} from '@react-navigation/native';
+import {useIsFocused, useRoute} from '@react-navigation/native';
 import {dimensions, dimensionsWidth} from '../../Dimensions';
 import Navigate from '../../asset/svgIcons/navigation.svg';
 import Clockreport from '../../asset/svgIcons/clockReport.svg';
@@ -34,6 +35,16 @@ import CustomDropDown from '../../components/CustomDropDown';
 import TrackingIcon from '../../asset/svgIcons/Tracking.svg';
 import PackageDetail from '../../asset/svgIcons/PackageDetail.svg';
 import ConfirmDeparture from '../../asset/svgIcons/ConfirmDeparture.svg';
+import {useDispatch, useSelector} from 'react-redux';
+import {getAllPickupPackages} from '../../redux/actions/getAllpackagesFromPickup';
+import DestinationMarker from '../../asset/svgIcons/destinationMarkerDark.svg';
+import {fetchMyLocation} from '../../utils/helperFunction';
+import GetLocation from 'react-native-get-location';
+import Truck from '../../asset/svgIcons/Truck.svg';
+import {all} from 'axios';
+import {GoogleMapKey} from '../../utils/keys';
+import MapViewDirections from 'react-native-maps-directions';
+import {getSingleShift} from '../../redux/actions/getShifts';
 // import MapEye from '../../asset/svgIcons/mapEye.svg'
 // import MapNavigate from '../../asset/svgIcons/mapNavigate.svg'
 // const arrDummy = [
@@ -90,9 +101,18 @@ const arrDummy = [
     description: 'cccccccccccc',
   },
 ];
+const initialRegion = {
+  latitude: 29.7604,
+  longitude: -95.3698, // Replace with your default longitude
+  latitudeDelta: 0.0922, // You can adjust these values to set initial zoom level
+  longitudeDelta: 0.0421,
+};
 const itemWidth = dimensionsWidth * 0.88;
 const itemSpacing = 20;
 const magneticOffset = (itemWidth + itemSpacing) / 2;
+
+const LATITUDE_DELTA = 0.04864195044303443;
+const LONGITUDE_DELTA = 0.040142817690068;
 const index = ({navigation}) => {
   //   const [successErrorAlert, setSuccessErrorAlert] = useState(false);
   //   const [showOrderDetail, setShowOrderDetail] = useState(false);
@@ -103,20 +123,56 @@ const index = ({navigation}) => {
   const [delayMins, setDelayMins] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
   const [closeBtn, setClosBtn] = useState(false);
+
   const [deliveryStatus, setDeliveryStatus] = useState('');
+  const [assignedOrders, setAssignedOrders] = useState([]);
 
+  const [allPickuppackages, setAllPickuppackages] = useState(false);
+  //   const [allCoords, setAllCoords] = useState({});
+  const [allCoords, setAllCoords] = useState([
+    {
+      lat: 51.5072,
+      lng: 0.1276,
+    },
+  ]);
+  const [myLiveLocation, setMyLiveLocation] = useState({
+    latitude: 37.785834,
+    longitude: -122.406417,
+  });
+
+  const dispatch = useDispatch();
   const parameter = useRoute();
+  const isFocused = useIsFocused();
   const param = parameter?.params;
-
+  // const {setStateValue} = parameter?.params;
   const checkDelayedTime =
     delayHours != null || delayMins != null ? true : false;
 
-  // calculate the progress
-  //   const progressValue = currentIndex / (arrDummy?.length - 1);
+  //get singleShift
+  // used is fouces when comming back to the pickupcards screen it should show the updated singleShift status prnding to done or so
+  useEffect(() => {
+    dispatch(getSingleShift(param?.shipmentId));
+  }, [navigation, isFocused]);
+
+  //getSingleShift
+  const truckingState = useSelector(state => state);
+  const {data: singleShift} = truckingState?.getSingleShift?.data || [];
+  const {loader: getSingleShiftLoader} = truckingState?.getSingleShift || {};
+
   // back for the map screen
   const handleBackPress = () => {
     navigation.goBack();
   };
+  useEffect(() => {
+    const allpickedUp = singleShift?.every(obj => obj.status === 'done');
+    setAllPickuppackages(allpickedUp);
+  }, [singleShift]);
+
+  useEffect(() => {
+    if (allPickuppackages != undefined) {
+      console.log('chaeck all pickedup', allPickuppackages);
+    }
+  }, [allPickuppackages]);
   //   // card next button
   //   const handleNextPress = () => {
   //     setCurrentIndex(prevIndex => (prevIndex + 1) % arrDummy.length);
@@ -144,6 +200,72 @@ const index = ({navigation}) => {
     setClosBtn(false);
     setChooseDelayTime(false);
   };
+  //get coords
+
+  useEffect(() => {
+    const fetchMyLoc = async () => {
+      const location = await fetchMyLocation();
+      setMyLiveLocation(location);
+    };
+
+    fetchMyLoc();
+  }, []);
+
+  useEffect(() => {
+    const cityCoordinates = [
+      {
+        lat: 40.7128,
+        lng: -74.006,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+      {
+        lat: 34.0522,
+        lng: -118.2437,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+      {
+        lat: 41.8781,
+        lng: -87.6298,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+      {
+        lat: 29.7604,
+        lng: -95.3698,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+      {
+        lat: 25.7617,
+        lng: -80.1918,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA,
+      },
+    ];
+    const cooooords = singleShift?.map(item => ({
+      lat: item.lat && item.lat,
+      lng: item.lng && item.lng,
+    }));
+    cooooords &&
+      setAllCoords(prevCoords => [
+        ...prevCoords,
+        ...cityCoordinates,
+        ...cooooords,
+      ]);
+  }, [singleShift]);
+
+  const handleAlternativeRoutes = result => {
+    const routes = result?.result?.routes || [];
+    console.log('Alternative Routes:', routes);
+    // You can store the routes in the state or handle them as needed
+  };
+  const waypoints = [
+    {latitude: 37.7896386, longitude: -122.421646},
+    // { latitude: 37.774929, longitude: -122.419418 },
+    // { latitude: 37.773972, longitude: -122.431297 },
+  ];
 
   return (
     <SafeAreaView flex={1}>
@@ -300,13 +422,58 @@ const index = ({navigation}) => {
           zoomEnabled={true}
           showsScale={true}
           showsBuildings={true}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        />
+          initialRegion={initialRegion}>
+          {allCoords?.map((coords, index) => (
+            <Marker
+              coordinate={{
+                latitude: coords?.lat,
+                longitude: coords?.lng,
+              }}
+              title="destinantion">
+              <DestinationMarker />
+            </Marker>
+          ))}
+          <Marker coordinate={myLiveLocation} title="driver">
+            <Truck />
+          </Marker>
+          {/* <Polyline
+            coordinates={[
+              myLiveLocation,{latitude: allCoords[0]?.lat, longitude: allCoords[0]?.lng},
+              {latitude: allCoords[1]?.lat, longitude: allCoords[1]?.lng},
+              {latitude: allCoords[2]?.lat, longitude: allCoords[2]?.lng},
+              {latitude: allCoords[3]?.lat, longitude: allCoords[3]?.lng},
+              {latitude: allCoords[4]?.lat, longitude: allCoords[4]?.lng},
+              {latitude: allCoords[5]?.lat, longitude: allCoords[5]?.lng},
+
+            ]}
+            strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+            strokeColors={[
+              '#7F0000',
+              'yellow', // no color, creates a "long" gradient between the previous and next coordinate
+              '#B24112',
+              '#E5845C',
+              '#238C23',
+              '#7F0000',
+            ]}
+            strokeWidth={6}
+          /> */}
+          <MapViewDirections
+            origin={{
+              latitude: allCoords[1]?.lat,
+              longitude: allCoords[1]?.lng,
+            }}
+            destination={{
+              latitude: allCoords[2]?.lat,
+              longitude: allCoords[2]?.lng,
+            }}
+            waypoints={waypoints}
+            apikey={GoogleMapKey}
+            mode="driving"
+            alternatives // Request multiple alternative routes
+            strokeWidth={6}
+            strokeColor="green"
+          />
+        </MapView>
         {/* new map Card */}
         {showAlert && (
           <CustomAlert
@@ -332,7 +499,7 @@ const index = ({navigation}) => {
               }
               decelerationRate="fast" // You can experiment with different rates
               showsHorizontalScrollIndicator={false}>
-              {arrDummy.map((item, index) => (
+              {singleShift?.map((item, index) => (
                 <View
                   key={index} // Make sure to set a unique key for each item
                   style={{
@@ -368,17 +535,17 @@ const index = ({navigation}) => {
                       <CustomText
                         size={15}
                         style={{color: color.appBlue, fontWeight: '600'}}>
-                        Pick up point 1
+                        {item.name}
                       </CustomText>
                       <CustomText
                         size={10}
                         style={{color: color.appBlue, fontWeight: '500'}}>
-                        ID : 8837373828
+                        ID : {item._id}
                       </CustomText>
                       <CustomText
                         size={10}
                         style={{color: color.appBlue, fontWeight: '500'}}>
-                        No75, Grand Lake,HDT45H, sydney, Australia.
+                        {item.address}
                       </CustomText>
                     </View>
                     <View
@@ -426,7 +593,7 @@ const index = ({navigation}) => {
                       <CustomText
                         size={13}
                         style={{color: color.appBlue, fontWeight: '600'}}>
-                        7am - 8:30am
+                        {item.time}
                       </CustomText>
                     </View>
                     <View
@@ -444,9 +611,19 @@ const index = ({navigation}) => {
                       <CustomText
                         size={13}
                         style={{color: color.appBlue, fontWeight: '600'}}>
-                        4
+                        {item.packageCount}
                       </CustomText>
                     </View>
+                    {item.status == 'done' && (
+                      <View
+                        style={{
+                          backgroundColor: 'orange',
+                          height: 20,
+                          width: 20,
+                          borderRadius: 10,
+                        }}
+                      />
+                    )}
                     <View
                       style={{
                         width: '33%',
@@ -462,7 +639,7 @@ const index = ({navigation}) => {
                       <CustomText
                         size={13}
                         style={{color: color.appBlue, fontWeight: '600'}}>
-                        200 Kg
+                        {item.totalPackageWeight} Kg
                       </CustomText>
                     </View>
                   </View>
@@ -494,8 +671,8 @@ const index = ({navigation}) => {
                   </View>
 
                   {/* Buttons */}
-                  {/* Extra buttons depending on screens requirement {arrival buttons} */}
-                  {param.requireButtonType == 'arrival' && (
+                  {/* Arrival  buttons when pickuopin progress of the shipment */}
+                  {!allPickuppackages&& (
                     <View
                       style={{
                         flexDirection: 'row',
@@ -524,11 +701,26 @@ const index = ({navigation}) => {
                       />
                       <CustomButton
                         onPress={() => {
-                          if (checkDelayedTime) {
-                            navigation.navigate(route.PackageDetails);
-                          } else {
-                            setShowAlert(true);
-                          }
+                          //   if (checkDelayedTime) {
+                          //     navigation.navigate(route.PackageDetails);
+                          //   } else {
+                          //     setShowAlert(true);
+                          //   }
+                          console.log(
+                            'get pickup id',
+                            item._id,
+                            param.shipmentId,
+                          );
+                          // dispatch(
+                          //   getAllPickupPackages({
+                          //     shipmentId: param.shipmentId,
+                          //     pickup_Id: item._id,
+                          //   }),
+                          // );
+                          navigation.navigate(route.PackageDetails, {
+                            shipmentId: param.shipmentId,
+                            pickup_Id: item._id,
+                          });
                         }}
                         buttonStyle={{
                           backgroundColor: checkDelayedTime
@@ -548,7 +740,7 @@ const index = ({navigation}) => {
                           color: checkDelayedTime
                             ? color.white
                             : color.successGreen,
-                          marginHorizontal: 10,
+                          marginHorizontal: 3,
                         }}
                         icon={
                           checkDelayedTime ? (
@@ -562,8 +754,8 @@ const index = ({navigation}) => {
                     </View>
                   )}
 
-                  {/* Confirm departure button*/}
-                  {param.requireButtonType == 'departure' && (
+                  {/* Confirm departure button when all pickups are collected*/}
+                  {allPickuppackages && (
                     <View
                       style={{
                         flexDirection: 'row',
@@ -605,10 +797,10 @@ const index = ({navigation}) => {
                           width: '48%',
                         }}
                         textStyle={{
-                          fontWeight: '600',
-                          fontSize: 11,
+                          fontWeight: '700',
+                          fontSize: 10,
                           color: color.successGreen,
-                          marginHorizontal: 10,
+                          marginHorizontal: 3,
                         }}
                         icon={<ConfirmDeparture />}
                         title={'Confirm Departure'}
@@ -651,7 +843,7 @@ const index = ({navigation}) => {
                     <CustomText
                       size={16}
                       style={{fontWeight: '600', color: color.appBlue}}>
-                      {item.item}
+                      pickup 1
                     </CustomText>
                     <CustomText
                       size={12}
