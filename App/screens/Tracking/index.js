@@ -42,59 +42,64 @@ const index = () => {
         <View style={[styles.dottedLine, { height }]} />
     );
     return (
-        <Block>
-            <View style={styles.mapContainer}>
-                <MapView
-                    style={styles.map}
-                    provider={PROVIDER_GOOGLE}
-                    zoomEnabled={true}
-                    showsScale={true}
-                    showsBuildings={true}
-                    initialRegion={{
-                        latitude: 37.78825,
-                        longitude: -122.4324,
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421,
-                    }}
-                />
-            </View>
-            <View style={{
-                height: dimensions / 2, width: '96%', alignSelf: 'center', shadowColor: "#000"}}>
-                {/* Distance Circle */}
-                <View style={{ backgroundColor: color.white, borderRadius: 100, alignSelf: 'center', position: 'absolute', top: -85 }}>
-                    <DistanceView height={200} width={200} />
-                    <View style={{ position: 'absolute', alignSelf: 'center', top: 40, alignItems: 'center', }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Van />
-                            <CustomText size={15} style={{ fontWeight: '600', color: color.textGrey, marginLeft: 6 }}>Distance</CustomText>
-                        </View>
-                        <CustomText size={62} style={{ color: color.black, fontWeight: '800' }}>120<CustomText size={18} style={{ color: color.black, fontWeight: 'bold' }}>km</CustomText></CustomText>
-                    </View>
-                </View>
-                <View style={{ marginTop: 50 }} />
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    {arrDummy?.map((item) => (
-                        <View style={styles.cardContainer}>
-                            <DottedLine height={50} />
-                            <View style={styles.iconContainer}>
-                                <TrackIcon />
-                            </View>
-                            <View style={styles.textContainer}>
-                                <CustomText size={18} style={styles.upperText}>{item.points}</CustomText>
-                                <CustomText size={12} style={styles.bottomText}>{item.address}</CustomText>
-                            </View>
-                            <TouchableOpacity style={styles.buttonLikeView}>
-                                <CustomText size={12} style={{ fontWeight: '600', color: color.white }} >
-                                    {item.time}
-                                </CustomText>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                    <View style={{ marginBottom: 180 }} />
-                </ScrollView>
-            </View>
+        // <Block>
+        //     <View style={styles.mapContainer}>
+        //         <MapView
+        //             style={styles.map}
+        //             provider={PROVIDER_GOOGLE}
+        //             zoomEnabled={true}
+        //             showsScale={true}
+        //             showsBuildings={true}
+        //             initialRegion={{
+        //                 latitude: 37.78825,
+        //                 longitude: -122.4324,
+        //                 latitudeDelta: 0.0922,
+        //                 longitudeDelta: 0.0421,
+        //             }}
+        //         />
+        //     </View>
+        //     <View style={{
+        //         height: dimensions / 2, width: '96%', alignSelf: 'center', shadowColor: "#000"}}>
+        //         {/* Distance Circle */}
+        //         <View style={{ backgroundColor: color.white, borderRadius: 100, alignSelf: 'center', position: 'absolute', top: -85 }}>
+        //             <DistanceView height={200} width={200} />
+        //             <View style={{ position: 'absolute', alignSelf: 'center', top: 40, alignItems: 'center', }}>
+        //                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        //                     <Van />
+        //                     <CustomText size={15} style={{ fontWeight: '600', color: color.textGrey, marginLeft: 6 }}>Distance</CustomText>
+        //                 </View>
+        //                 <CustomText size={62} style={{ color: color.black, fontWeight: '800' }}>120<CustomText size={18} style={{ color: color.black, fontWeight: 'bold' }}>km</CustomText></CustomText>
+        //             </View>
+        //         </View>
+        //         <View style={{ marginTop: 50 }} />
+        //         <ScrollView showsVerticalScrollIndicator={false}>
+        //             {arrDummy?.map((item) => (
+        //                 <View style={styles.cardContainer}>
+        //                     <DottedLine height={50} />
+        //                     <View style={styles.iconContainer}>
+        //                         <TrackIcon />
+        //                     </View>
+        //                     <View style={styles.textContainer}>
+        //                         <CustomText size={18} style={styles.upperText}>{item.points}</CustomText>
+        //                         <CustomText size={12} style={styles.bottomText}>{item.address}</CustomText>
+        //                     </View>
+        //                     <TouchableOpacity style={styles.buttonLikeView}>
+        //                         <CustomText size={12} style={{ fontWeight: '600', color: color.white }} >
+        //                             {item.time}
+        //                         </CustomText>
+        //                     </TouchableOpacity>
+        //                 </View>
+        //             ))}
+        //             <View style={{ marginBottom: 180 }} />
+        //         </ScrollView>
+        //     </View>
 
-        </Block>
+        // </Block>
+        <View>
+            <CustomText>
+                In Progress
+            </CustomText>
+        </View>
     )
 }
 const styles = StyleSheet.create({

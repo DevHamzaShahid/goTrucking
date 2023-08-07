@@ -29,7 +29,6 @@ const MultipleImagePicker = ({
           type: image.mime,
           path: image.path,
         };
-        console.log("source ios and android",newImage);
         setImageSelected(newImage);
         setShowPicker(false);
       })

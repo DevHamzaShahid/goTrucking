@@ -1,7 +1,7 @@
-import {View, Text, Image, ScrollView} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import { View, Text, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {color} from '../../utils/colors';
+import { color } from '../../utils/colors';
 import Block from '../../components/Block';
 import CustomText from '../../components/CustomText';
 import CustomButton from '../../components/CustomButton';
@@ -10,41 +10,42 @@ import styles from './style';
 import Profile from '../../asset/svgs/ProfileImagee.svg';
 import Carton from '../../asset/svgIcons/carton.svg';
 import Building from '../../asset/svgs/Building.svg';
-import {route} from '../../Routes';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import { route } from '../../Routes';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import PickupAlert from '../../components/PickupAlert';
 import database from '@react-native-firebase/database';
-import {useDispatch, useSelector} from 'react-redux';
-import {getProfile} from '../../redux/actions/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProfile } from '../../redux/actions/auth';
 import CustomActivityIndicator from '../../components/CustomLoader';
-import {getAllShifts, getSingleShift} from '../../redux/actions/getShifts';
-import {acceptOrRejectJob} from '../../redux/actions/acceptOrRejectJob';
+import { getAllShifts, getSingleShift } from '../../redux/actions/getShifts';
+import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 
-const Index = React.memo(({navigation}) => {
+const Index = React.memo(({ navigation }) => {
   // hitApis/dispatch
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getProfile());
     dispatch(getAllShifts());
-  }, [isFocused]);
+  }, [isFocused, navigation, dispatch, allShifts]);
 
   //selectors
 
   const truckingState = useSelector(state => state);
-
+  const {shipment_Id}=truckingState.shipmentId||''
+  console.log("shipment id reducer", shipment_Id);
   // get profile
 
-  const {fullName, email, city, profilePhoto, firstName, lastName} =
+  const { fullName, email, city, profilePhoto, firstName, lastName } =
     truckingState?.getProfile.data || {};
-  const {loading: getProfileLoader} = truckingState?.getProfile || {};
+  const { loading: getProfileLoader } = truckingState?.getProfile || {};
 
   //getAllshifts
 
-  const {data: allShifts} = truckingState?.getAllShifts?.data || [];
-  const {loading: getAllShiftsLoader} = truckingState?.getAllShifts || {};
+  const { data: allShifts } = truckingState?.getAllShifts?.data || [];
+  const { loading: getAllShiftsLoader } = truckingState?.getAllShifts || {};
   //get acceptrejectjob status
-  const {data} = truckingState?.acceptOrRejectJob?.data || [];
+  const { data } = truckingState?.acceptOrRejectJob?.data || [];
 
   const [readyForPickup, setReadyForPickup] = useState(false);
   const [shipmentId, setShipmentId] = useState('');
@@ -52,7 +53,7 @@ const Index = React.memo(({navigation}) => {
   const param = parameter?.params;
 
   const PickupAlertNext = () => {
-    dispatch(acceptOrRejectJob({id: shipmentId, status: 'start'}));
+    dispatch(acceptOrRejectJob({ id: shipmentId, status: 'start' }));
     // active single shifts again to get its response to next screen where currently navigating
     // dispatch(getSingleShift(shipmentId));
     navigation.navigate(route.MyRoutes, {
@@ -66,9 +67,10 @@ const Index = React.memo(({navigation}) => {
   };
   const onClickViewDetails = _id => {
     dispatch(getSingleShift(_id));
-    navigation.navigate(route.ViewDetails, {shiftId: _id});
+    navigation.navigate(route.ViewDetails, { shiftId: _id });
     // send shift id to get single shift packages
   };
+
   const onClickShipmentButton = item => {
     if (item.status == 'accept') {
       setReadyForPickup(true);
@@ -76,15 +78,40 @@ const Index = React.memo(({navigation}) => {
     } else if (item.status == 'assign') {
       onClickViewDetails(item._id);
     } else if (item.status == 'start') {
-      //   onClickViewDetails(item._id);
-      setReadyForPickup(true);
       setShipmentId(item._id);
+      navigation.navigate(route.MyRoutes, {
+        requireButtonType: 'arrival',
+        shipmentId: item._id,
+      });
+    }
+    else if (item.status == 'delivering') {
+      setShipmentId(item._id);
+      navigation.navigate(route.MyRoutes, {
+        requireButtonType: 'arrival',
+        shipmentId: item._id,
+      });
+    }
+    else if (item.status == 'delivered') {
+      alert("Successfully Delivered")
+      // setShipmentId(item._id);
+      // navigation.navigate(route.MyRoutes, {
+      //   requireButtonType: 'arrival',
+      //   shipmentId: item._id,
+      // });
+    }
+    else if (item.status == 'reject') {
+      alert("You rejected the job contact admin if still interested")
     }
   };
+
+  useEffect(() => {
+    dispatch({ type: 'SET_SHIPMENT_ID', payload: "3245632456tf345643" });
+  }, [])
+
   return (
     <Block>
       {(getProfileLoader || getAllShiftsLoader) && <CustomActivityIndicator />}
-      <RoundTop width={'100%'} height={500} style={{marginTop: -50}} />
+      <RoundTop width={'100%'} height={500} style={{ marginTop: -50 }} />
       {readyForPickup && (
         <PickupAlert
           PickupAlertNext={PickupAlertNext}
@@ -101,7 +128,7 @@ const Index = React.memo(({navigation}) => {
         showsVerticalScrollIndicator={false}
         style={styles.ScrollView}>
         {allShifts?.map(item => (
-          <View style={{marginTop: 20}}>
+          <View style={{ marginTop: 20 }}>
             <View style={styles.BlueBackCard} />
             <View style={styles.MainCardContainer}>
               {/* Card Header */}
@@ -109,12 +136,12 @@ const Index = React.memo(({navigation}) => {
                 <View style={styles.Icon}>
                   <Carton />
                 </View>
-                <View style={{flexDirection: 'column'}}>
+                <View style={{ flexDirection: 'column' }}>
                   <CustomText
                     size={14}
                     style={[
                       styles.textSmall,
-                      {fontWeight: '700', color: color.appBlue},
+                      { fontWeight: '700', color: color.appBlue },
                     ]}>
                     Shift ID: {item.shiftId}
                   </CustomText>
@@ -195,8 +222,8 @@ const Index = React.memo(({navigation}) => {
                   (item.status == 'accept' && 'Start Working') ||
                   (item.status == 'assign' && 'View Details') ||
                   (item.status == 'reject' && 'Rejected') ||
-                  (item.status == 'start' && 'Picking Up')||
-                  (item.status == 'delivering' && 'Delivering')||
+                  (item.status == 'start' && 'Picking Up') ||
+                  (item.status == 'delivering' && 'Delivering') ||
                   (item.status == 'delivered' && 'Delivered')
                 }
                 onPress={() => {
@@ -208,7 +235,7 @@ const Index = React.memo(({navigation}) => {
             </View>
           </View>
         ))}
-        <View style={{marginBottom: 100}} />
+        <View style={{ marginBottom: 100 }} />
       </ScrollView>
 
       <Image
@@ -232,7 +259,7 @@ const Index = React.memo(({navigation}) => {
             <View style={styles.profileContainer2}>
               {/* <Profile height={182} width={182} style={styles.profilePhoto} /> */}
               <Image
-                source={{uri: profilePhoto}}
+                source={{ uri: profilePhoto }}
                 height={182}
                 width={184}
                 style={styles.profilePhoto}

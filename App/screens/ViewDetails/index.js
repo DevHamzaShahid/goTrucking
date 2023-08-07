@@ -5,25 +5,25 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Block from '.././../components/Block';
 import CustomButton from '../../components/CustomButton';
-import {color} from '../../utils/colors';
-import {dimensions} from '../../Dimensions';
+import { color } from '../../utils/colors';
+import { dimensions } from '../../Dimensions';
 import Location from '../../asset/svgIcons/Location.svg';
 import CustomAlert from '../../components/CustomAlert';
 import PickupAlert from '../../components/PickupAlert';
 import Card from '../../components/Card';
-import {useRoute} from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import ClockReport from '../../asset/svgIcons/clockReport.svg';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomText from '../../components/CustomText';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CustomDropDown from '../../components/CustomDropDown';
-import {route} from '../../Routes';
-import {useDispatch, useSelector} from 'react-redux';
+import { route } from '../../Routes';
+import { useDispatch, useSelector } from 'react-redux';
 import CustomActivityIndicator from '../../components/CustomLoader';
-import {acceptOrRejectJob} from '../../redux/actions/acceptOrRejectJob';
+import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 
 const arrDummy = [
   {
@@ -47,7 +47,7 @@ const arrDummy = [
     time: '3:22',
   },
 ];
-const index = ({navigation}) => {
+const index = ({ navigation }) => {
   const [successErrorAlert, setSuccessErrorAlert] = useState(false);
   const [readyForPickup, setReadyForPickup] = useState(false);
   const [chooseDelayTime, setChooseDelayTime] = useState(false);
@@ -56,10 +56,16 @@ const index = ({navigation}) => {
   const [closeBtn, setClosBtn] = useState(false);
 
   const dispatch = useDispatch();
-  //getSingleShift
   const truckingState = useSelector(state => state);
-  const {data: singleShift} = truckingState?.getSingleShift?.data || [];
-  const {loader: getSingleShiftLoader} = truckingState?.getSingleShift || {};
+  //getSingleShift
+  const { data: singleShift } = truckingState?.getSingleShift?.data || [];
+  const { loading: getSingleShiftLoader } = truckingState?.getSingleShift || {};
+  //accept or reject job
+  const { data: acceptrej } = truckingState?.acceptOrRejectJob || [];
+  const { loading: acceptRejectLoader } = truckingState?.acceptOrRejectJob || {};
+
+
+  console.log("accept erject loader and daat", acceptRejectLoader, acceptrej);
 
   const parameter = useRoute();
   const param = parameter?.params;
@@ -83,23 +89,21 @@ const index = ({navigation}) => {
   };
   const confirmDeparture = () => {
     navigation.navigate(route.MyRoutes);
-    
+
   };
-  const onClickAccept = () => {
-    dispatch(acceptOrRejectJob({id: param.shiftId, status: 'accept'}));
-    navigation.navigate('Home');
+  const onClickAccept = async () => {
+    await dispatch(acceptOrRejectJob({ id: param.shiftId, status: 'accept' }));
+    acceptrej && navigation.navigate('Home');
   };
-  const onClickReject = () => {
-    dispatch(acceptOrRejectJob({id: param.shiftId, status: 'reject'}));
-    navigation.navigate('Home');
+  const onClickReject = async () => {
+    await dispatch(acceptOrRejectJob({ id: param.shiftId, status: 'reject' }));
+    acceptrej && navigation.navigate('Home');
   };
   useEffect(() => {
     console.log(delayHours, ' ', delayMins);
   }, [delayHours, delayMins]);
   return (
     <Block>
-      {/* loader */}
-      {getSingleShiftLoader && <CustomActivityIndicator />}
 
       {/* delay card */}
       {chooseDelayTime && (
@@ -169,28 +173,28 @@ const index = ({navigation}) => {
             {/* Dropdown pickers */}
             <CustomText
               size={18}
-              style={{color: color.appBlue, fontWeight: '500'}}>
+              style={{ color: color.appBlue, fontWeight: '500' }}>
               Please Choose your current time
             </CustomText>
-            <View style={{width: 120, position: 'absolute', left: 30, top: 40}}>
+            <View style={{ width: 120, position: 'absolute', left: 30, top: 40 }}>
               <CustomDropDown
                 placeholder={'Hours'}
                 objects={[
-                  {label: '1 hour', value: '1 hour'},
-                  {label: '2 Hours', value: '2 hours'},
-                  {label: '3 Hours', value: '3 hours'},
+                  { label: '1 hour', value: '1 hour' },
+                  { label: '2 Hours', value: '2 hours' },
+                  { label: '3 Hours', value: '3 hours' },
                 ]}
                 onChange={handleHourChange}
               />
             </View>
             <View
-              style={{width: 120, position: 'absolute', right: 30, top: 40}}>
+              style={{ width: 120, position: 'absolute', right: 30, top: 40 }}>
               <CustomDropDown
                 placeholder={'Mins'}
                 objects={[
-                  {label: '10 mins', value: '10 mins'},
-                  {label: '15 mins', value: '15 mins'},
-                  {label: '30 mins', value: '30 mins'},
+                  { label: '10 mins', value: '10 mins' },
+                  { label: '15 mins', value: '15 mins' },
+                  { label: '30 mins', value: '30 mins' },
                 ]}
                 onChange={handleMinsChange}
               />
@@ -208,7 +212,7 @@ const index = ({navigation}) => {
               width: '60%',
               backgroundColor: color.appBlue,
             }}
-            textStyle={{color: color.white, fontWeight: '500'}}
+            textStyle={{ color: color.white, fontWeight: '500' }}
           />
         </View>
       )}
@@ -220,12 +224,14 @@ const index = ({navigation}) => {
           width: '95%',
           height:
             param?.requireButtonType == 'arrival' ||
-            param?.requireButtonType == 'departure'
+              param?.requireButtonType == 'departure'
               ? (dimensions / 2) * 1.6
               : (dimensions / 2) * 1.45,
           borderRadius: 15,
         }}>
         {/* Main Card */}
+        {/* loader */}
+        {(getSingleShiftLoader || acceptRejectLoader) && <CustomActivityIndicator />}
         <Card
           data={singleShift}
           hours={delayHours}
@@ -280,7 +286,7 @@ const index = ({navigation}) => {
               }}
             />
             <CustomButton
-              onPress={() =>onClickReject()
+              onPress={() => onClickReject()
               }
               title={'Reject'}
               buttonStyle={{

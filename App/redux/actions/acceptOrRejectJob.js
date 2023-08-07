@@ -17,7 +17,6 @@ export const acceptOrRejectJob = status => async dispatch => {
       `${config.SERVER_IP}api/shipping/shippment/updateStatus`,
       status,
     );
-    console.log('get status response', data);
     dispatch({
       type: ACCEPTREJECTJOB_SUCCESS,
       payload: data,

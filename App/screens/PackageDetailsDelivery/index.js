@@ -10,14 +10,13 @@ import CustomAlert from '../../components/CustomAlert';
 import {route} from '../../Routes';
 import FormText from '../../components/FormText';
 import {useDispatch, useSelector} from 'react-redux';
-import {confirmPickupPackages} from '../../redux/actions/confirmPackagePickup';
 import {useIsFocused, useRoute} from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import {
-  getAllPickupPackages,
-  pickupPointDepartureOrDone,
-} from '../../redux/actions/getAllpackagesFromPickup';
-import {all} from 'axios';
+  deliveryDepartureOrDone,
+  getAllDeliveryPackages,
+} from '../../redux/actions/getAllPackagesFromDelivery';
+import {confirmDeliveryPackages} from '../../redux/actions/confirmPackageDelivery';
 const arrDummy = [
   {
     id: '234',
@@ -41,11 +40,9 @@ const arrDummy = [
   },
 ];
 const index = ({navigation}) => {
-  const [pickupConfirmed, setPickupConfirmed] = useState(false);
   const [showNotificationAlert, setShowNotificationAlert] = useState(false);
   const [oneTimeShowNotiAlert, setOneTimeShowNotiAlert] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
-  const [cardStates, setCardStates] = useState({});
   const [refreshComponent, setRefreshComponent] = useState(0);
   const [dataFetched, setDataFetched] = useState(false);
 
@@ -53,46 +50,46 @@ const index = ({navigation}) => {
   const isFocused = useIsFocused();
   const parameter = useRoute();
   const param = parameter?.params;
-
   //selectors
 
   const truckingState = useSelector(state => state);
 
   //getAllPickupPackages
 
-  const {data: allPickupPackages} =
-    truckingState?.getALLPickupPackages?.data || [];
-  const {loading: getALLPickupLoader} = truckingState?.getAllShifts || {};
+  const {data: allDeliveryPackages} =
+    truckingState?.getAllDeliveryPackages?.data || [];
+  const {loading: getALLPickupLoader} =
+    truckingState?.getAllDeliveryPackages || {};
 
   // confirm packages pickup
 
-  const {data: confirmPickupResponse, success: confirmPickupSuccess} =
-    truckingState?.confirmPackagesPickup?.data || [];
-  const {loading: confirmPackagesPickupLoader} =
-    truckingState?.confirmPackagesPickup || {};
-  console.log('get datat succex pickup', confirmPickupSuccess);
+  const {data: confirmPickupResponse, success: confirmDeliveredSuccess} =
+    truckingState?.confirmPackagesDelivery?.data || [];
+  const {loading: confirmPackagesDeliveryLoader} =
+    truckingState?.confirmPackagesDelivery || {};
+
   useEffect(() => {
     dispatch(
-      getAllPickupPackages({
+      getAllDeliveryPackages({
         shipmentId: param.shipmentId,
-        pickup_Id: param.pickup_Id,
+        delivery_Id: param.deliveryId,
       }),
     );
   }, [refreshComponent, isFocused]);
 
   useEffect(() => {
-    // Check if allPickupPackages has a value
-    if (allPickupPackages) {
-      const allPickup = allPickupPackages?.every(
-        obj => obj.status === 'pickup',
+    // Check if alldeliveered packages has a value
+    if (allDeliveryPackages) {
+      const allPickup = allDeliveryPackages?.every(
+        obj => obj.status === 'delivered',
       );
       // Show alert when data is fetched and value is available
       if (dataFetched) {
         if (allPickup) {
           dispatch(
-            pickupPointDepartureOrDone({
+            deliveryDepartureOrDone({
               shipmentId: param.shipmentId,
-              pickup_Id: param.pickup_Id,
+              deliveryId: param.deliveryId,
               status: 'done',
             }),
           );
@@ -102,10 +99,10 @@ const index = ({navigation}) => {
         setDataFetched(true);
       }
     }
-  }, [allPickupPackages, dataFetched]);
-  // show notification alert when confirmed
-  const handleConfirmPickup = () => {
-    if (confirmPickupSuccess) {
+  }, [allDeliveryPackages, dataFetched]);
+
+  const handleConfirmDeliveredNotification = () => {
+    if (confirmDeliveredSuccess) {
       setShowNotificationAlert(true);
     }
   };
@@ -123,11 +120,11 @@ const index = ({navigation}) => {
     });
   };
 
-  const handleConfirmPickupPackage = async obj => {
+  const handleConfirmDeliveredPackage = async obj => {
     // Dispatch your action to confirm pickup
     await dispatch(
-      confirmPickupPackages({
-        pickUp_id: obj._id,
+      confirmDeliveryPackages({
+        delivering_id: obj._id,
         shipmentId: param?.shipmentId,
       }),
     );
@@ -136,13 +133,13 @@ const index = ({navigation}) => {
   };
   // show NotificationAlert
   useEffect(() => {
-    oneTimeShowNotiAlert && handleConfirmPickup();
+    oneTimeShowNotiAlert && handleConfirmDeliveredNotification();
     // handleConfirmPickup();
-  }, [confirmPickupSuccess && oneTimeShowNotiAlert]);
+  }, [confirmDeliveredSuccess && oneTimeShowNotiAlert]);
 
   return (
     <Block>
-      {(getALLPickupLoader || confirmPackagesPickupLoader) && (
+      {(getALLPickupLoader || confirmPackagesDeliveryLoader) && (
         <CustomActivityIndicator />
       )}
       {successAlert && (
@@ -157,7 +154,7 @@ const index = ({navigation}) => {
       {showNotificationAlert && (
         <NotificationAlert
           title={'Success'}
-          description={'Pick-up Confirmed'}
+          description={'Delivery Confirmed'}
           onClose={handleCloseAlert}
         />
       )}
@@ -171,7 +168,7 @@ const index = ({navigation}) => {
         }}>
         {/* card */}
         <ScrollView showsVerticalScrollIndicator={false}>
-          {allPickupPackages?.map(obj => (
+          {allDeliveryPackages?.map(obj => (
             <View
               style={{
                 backgroundColor: color.white,
@@ -234,7 +231,7 @@ const index = ({navigation}) => {
                       // setShowNotificationAlert(true)
                       // setPickupConfirmed(!pickupConfirmed)
                       //   handleConfirmPickup(obj.id);
-                      await handleConfirmPickupPackage(obj);
+                      await handleConfirmDeliveredPackage(obj);
                     }}
                     style={{
                       height: 30,
@@ -248,11 +245,13 @@ const index = ({navigation}) => {
                       size={11}
                       style={{color: color.appBlue, fontWeight: '600'}}>
                       {/* {cardStates[obj.id] ? 'Confirmed' : 'Confirm Pickup'} */}
-                      {obj.status == 'pickup' ? 'Confirmed' : 'Confirm Pickup'}
+                      {obj.status == 'delivered'
+                        ? 'Delivered'
+                        : 'Confirm delivery'}
                     </CustomText>
                   </TouchableOpacity>
                   {/* disablig button when pickedup */}
-                  {obj.status == 'pickup' && (
+                  {obj.status == 'delivered' && (
                     <View
                       style={{
                         backgroundColor: 'pink',

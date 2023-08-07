@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import PackageDetails from '../../screens/PackageDetails'
 import MyRoutes from '../../screens/MyRoutes';
 import Receipt from '../../screens/Receipt';
-
+import PackageDetailsDelivery from '../../screens/PackageDetailsDelivery'
 const Stack = createStackNavigator();
 
 export function HomeStack() {
@@ -30,6 +30,22 @@ export function HomeStack() {
                 }
             />
             <Stack.Screen name="PackageDetails" component={PackageDetails}
+                options={{
+                    headerShown: true,
+                    headerStyle: { backgroundColor: color.white },
+                    headerShadowVisible: false,
+                    headerBackTitleVisible: false,
+                    headerTitleStyle: { color: color.black, fontSize: 20, fontWeight: 500 },
+                    headerTintColor: color.appBlue,
+                    headerTitleAlign: 'center',
+                    title: 'Package Details',
+                    headerRight: () => (
+                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    )
+                }
+                }
+            />
+             <Stack.Screen name="PackageDetailsDelivery" component={PackageDetailsDelivery}
                 options={{
                     headerShown: true,
                     headerStyle: { backgroundColor: color.white },

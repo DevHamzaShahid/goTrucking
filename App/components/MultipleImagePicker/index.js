@@ -51,7 +51,6 @@ const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
                 cropping: true
             }).then(image => {
                 let imageListss = []
-                console.log("image camera", image);
                 const imagePath = "/private/var/mobile/Containers/Data/Application/81FFFDBE-7D91-4673-9289-4A9A6A327FBE/tmp/react-native-image-crop-picker/0180B877-E2C6-4271-BF30-58DA60CC3B12.jpg";
                 const imageUri = imagePath;
                 imageListss.push({
@@ -73,7 +72,6 @@ const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
         newArray.splice(index, 1); // remove the item at the given index
         setImageList(newArray); // set the state using the new array
     }
-    console.log("imagelist", imageList);
     const uploadPhotoHandler = async () => {
         setActiveLoader(true)
         setHideSlctBtnWhileUploading(true)

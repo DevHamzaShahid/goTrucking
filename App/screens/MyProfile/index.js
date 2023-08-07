@@ -1,16 +1,16 @@
-import {View, Text, TouchableOpacity, Image} from 'react-native';
-import React, {useEffect} from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect } from 'react';
 import CustomText from '../../components/CustomText';
 import Block from '../../components/Block';
 import RoundTop from '../../asset/svgs/Round top.svg';
 import ProfileImage from '../../asset/svgs/ProfileImagee.svg';
-import {color} from '../../utils/colors';
+import { color } from '../../utils/colors';
 import RatingStars from '../../components/RatingStars';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {route} from '../../Routes';
-import {useDispatch, useSelector} from 'react-redux';
-import {getProfile} from '../../redux/actions/auth';
-import {useIsFocused} from '@react-navigation/native';
+import { route } from '../../Routes';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProfile } from '../../redux/actions/auth';
+import { useIsFocused } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 
 arrDummy = [
@@ -50,7 +50,7 @@ arrDummy = [
     rightIcon: 'arrow-right',
   },
 ];
-const index = ({navigation}) => {
+const index = ({ navigation }) => {
   const rating = 4;
 
   const dispatch = useDispatch();
@@ -71,7 +71,7 @@ const index = ({navigation}) => {
     lastName,
     mobileNumber,
   } = ProfileData?.getProfile.data || {};
-  const {loading: getProfileLoader} = ProfileData?.getProfile || {};
+  const { loading: getProfileLoader } = ProfileData?.getProfile || {};
   return (
     <Block>
       {getProfileLoader && <CustomActivityIndicator />}
@@ -85,26 +85,29 @@ const index = ({navigation}) => {
           top: 50,
           width: '100%',
         }}>
-        <Icon
+        {/* ignoring icon for now, no use of that */}
+        {/* <Icon
           name="arrow-left"
           size={30}
           color={color.white}
           style={{marginLeft: 20}}
-        />
+        /> */}
+        <View />
+
         <TouchableOpacity
           onPress={() => navigation.navigate(route.EditProfile)}>
           <Icon
             name="pencil"
             size={30}
             color={color.white}
-            style={{marginRight: 20}}
+            style={{ marginRight: 20 }}
           />
         </TouchableOpacity>
       </View>
 
       {/*Profile header */}
       <View>
-        <RoundTop width={'100%'} style={{marginTop: -160}} />
+        <RoundTop width={'100%'} style={{ marginTop: -160 }} />
         <View
           style={{
             alignItems: 'center',
@@ -119,20 +122,20 @@ const index = ({navigation}) => {
           }}>
           {/* <ProfileImage height={150} width={150} /> */}
           <Image
-            source={{uri: profilePhoto}}
+            source={{ uri: profilePhoto }}
             height={150}
             width={150}
-            style={{borderRadius: 100}}
+            style={{ borderRadius: 100 }}
           />
         </View>
-        <View style={{position: 'absolute', top: 130, left: 150}}>
-          <CustomText size={32} style={{fontWeight: '700', color: color.white}}>
+        <View style={{ position: 'absolute', top: 130, left: 150 }}>
+          <CustomText size={32} style={{ fontWeight: '700', color: color.white }}>
             {fullName}
           </CustomText>
-          <CustomText size={16} style={{fontWeight: '400', color: color.white}}>
+          <CustomText size={16} style={{ fontWeight: '400', color: color.white }}>
             {email}
           </CustomText>
-          <CustomText size={15} style={{fontWeight: '400', color: color.white}}>
+          <CustomText size={15} style={{ fontWeight: '400', color: color.white }}>
             {mobileNumber}
           </CustomText>
           <RatingStars rating={rating} />
@@ -140,7 +143,7 @@ const index = ({navigation}) => {
       </View>
 
       {/* Body */}
-      <View style={{width: '80%', alignSelf: 'center', marginVertical: 50}}>
+      <View style={{ width: '80%', alignSelf: 'center', marginVertical: 50 }}>
         {arrDummy?.map(item => (
           <View
             style={{
@@ -150,22 +153,22 @@ const index = ({navigation}) => {
               borderBottomColor: color.textGrey,
               borderBottomWidth: 1,
             }}>
-            <View style={{width: '20%', height: 30, alignItems: 'center'}}>
+            <View style={{ width: '20%', height: 30, alignItems: 'center' }}>
               <Icon name={item.iconName} color={color.appBlue} size={30} />
             </View>
-            <View style={{width: '70%', height: 60, justifyContent: 'center'}}>
+            <View style={{ width: '70%', height: 60, justifyContent: 'center' }}>
               <CustomText
                 size={13}
-                style={{fontWeight: '600', color: color.appBlue}}>
+                style={{ fontWeight: '600', color: color.appBlue }}>
                 {item.heading}
               </CustomText>
               <CustomText
                 size={10}
-                style={{fontWeight: '500', color: color.textGrey}}>
+                style={{ fontWeight: '500', color: color.textGrey }}>
                 {item.description}
               </CustomText>
             </View>
-            <View style={{width: '10%', height: 60, justifyContent: 'center'}}>
+            <View style={{ width: '10%', height: 60, justifyContent: 'center' }}>
               <Icon name={item.rightIcon} color={color.appBlue} size={30} />
             </View>
           </View>

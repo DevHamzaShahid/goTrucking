@@ -1,8 +1,8 @@
-import {applyMiddleware, createStore} from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import rootReducer from './reducers/rootReducer';
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
-import {persistReducer, persistStore} from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const middlewareList = [logger, thunk];
@@ -10,7 +10,7 @@ const middlewareList = [logger, thunk];
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['user',],
+  whitelist: ['user',], //Put those reducer names here you want to persist the data
   blacklist: [],
   timeout: null,
 };

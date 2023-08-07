@@ -64,7 +64,6 @@ export const updateProfile = obj => async dispatch => {
       `${config.SERVER_IP}api/users/myProfile`,
       obj,
     );
-    console.log('updated profile', data);
     dispatch({
       type: UPDATE_PROFILE_SUCCESS,
       payload: data,
@@ -88,7 +87,6 @@ export const uploadPhoto = photo => async dispatch => {
         'Content-Type': 'multipart/form-data',
       },
     });
-    console.log('upload>>>>', data);
     dispatch({
       type: UPLOAD_PHOTO_SUCCESS,
       payload: data,

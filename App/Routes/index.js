@@ -5,5 +5,6 @@ export const route = {
     MyRoutes: "MyRoutes",
     Receipt: "Receipt",
     MyProfile: "MyProfile",
-    EditProfile: "EditProfile"
+    EditProfile: "EditProfile",
+    PackageDetailsDelivery:"PackageDetailsDelivery"
 }
