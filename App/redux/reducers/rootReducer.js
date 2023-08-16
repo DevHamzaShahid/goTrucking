@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { GetProfile, UpdateProfile, UploadPhoto, userLoginReducer } from './auth';
+import UserToken, { GetProfile, UpdateProfile, UploadPhoto, userLoginReducer, userSignupReducer } from './auth';
 import {
   GetAllShifts,
   GetSingleShift,
@@ -14,9 +14,12 @@ import { ConfirmPickupDeparture } from './confirmPickupDeparture';
 import { ConfirmDeliveryDeparture } from './confirmDeliveryDeparture';
 import { ConfirmAllPackagesPickedUp } from './confirmAllPackagesPickedup';
 import shipmentReducer from './shipmentId';
+import { GetDirectionLine } from './getDirectionLine';
 
 export default combineReducers({
-  user: userLoginReducer,
+  userToken:UserToken,
+  userLogin: userLoginReducer,
+  signUp:userSignupReducer,
   getProfile: GetProfile,
   updateProfile: UpdateProfile,
   uploadPhoto: UploadPhoto,
@@ -31,5 +34,6 @@ export default combineReducers({
   confirmPickupDeparturereducer: ConfirmPickupDeparture,
   confirmDeliveryDeparturereducer: ConfirmDeliveryDeparture,
   confirmAllPackagesArePickedup: ConfirmAllPackagesPickedUp,
-  shipmentId:shipmentReducer
+  shipmentId: shipmentReducer,
+  getdirectionLine:GetDirectionLine
 });

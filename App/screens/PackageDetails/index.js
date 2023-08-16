@@ -70,7 +70,6 @@ const index = ({navigation}) => {
     truckingState?.confirmPackagesPickup?.data || [];
   const {loading: confirmPackagesPickupLoader} =
     truckingState?.confirmPackagesPickup || {};
-  console.log('get datat succex pickup', confirmPickupSuccess);
   useEffect(() => {
     dispatch(
       getAllPickupPackages({

@@ -18,8 +18,8 @@ import { useIsFocused } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 const iconSize = 24
-export function MyTabs() {
 
+export function MyTabs() {
     return (
         <Tab.Navigator
             screenOptions={{

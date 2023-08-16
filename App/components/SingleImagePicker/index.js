@@ -11,7 +11,7 @@ const MultipleImagePicker = ({
   const [reFresh, setRefresh] = useState(0);
 
   const openPicker = () => {
-    ImageCropPicker.openPicker({
+    ImageCropPicker?.openPicker({
       waitAnimationEnd: false,
       multiple: false,
       includeExif: true,
@@ -47,7 +47,7 @@ const MultipleImagePicker = ({
     setShowImagePickerModal(false)
   }, []);
   const openCamera = () => {
-    ImageCropPicker.openCamera({
+    ImageCropPicker?.openCamera({
       mediaType: 'photo',
       cropping: true,
     })

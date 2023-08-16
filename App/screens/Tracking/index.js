@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Platform, ScrollView, TouchableOpacity } from 'react-native'
 import React from 'react'
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
+import MapView, { Marker, PROVIDER_GOOGLE, Polyline } from 'react-native-maps'
 import Block from '../../components/Block'
 import { dimensions } from '../../Dimensions'
 import { color } from '../../utils/colors'
@@ -8,6 +8,10 @@ import DistanceView from '../../asset/svgs/distanceView.svg'
 import Van from '../../asset/svgs/distanceVan.svg'
 import CustomText from '../../components/CustomText'
 import TrackIcon from '../../asset/svgIcons/trackingIcon.svg'
+import polyline from '@mapbox/polyline';
+import MapViewDirections from 'react-native-maps-directions'
+import { GoogleMapKey } from '../../utils/keys'
+import { route } from '../../Routes'
 const arrDummy = [
     {
         id: '234',
@@ -37,10 +41,26 @@ const arrDummy = [
         address: 'No75, Grand Lake,HDT45H,  sydney, Australia.'
     },
 ]
-const index = () => {
+const index = ({ navigation }) => {
     const DottedLine = ({ height }) => (
         <View style={[styles.dottedLine, { height }]} />
     );
+
+    const chicago = [41.8781, -87.6298];
+    const waypoint1 = [41.1400, -73.2613]; // White Plains, New York
+    //  const waypoint1 = [41.8781, -86.2481]; // South Bend, Indiana
+    // const waypoint1 = [39.9526, -75.1652]; // Philadelphia, Pennsylvania
+    // const waypoint1 = [38.8951, -77.0364]; // Washington, D.C.
+    // const waypoint1 = [39.9526, -75.1652]
+    // const waypoint1 = [41.4034, -82.7117]
+    const washington = [38.9072, -77.0379];
+
+    const coordinates = [chicago, waypoint1, washington];
+    const encodedPolyline = polyline.encode(coordinates);
+
+    const decodedCoordinates = polyline.decode(encodedPolyline);
+
+
     return (
         // <Block>
         //     <View style={styles.mapContainer}>
@@ -95,11 +115,48 @@ const index = () => {
         //     </View>
 
         // </Block>
-        <View>
-            <CustomText>
-                In Progress
-            </CustomText>
-        </View>
+        // <MapView
+        //     style={{ flex: 1 }}
+        //     // provider={PROVIDER_GOOGLE}
+        //     initialRegion={{
+        //         latitude: chicago[0],
+        //         longitude: chicago[1],
+        //         latitudeDelta: 10,
+        //         longitudeDelta: 10,
+        //     }}
+        // >
+        //     <Marker coordinate={{ latitude: chicago[0], longitude: chicago[1] }} title="Chicago" />
+        //     <Marker coordinate={{ latitude: washington[0], longitude: washington[1] }} title="Washington" />
+        //     <Polyline
+        //         coordinates={decodedCoordinates}
+        //         strokeWidth={4}
+        //         strokeColor="#FF0000"
+        //     />
+
+        //     <MapViewDirections
+        //         origin={{
+        //             latitude: decodedCoordinates[0][0],
+        //             longitude: decodedCoordinates[0][1],
+        //         }}
+        //         destination={{
+        //             latitude: decodedCoordinates[2][0],
+        //             longitude: decodedCoordinates[2][1],
+        //         }}
+        //         waypoints={[{
+        //             latitude: decodedCoordinates[1][0],
+        //             longitude: decodedCoordinates[1][1],
+        //         }]}
+        //         apikey={GoogleMapKey}
+        //         mode="driving"
+        //         alternatives // Request multiple alternative routes
+        //         strokeWidth={6}
+        //         strokeColor="green"
+        //     />
+        // </MapView>
+        // <TouchableOpacity onPress={()=>navigation.navigate(route.Register)} style={{ backgroundColor: 'yellow', height: 50, width: '80%' }}>
+
+        // </TouchableOpacity>
+null
     )
 }
 const styles = StyleSheet.create({

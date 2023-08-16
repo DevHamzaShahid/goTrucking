@@ -19,11 +19,15 @@ import { getProfile } from '../../redux/actions/auth';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { getAllShifts, getSingleShift } from '../../redux/actions/getShifts';
 import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
+import { resetState } from '../../redux/actions/resetReduxState';
 
-const Index = React.memo(({ navigation }) => {
+const Index = ({ navigation }) => {
   // hitApis/dispatch
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
+
+  // getallshipments and profile
+
   useEffect(() => {
     dispatch(getProfile());
     dispatch(getAllShifts());
@@ -32,8 +36,8 @@ const Index = React.memo(({ navigation }) => {
   //selectors
 
   const truckingState = useSelector(state => state);
-  const {shipment_Id}=truckingState.shipmentId||''
-  console.log("shipment id reducer", shipment_Id);
+  const { shipment_Id } = truckingState.shipmentId || ''
+
   // get profile
 
   const { fullName, email, city, profilePhoto, firstName, lastName } =
@@ -44,13 +48,18 @@ const Index = React.memo(({ navigation }) => {
 
   const { data: allShifts } = truckingState?.getAllShifts?.data || [];
   const { loading: getAllShiftsLoader } = truckingState?.getAllShifts || {};
+
   //get acceptrejectjob status
+
   const { data } = truckingState?.acceptOrRejectJob?.data || [];
 
   const [readyForPickup, setReadyForPickup] = useState(false);
   const [shipmentId, setShipmentId] = useState('');
   const parameter = useRoute();
   const param = parameter?.params;
+
+
+
 
   const PickupAlertNext = () => {
     dispatch(acceptOrRejectJob({ id: shipmentId, status: 'start' }));
@@ -70,12 +79,28 @@ const Index = React.memo(({ navigation }) => {
     navigation.navigate(route.ViewDetails, { shiftId: _id });
     // send shift id to get single shift packages
   };
-
+  const checkIfanyotherJobIsInProgress = () => {
+    const jobInProgress = allShifts?.some(
+      shift =>
+        shift.status === 'delivering' ||
+        shift.status === 'pickup' ||
+        shift.status === 'arrival' ||
+        shift.status === 'start'
+    );
+    return jobInProgress
+  }
   const onClickShipmentButton = item => {
     if (item.status == 'accept') {
-      setReadyForPickup(true);
-      setShipmentId(item._id);
-    } else if (item.status == 'assign') {
+      //onclick startworking
+      const inProgress = checkIfanyotherJobIsInProgress()
+      if (inProgress) {
+        alert('one job allowed at a time')
+      }
+      else {
+        setReadyForPickup(true);
+        setShipmentId(item._id);
+      }
+    } else if (item.status == 'assign') {//by default assign
       onClickViewDetails(item._id);
     } else if (item.status == 'start') {
       setShipmentId(item._id);
@@ -106,7 +131,13 @@ const Index = React.memo(({ navigation }) => {
 
   useEffect(() => {
     dispatch({ type: 'SET_SHIPMENT_ID', payload: "3245632456tf345643" });
-  }, [])
+  }, [isFocused])
+
+  useEffect(() => {
+    
+      dispatch(resetState());
+    
+  }, [isFocused, navigation, dispatch])
 
   return (
     <Block>
@@ -291,5 +322,5 @@ const Index = React.memo(({ navigation }) => {
       />
     </Block>
   );
-});
+}
 export default Index;

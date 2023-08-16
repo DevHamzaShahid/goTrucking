@@ -1,11 +1,9 @@
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   ScrollView,
-  Image,
   Dimensions,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
@@ -16,33 +14,22 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MapBackBtn from '../../asset/svgIcons/mapBackBtn.svg';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
-import * as Progress from 'react-native-progress';
-import SquarePrev from '../../asset/svgIcons/squarePrevious.svg';
-import SquareNext from '../../asset/svgIcons/squareNext.svg';
-import Location from '../../asset/svgIcons/Location.svg';
 import MapEye from '../../asset/svgIcons/MapEye.svg';
-import MapNavigate from '../../asset/svgIcons/mapNavigate.svg';
-import FormText from '../../components/FormText';
 import { route } from '../../Routes';
-import Card from '../../components/Card';
 import { CommonActions, useIsFocused, useRoute } from '@react-navigation/native';
 import { dimensions, dimensionsWidth } from '../../Dimensions';
 import Navigate from '../../asset/svgIcons/navigation.svg';
 import Clockreport from '../../asset/svgIcons/clockReport.svg';
 import ClockConfirmArrival from '../../asset/svgIcons/clockConfirmArrival.svg';
-import ClockConfirmArrivalwhite from '../../asset/svgIcons/clockConfirmArrivalwhite.svg';
 import CustomAlert from '../../components/CustomAlert';
 import CustomDropDown from '../../components/CustomDropDown';
 import TrackingIcon from '../../asset/svgIcons/Tracking.svg';
 import PackageDetail from '../../asset/svgIcons/PackageDetail.svg';
 import ConfirmDeparture from '../../asset/svgIcons/ConfirmDeparture.svg';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllPickupPackages } from '../../redux/actions/getAllpackagesFromPickup';
-import DestinationMarker from '../../asset/svgIcons/destinationMarkerDark.svg';
+import PickupPin from '../../asset/svgIcons/destinationMarker.svg';
 import { fetchMyLocation } from '../../utils/helperFunction';
-import GetLocation from 'react-native-get-location';
 import Truck from '../../asset/svgIcons/Truck.svg';
-import { all } from 'axios';
 import { GoogleMapKey } from '../../utils/keys';
 import MapViewDirections from 'react-native-maps-directions';
 import {
@@ -53,7 +40,618 @@ import { confirmPickupDeparturee } from '../../redux/actions/confirmPickupDepart
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { confirmDeliveryDeparturee } from '../../redux/actions/confirmDeliveryDeparturee';
 import { confirmAllPackagesPcikedUp } from '../../redux/actions/confirmAllPackagesPickedup';
+import { auth } from '@react-native-firebase/auth';
+import { firebase } from '@react-native-firebase/database';
+import DeliveryPin from '../../asset/svgIcons/deliveryMarker.svg';
+import { getDirectionLine } from '../../redux/actions/getDirectionLine';
+import polyline from '@mapbox/polyline';
+import { resetState } from '../../redux/actions/resetReduxState';
 
+// const direction1 = [
+//   {
+//     "latitude": 37.77494,
+//     "longitude": -122.41945
+//   },
+//   {
+//     "latitude": 37.77504,
+//     "longitude": -122.41931
+//   },
+//   {
+//     "latitude": 37.77513,
+//     "longitude": -122.41919
+//   },
+//   {
+//     "latitude": 37.7753,
+//     "longitude": -122.41899
+//   },
+//   {
+//     "latitude": 37.77555,
+//     "longitude": -122.41866
+//   },
+//   {
+//     "latitude": 37.77566,
+//     "longitude": -122.41852
+//   },
+//   {
+//     "latitude": 37.77576,
+//     "longitude": -122.41849
+//   },
+//   {
+//     "latitude": 37.77588,
+//     "longitude": -122.41833
+//   },
+//   {
+//     "latitude": 37.776,
+//     "longitude": -122.41818
+//   },
+//   {
+//     "latitude": 37.7765,
+//     "longitude": -122.41757
+//   },
+//   {
+//     "latitude": 37.7764,
+//     "longitude": -122.41733
+//   },
+//   {
+//     "latitude": 37.7761,
+//     "longitude": -122.41695
+//   },
+//   {
+//     "latitude": 37.77576,
+//     "longitude": -122.41651
+//   },
+//   {
+//     "latitude": 37.77553,
+//     "longitude": -122.41624
+//   },
+//   {
+//     "latitude": 37.77528,
+//     "longitude": -122.41592
+//   },
+//   {
+//     "latitude": 37.77517,
+//     "longitude": -122.41579
+//   },
+//   {
+//     "latitude": 37.77484,
+//     "longitude": -122.41539
+//   },
+//   {
+//     "latitude": 37.77473,
+//     "longitude": -122.41524
+//   },
+//   {
+//     "latitude": 37.77448,
+//     "longitude": -122.41493
+//   },
+//   {
+//     "latitude": 37.77403,
+//     "longitude": -122.41437
+//   },
+//   {
+//     "latitude": 37.77394,
+//     "longitude": -122.41426
+//   },
+//   {
+//     "latitude": 37.7737,
+//     "longitude": -122.41396
+//   },
+//   {
+//     "latitude": 37.77355,
+//     "longitude": -122.41378
+//   },
+//   {
+//     "latitude": 37.77281,
+//     "longitude": -122.41284
+//   },
+//   {
+//     "latitude": 37.77251,
+//     "longitude": -122.41246
+//   },
+//   {
+//     "latitude": 37.77246,
+//     "longitude": -122.41239
+//   },
+//   {
+//     "latitude": 37.77208,
+//     "longitude": -122.41192
+//   },
+//   {
+//     "latitude": 37.77157,
+//     "longitude": -122.41129
+//   },
+//   {
+//     "latitude": 37.77127,
+//     "longitude": -122.41091
+//   },
+//   {
+//     "latitude": 37.77107,
+//     "longitude": -122.41066
+//   },
+//   {
+//     "latitude": 37.771,
+//     "longitude": -122.41056
+//   },
+//   {
+//     "latitude": 37.77067,
+//     "longitude": -122.41013
+//   },
+//   {
+//     "latitude": 37.77037,
+//     "longitude": -122.40973
+//   },
+//   {
+//     "latitude": 37.77032,
+//     "longitude": -122.40967
+//   },
+//   {
+//     "latitude": 37.76982,
+//     "longitude": -122.40905
+//   },
+//   {
+//     "latitude": 37.7694,
+//     "longitude": -122.40858
+//   },
+//   {
+//     "latitude": 37.76928,
+//     "longitude": -122.40843
+//   },
+//   {
+//     "latitude": 37.76916,
+//     "longitude": -122.40829
+//   },
+//   {
+//     "latitude": 37.76918,
+//     "longitude": -122.40794
+//   },
+//   {
+//     "latitude": 37.76919,
+//     "longitude": -122.4078
+//   },
+//   {
+//     "latitude": 37.7692,
+//     "longitude": -122.40761
+//   },
+//   {
+//     "latitude": 37.76922,
+//     "longitude": -122.4074
+//   },
+//   {
+//     "latitude": 37.76924,
+//     "longitude": -122.40723
+//   },
+//   {
+//     "latitude": 37.76924,
+//     "longitude": -122.40719
+//   },
+//   {
+//     "latitude": 37.76926,
+//     "longitude": -122.40689
+//   },
+//   {
+//     "latitude": 37.76927,
+//     "longitude": -122.40675
+//   },
+//   {
+//     "latitude": 37.76929,
+//     "longitude": -122.40665
+//   },
+//   {
+//     "latitude": 37.7693,
+//     "longitude": -122.40659
+//   },
+//   {
+//     "latitude": 37.76937,
+//     "longitude": -122.40634
+//   },
+//   {
+//     "latitude": 37.76942,
+//     "longitude": -122.40624
+//   },
+//   {
+//     "latitude": 37.76944,
+//     "longitude": -122.40621
+//   },
+//   {
+//     "latitude": 37.76959,
+//     "longitude": -122.40595
+//   },
+//   {
+//     "latitude": 37.76961,
+//     "longitude": -122.40591
+//   },
+//   {
+//     "latitude": 37.76962,
+//     "longitude": -122.40588
+//   },
+//   {
+//     "latitude": 37.76963,
+//     "longitude": -122.40586
+//   },
+//   {
+//     "latitude": 37.76964,
+//     "longitude": -122.4058
+//   },
+//   {
+//     "latitude": 37.76965,
+//     "longitude": -122.4057
+//   },
+//   {
+//     "latitude": 37.76968,
+//     "longitude": -122.40565
+//   },
+//   {
+//     "latitude": 37.76968,
+//     "longitude": -122.40559
+//   },
+//   {
+//     "latitude": 37.7697,
+//     "longitude": -122.40544
+//   },
+//   {
+//     "latitude": 37.76971,
+//     "longitude": -122.40521
+//   },
+//   {
+//     "latitude": 37.76972,
+//     "longitude": -122.40497
+//   },
+//   {
+//     "latitude": 37.76974,
+//     "longitude": -122.4045
+//   },
+//   {
+//     "latitude": 37.76975,
+//     "longitude": -122.40443
+//   },
+//   {
+//     "latitude": 37.76977,
+//     "longitude": -122.40435
+//   },
+//   {
+//     "latitude": 37.76974,
+//     "longitude": -122.40427
+//   },
+//   {
+//     "latitude": 37.76976,
+//     "longitude": -122.4041
+//   },
+//   {
+//     "latitude": 37.76978,
+//     "longitude": -122.40405
+//   },
+//   {
+//     "latitude": 37.7698,
+//     "longitude": -122.404
+//   },
+//   {
+//     "latitude": 37.76979,
+//     "longitude": -122.40395
+//   },
+//   {
+//     "latitude": 37.76979,
+//     "longitude": -122.4039
+//   },
+//   {
+//     "latitude": 37.76979,
+//     "longitude": -122.40387
+//   },
+//   {
+//     "latitude": 37.76982,
+//     "longitude": -122.40382
+//   },
+//   {
+//     "latitude": 37.76984,
+//     "longitude": -122.40379
+//   },
+//   {
+//     "latitude": 37.76988,
+//     "longitude": -122.40376
+//   },
+//   {
+//     "latitude": 37.76992,
+//     "longitude": -122.40376
+//   },
+//   {
+//     "latitude": 37.76996,
+//     "longitude": -122.40377
+//   },
+//   {
+//     "latitude": 37.77,
+//     "longitude": -122.40379
+//   },
+//   {
+//     "latitude": 37.77002,
+//     "longitude": -122.40382
+//   },
+//   {
+//     "latitude": 37.77003,
+//     "longitude": -122.40386
+//   },
+//   {
+//     "latitude": 37.77004,
+//     "longitude": -122.40389
+//   },
+//   {
+//     "latitude": 37.77018,
+//     "longitude": -122.40372
+//   },
+//   {
+//     "latitude": 37.771,
+//     "longitude": -122.40269
+//   },
+//   {
+//     "latitude": 37.77114,
+//     "longitude": -122.4025
+//   },
+//   {
+//     "latitude": 37.77133,
+//     "longitude": -122.40227
+//   },
+//   {
+//     "latitude": 37.77147,
+//     "longitude": -122.40209
+//   },
+//   {
+//     "latitude": 37.77162,
+//     "longitude": -122.4019
+//   },
+//   {
+//     "latitude": 37.77181,
+//     "longitude": -122.40168
+//   },
+//   {
+//     "latitude": 37.7721,
+//     "longitude": -122.40134
+//   },
+//   {
+//     "latitude": 37.7722,
+//     "longitude": -122.40122
+//   },
+//   {
+//     "latitude": 37.77238,
+//     "longitude": -122.401
+//   },
+//   {
+//     "latitude": 37.77292,
+//     "longitude": -122.40031
+//   },
+//   {
+//     "latitude": 37.77342,
+//     "longitude": -122.39966
+//   },
+//   {
+//     "latitude": 37.77351,
+//     "longitude": -122.39955
+//   },
+//   {
+//     "latitude": 37.77361,
+//     "longitude": -122.39943
+//   },
+//   {
+//     "latitude": 37.77486,
+//     "longitude": -122.39784
+//   },
+//   {
+//     "latitude": 37.77534,
+//     "longitude": -122.39723
+//   },
+//   {
+//     "latitude": 37.77561,
+//     "longitude": -122.39689
+//   },
+//   {
+//     "latitude": 37.7759,
+//     "longitude": -122.39653
+//   },
+//   {
+//     "latitude": 37.77645,
+//     "longitude": -122.39581
+//   },
+//   {
+//     "latitude": 37.77664,
+//     "longitude": -122.39556
+//   },
+//   {
+//     "latitude": 37.77706,
+//     "longitude": -122.39504
+//   },
+//   {
+//     "latitude": 37.77712,
+//     "longitude": -122.39495
+//   },
+//   {
+//     "latitude": 37.77717,
+//     "longitude": -122.39488
+//   },
+//   {
+//     "latitude": 37.77748,
+//     "longitude": -122.3945
+//   },
+//   {
+//     "latitude": 37.77791,
+//     "longitude": -122.39397
+//   },
+//   {
+//     "latitude": 37.77796,
+//     "longitude": -122.39389
+//   },
+//   {
+//     "latitude": 37.77824,
+//     "longitude": -122.39356
+//   },
+//   {
+//     "latitude": 37.77843,
+//     "longitude": -122.3933
+//   },
+//   {
+//     "latitude": 37.77868,
+//     "longitude": -122.39298
+//   },
+//   {
+//     "latitude": 37.77885,
+//     "longitude": -122.39276
+//   },
+//   {
+//     "latitude": 37.77912,
+//     "longitude": -122.39244
+//   },
+//   {
+//     "latitude": 37.77929,
+//     "longitude": -122.39222
+//   },
+//   {
+//     "latitude": 37.77975,
+//     "longitude": -122.39165
+//   },
+//   {
+//     "latitude": 37.78019,
+//     "longitude": -122.39108
+//   },
+//   {
+//     "latitude": 37.78061,
+//     "longitude": -122.39054
+//   },
+//   {
+//     "latitude": 37.78034,
+//     "longitude": -122.39018
+//   },
+//   {
+//     "latitude": 37.78022,
+//     "longitude": -122.39004
+//   },
+//   {
+//     "latitude": 37.78018,
+//     "longitude": -122.38999
+//   },
+//   {
+//     "latitude": 37.77994,
+//     "longitude": -122.38967
+//   },
+//   {
+//     "latitude": 37.77975,
+//     "longitude": -122.38993
+//   },
+//   {
+//     "latitude": 37.77969,
+//     "longitude": -122.39001
+//   }
+// // ]
+// const direction1=[[-45.460626,3.069363],[-45.317803,3.071252],[-45.269464,3.004909],[-45.271660999999995,3.0806929999999997],[-45.566094,3.0655829999999997],[-45.348565,3.1127219999999998],[-45.300225,3.168981],[-45.23211,3.146518],[-45.552910999999995,3.157756],[-45.1596,3.1988469999999998],[-45.056329,3.0825799999999997],[-45.02337,3.174588],[-44.882745,3.107078],[-45.128839,2.974431],[-44.970635,3.016314],[-45.467217,3.25088],[-45.240358,3.5116009999999998],[-45.200807,3.390294],[-45.238161,3.3133559999999997],[-44.904176,3.42124]]
+
+
+// const direction1 = [[-454.60626, 30.69363], [-453.17803, 30.71252], [-452.69464, 30.04909], [-452.71661, 30.80693], [-452.24522, -2984.18449], [-451.68263, -2982.0092], [-451.90726, -2981.5258], [-451.79488, -2980.84465], [-451.38397, -2984.05266], [-452.54664, -2980.11955], [-451.62656, -2979.08684], [-452.30166, -2978.75725], [-453.62813, -2977.351], [-453.2093, -2979.81194], [-450.86364, -2978.2299], [-448.25643, -2983.19572], [-449.4695, -2980.92713], [-450.23888, -2980.53162], [-449.16004, -2980.90516], [-449.16004, -2977.56531]]
+
+const direction1 = [
+  [
+    151.1394844121329,
+    -33.76806907278485
+  ],
+  [
+    151.01637565713838,
+    -32.93157259390829
+  ],
+  [
+    150.3569268484777,
+    -32.087893072915634
+  ],
+  [
+    147.90045293476015,
+    -30.869577388425427
+  ],
+  [
+    148.3773267886138,
+    -32.29036690886308
+  ],
+  [
+    147.45385346032378,
+    -33.89204769786868
+  ],
+  [
+    148.86209272919683,
+    -34.01917162023395
+  ],
+  [
+    147.19106171372812,
+    -35.44623786880841
+  ],
+  [
+    145.48613491345964,
+    -33.31348914307953
+  ],
+  [
+    144.19032017906795,
+    -32.77981223389115
+  ],
+  [
+    144.18261512760222,
+    -34.81073259145486
+  ],
+  [
+    146.53962053884612,
+    -35.926155173948246
+  ],
+  [
+    149.8546350322053,
+    -36.06442638528288
+  ],
+  [
+    150.29474481792937,
+    -33.433550197987
+  ],
+  [
+    151.2723748783476,
+    -34.81063277887092
+  ],
+  [
+    150.53385121020926,
+    -33.10183855140902
+  ]
+]
+
+
+
+// const encodePolyline = (coords) => {
+//   const encoded = [];
+//   let prevLat = 0;
+//   let prevLng = 0;
+
+//   for (const coord of coords) {
+//     const latDiff = Math.round((coord.latitude - prevLat) * 1e5);
+//     const lngDiff = Math.round((coord.longitude - prevLng) * 1e5);
+//     prevLat = coord.latitude;
+//     prevLng = coord.longitude;
+
+//     encoded.push(latDiff);
+//     encoded.push(lngDiff);
+//   }
+
+//   return encoded.join(",");
+// };
+
+// const encodedDirection1 = encodePolyline(newDirection1);
+// console.log("encodedDirection1", encodedDirection1);
+
+// const decodePolyline = (encoded) => {
+//   const decoded = [];
+//   let prevLat = 0;
+//   let prevLng = 0;
+
+//   const values = encoded.split(",");
+
+//   for (let i = 0; i < values.length; i += 2) {
+//     const latDiff = parseInt(values[i], 10);
+//     const lngDiff = parseInt(values[i + 1], 10);
+//     prevLat += latDiff / 1e5;
+//     prevLng += lngDiff / 1e5;
+//     decoded.push({ latitude: prevLat, longitude: prevLng });
+//   }
+
+//   return decoded;
+// };
+
+// const decodedDirection1 = decodePolyline(encodedDirection1);
+// console.log("decodedDirection1", decodedDirection1);
 
 const initialRegion = {
   latitude: 29.7604,
@@ -87,12 +685,10 @@ const index = ({ navigation }) => {
 
   const [allPickuppackages, setAllPickuppackages] = useState(false);
   const [allDeliveredPackages, setAllDeliveredPackages] = useState(false);
-  const [allCoords, setAllCoords] = useState([
-    {
-      lat: 51.5072,
-      lng: 0.1276,
-    },
-  ]);
+  const [allCoords, setAllCoords] = useState([]);
+  const [singleShiftCoords, setSingleShiftCoords] = useState([]);
+  const [singleDeliveryCoords, setSingleDeliveryCoords] = useState([]);
+  const [getPolyline, setPolyline] = useState([]);
   const [myLiveLocation, setMyLiveLocation] = useState({
     latitude: 37.785834,
     longitude: -122.406417,
@@ -109,6 +705,11 @@ const index = ({ navigation }) => {
   const checkDelayedTime =
     delayHours != null || delayMins != null ? true : false;
 
+  //getdirectionLine
+  useEffect(() => {
+    dispatch(getDirectionLine(param?.shipmentId))
+  }, [])
+
   //get singleShift
   // used is fouces when comming back to the pickupcards screen it should show the updated singleShift status prnding to done or so
   useEffect(() => {
@@ -116,8 +717,6 @@ const index = ({ navigation }) => {
   }, [navigation, isFocused, refresher]);
 
   //getSingleShift
-
-  console.log("Alllcords>>>>", allCoords);
 
   const truckingState = useSelector(state => state);
   const { data: singleShift } = truckingState?.getSingleShift?.data || [];
@@ -141,14 +740,28 @@ const index = ({ navigation }) => {
   const { loading: confirmDeliveryDepartureLoader } =
     truckingState?.confirmDeliveryDeparturereducer || {};
 
+  //get Direction Line
+  const { data: directionLine } =
+    truckingState?.getdirectionLine || [];
+  const { loading: directionLineLoader } =
+    truckingState?.getdirectionLine || {};
+  const direction = directionLine?.data?.shipmentDetail?.direction
+
+  //get profile
+  const { data: userData } =
+    truckingState?.getProfile || [];
+
   //confirm all the packages are picked up send confirmation status
   const { data: confirmAllPackagespickup } = truckingState?.confirmAllPackagesArePickedup || [];
-  console.log("confirm all pickedup", confirmAllPackagespickup);
 
 
   // back for the map screen
   const handleBackPress = () => {
-    navigation.goBack();
+    const resetAction = CommonActions.reset({
+      index: 0, // Reset to the first screen in the stack
+      routes: [{ name: route.Home }], // Replace the stack with the Home screen
+    });
+    navigation.dispatch(resetAction);
   };
 
   // CHECK IF single shift all pickuppoints are pickuped , if pickup and departed then show delivery cards instead
@@ -166,16 +779,7 @@ const index = ({ navigation }) => {
     };
   }, [singleShift, navigation]);
 
-  //   // card next button
-  //   const handleNextPress = () => {
-  //     setCurrentIndex(prevIndex => (prevIndex + 1) % arrDummy.length);
-  //   };
-  //   //   card Back Button
-  //   const handlePreviousPress = () => {
-  //     setCurrentIndex(
-  //       prevIndex => (prevIndex - 1 + arrDummy.length) % arrDummy.length,
-  //     );
-  //   };
+
   const handleHourChange = value => {
     setDelayHours(value);
   };
@@ -183,45 +787,61 @@ const index = ({ navigation }) => {
     setDelayMins(value);
   };
 
+
   const closeSuccessErrorAlert = () => {
     setShowAlert(false);
     // navigating to home and removing navigation cache
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: route.Home }],
-      }),
-    );
+    handleBackPress()
   };
   const closeButton = () => {
     setClosBtn(false);
     setChooseDelayTime(false);
   };
 
-  //get live coords
+  // get live coords
+  // send location to database after every 3sec
+  // useEffect(() => {
+  //   // if (singleShiftDelivery) {
+  //   const intervalId = setInterval(async () => {
+  //     const location = await fetchMyLocation();
+  //     setMyLiveLocation(location);
+  //     console.log(location);
+  //     const userUid = userData?._id
+  //     firebase.database().ref(`driver_livelocation/${userUid}`).set(location);
+  //   }, 3000);
+  //   return () => {
+  //     clearInterval(intervalId); // Clear the interval when the component unmounts
+  //   };
+  //   // }
+  // }, [singleShiftDelivery]);
+
 
   useEffect(() => {
-    const fetchMyLoc = async () => {
-      const location = await fetchMyLocation();
-      setMyLiveLocation(location);
-    };
-    fetchMyLoc();
-  }, []);
+    if (singleShiftDelivery) {
+      const intervalId = setInterval(async () => {
+        try {
+          const location = await fetchMyLocation();
+          setMyLiveLocation(location);
+          console.log("location", location);
+
+          if (userData && userData._id) {
+            firebase.database().ref(`driver_livelocation/${userData._id}`).set(location);
+          }
+        } catch (error) {
+          console.error('Location fetch error:', error);
+          // Handle the timeout error here and restart the interval
+        }
+      }, 3000);
+
+      return () => {
+        clearInterval(intervalId); // Clear the interval when the component unmounts
+      };
+    }
+  }, [singleShiftDelivery]);
+
 
   useEffect(() => {
     const cityCoordinates = [
-      // {
-      //   lat: 40.7128,
-      //   lng: -74.006,
-      //   latitudeDelta: LATITUDE_DELTA,
-      //   longitudeDelta: LONGITUDE_DELTA,
-      // },
-      // {
-      //   lat: 34.0522,
-      //   lng: -118.2437,
-      //   latitudeDelta: LATITUDE_DELTA,
-      //   longitudeDelta: LONGITUDE_DELTA,
-      // },
       {
         lat: 41.8781,
         lng: -87.6298,
@@ -241,38 +861,30 @@ const index = ({ navigation }) => {
         longitudeDelta: LONGITUDE_DELTA,
       },
     ];
-    const cooooords = singleShift?.map(item => ({
-      lat: item.lat && item.lat,
-      lng: item.lng && item.lng,
+    const pickupCoords = singleShift?.map(item => ({
+      lat: item.lng && item.lng,
+      lng: item.lat && item.lat,
     }));
-    cooooords &&
-      setAllCoords(prevCoords => [
-        ...prevCoords,
-        ...cityCoordinates,
-        // ...cooooords,
-      ]);
+    const deliveryCoords = singleShiftDelivery?.map(item => ({
+      lat: item.lng && item.lng,
+      lng: item.lat && item.lat,
+    }));
+    pickupCoords && setSingleShiftCoords((prevCoords) => [...prevCoords, ...pickupCoords])
+    deliveryCoords && setSingleDeliveryCoords((prevCoords) => [...prevCoords, ...deliveryCoords])
   }, [singleShift]);
 
-  const handleAlternativeRoutes = result => {
-    const routes = result?.result?.routes || [];
-    console.log('Alternative Routes:', routes);
-    // You can store the routes in the state or handle them as needed
-  };
-  const waypoints = [
-    { latitude: 37.7896386, longitude: -122.421646 },
-    // { latitude: 37.774929, longitude: -122.419418 },
-    // { latitude: 37.773972, longitude: -122.431297 },
-  ];
+  // get delivery points
   useEffect(() => {
     dispatch(getSingleShiftDelivery(param?.shipmentId));
   }, [navigation, isFocused, refresher]);
+
 
   // CHECK IF single delivery card deliveries are done and ready/click departure
   useEffect(() => {
     let allDelivered = singleShiftDelivery?.every(
       obj => obj.status === 'departure',
     );
-    if (allDelivered) {
+    if (allDelivered===true) {
       // when all packages are delivered then tell delivered//sending status to admin
       dispatch(confirmAllPackagesPcikedUp({ id: param?.shipmentId, status: "delivered" }))
       setShowAlert(true);
@@ -286,6 +898,7 @@ const index = ({ navigation }) => {
     };
   }, [singleShiftDelivery]);
 
+
   //  pickup on click confirm deaprture
   const confirmPickupDeparture = async item => {
     await dispatch(
@@ -297,6 +910,8 @@ const index = ({ navigation }) => {
     );
     setRefresher(refresher + 2);
   };
+
+
   // delivery on click confirm departure
   const confirmDeliveryDeparture = async item => {
     await dispatch(
@@ -315,20 +930,22 @@ const index = ({ navigation }) => {
     setSelectedMarkerIndex(index);
     scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
     mapRef.current.animateToRegion({
-      latitude: allCoords[index]?.lat,
-      longitude: allCoords[index]?.lng,
+      latitude: singleShiftCoords[index]?.lat,
+      longitude: singleShiftCoords[index]?.lng,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
     }, ANIMATION_DURATION);
   };
+
+
   // on scrolling moving to the markers
   const handleHorizontalListScroll = (event) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.floor(contentOffsetX / getCardWidth());
     setSelectedMarkerIndex(index);
     mapRef.current.animateToRegion({
-      latitude: allCoords[index]?.lat,
-      longitude: allCoords[index]?.lng,
+      latitude: singleShiftCoords[index]?.lat,
+      longitude: singleShiftCoords[index]?.lng,
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
     }, ANIMATION_DURATION);
@@ -337,10 +954,12 @@ const index = ({ navigation }) => {
     const screenWidth = Dimensions.get('window').width;
     return screenWidth * 0.8; // 80% of the screen width
   };
+
+
   useEffect(() => {
     // When the component mounts or markers change, fit all markers on the screen
-    if (allCoords?.length > 0) {
-      const coordinates = allCoords?.map((marker) => ({
+    if (singleShiftCoords?.length > 0) {
+      const coordinates = singleShiftCoords?.map((marker) => ({
         latitude: marker.lat,
         longitude: marker.lng,
       }));
@@ -349,7 +968,36 @@ const index = ({ navigation }) => {
         animated: true,
       });
     }
-  }, [allCoords, isFocused]);
+  }, [singleShiftCoords, isFocused]);
+
+  const convertInnerArraysToObjects = (array) => {
+    const newArray = [];
+    for (const innerArray of array) {
+      const object = {};
+      object.latitude = innerArray[1];
+      object.longitude = innerArray[0];
+      newArray.push(object);
+    }
+    return newArray;
+  };
+
+  useEffect(() => {
+    const encode = polyline.encode(direction1)
+    console.log("encodedededededed", encode);
+    const decodedPolyline = polyline?.decode(encode);
+    console.log("decodedPolyline", decodedPolyline);
+    const newArray = convertInnerArraysToObjects(decodedPolyline);
+    setPolyline(newArray)
+  }, [])
+
+
+
+
+
+
+
+
+
 
   return (
     <SafeAreaView flex={1}>
@@ -509,7 +1157,7 @@ const index = ({ navigation }) => {
           showsScale={true}
           showsBuildings={true}
           initialRegion={initialRegion}>
-          {allCoords?.map((coords, index) => (
+          {singleShiftCoords?.map((coords, index) => (
             <Marker
               coordinate={{
                 latitude: coords?.lat,
@@ -518,54 +1166,53 @@ const index = ({ navigation }) => {
               title="destinantion"
               onPress={() => handleMarkerClick(index)}
             >
-              <DestinationMarker />
+              <PickupPin />
+            </Marker>
+          ))}
+          {singleDeliveryCoords?.map((coords, index) => (
+            <Marker
+              coordinate={{
+                latitude: coords?.lat,
+                longitude: coords?.lng,
+              }}
+              title="destinantion"
+              onPress={() => handleMarkerClick(index)}
+            >
+              <DeliveryPin />
             </Marker>
           ))}
           <Marker coordinate={myLiveLocation} title="driver">
             <Truck />
           </Marker>
-          {/* <Polyline
-            coordinates={[
-              myLiveLocation,{latitude: allCoords[0]?.lat, longitude: allCoords[0]?.lng},
-              {latitude: allCoords[1]?.lat, longitude: allCoords[1]?.lng},
-              {latitude: allCoords[2]?.lat, longitude: allCoords[2]?.lng},
-              {latitude: allCoords[3]?.lat, longitude: allCoords[3]?.lng},
-              {latitude: allCoords[4]?.lat, longitude: allCoords[4]?.lng},
-              {latitude: allCoords[5]?.lat, longitude: allCoords[5]?.lng},
 
-            ]}
-            strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+          <Polyline
+            coordinates={getPolyline}
+            strokeColor={'red'}
             strokeColors={[
-              '#7F0000',
-              'yellow', // no color, creates a "long" gradient between the previous and next coordinate
-              '#B24112',
-              '#E5845C',
-              '#238C23',
-              '#7F0000',
+              'red',
+              'orange'
             ]}
-            strokeWidth={6}
-          /> */}
-          <MapViewDirections
-            origin={{
-              latitude: allCoords[1]?.lat,
-              longitude: allCoords[1]?.lng,
-            }}
-            destination={{
-              latitude: allCoords[2]?.lat,
-              longitude: allCoords[2]?.lng,
-            }}
-            waypoints={waypoints}
+            strokeWidth={3}
+
+          />
+
+          {/* <MapViewDirections
+            origin={origin}
+            destination={destination}
+            // waypoints={waypointsss}
             apikey={GoogleMapKey}
             mode="driving"
             alternatives // Request multiple alternative routes
             strokeWidth={6}
             strokeColor="green"
-          />
+          /> */}
         </MapView>
         {(confirmPickupDepartureLoader ||
           getSingleShiftLoader ||
           getSingleShiftDeliveryLoader ||
-          confirmDeliveryDepartureLoader) && <CustomActivityIndicator />}
+          confirmDeliveryDepartureLoader ||
+          directionLineLoader
+        ) && <CustomActivityIndicator />}
 
         {/* new map Card */}
         {/* {showAlert && (
@@ -808,27 +1455,26 @@ const index = ({ navigation }) => {
                         title={'Report Delay'}
                       />
                       <CustomButton
-                        onPress={() => {
+                        onPress={async () => {
                           //   if (checkDelayedTime) {
                           //     navigation.navigate(route.PackageDetails);
                           //   } else {
                           //     setShowAlert(true);
                           //   }
-                          console.log(
-                            'get pickup id',
-                            item._id,
-                            param.shipmentId,
-                          );
+
+                          await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipmentId, pickup_Id: item._id, status: 'arrival' }))
+                          dispatch(getSingleShift(param?.shipmentId))
                           // dispatch(
                           //   getAllPickupPackages({
                           //     shipmentId: param.shipmentId,
                           //     pickup_Id: item._id,
                           //   }),
                           // );
-                          navigation.navigate(route.PackageDetails, {
-                            shipmentId: param.shipmentId,
-                            pickup_Id: item._id,
-                          });
+                          // navigation.navigate(route.PackageDetails, {
+                          //   shipmentId: param.shipmentId,
+                          //   pickup_Id: item._id,
+                          // });
+
                         }}
                         buttonStyle={{
                           backgroundColor: color.white,
@@ -866,7 +1512,58 @@ const index = ({ navigation }) => {
                       />
                     </View>
                   )}
-
+                  {/*Start picking up*/}
+                  {(item.status == 'arrival') && (
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-evenly',
+                        marginVertical: 10,
+                      }}>
+                      <CustomButton
+                        onPress={() => {
+                          navigation.navigate(route.PackageDetails, {
+                            shipmentId: param.shipmentId,
+                            pickup_Id: item._id,
+                          });
+                        }}
+                        buttonStyle={{
+                          backgroundColor: color.white,
+                          // backgroundColor: checkDelayedTime
+                          //   ? color.successGreen
+                          //   : color.white,
+                          borderWidth: 2.5,
+                          borderColor: color.successGreen,
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          height: 40,
+                          width: '48%',
+                        }}
+                        textStyle={{
+                          fontWeight: '600',
+                          fontSize: 11,
+                          color: color.successGreen,
+                          // color: checkDelayedTime
+                          // ? color.white
+                          // : color.successGreen,
+                          marginHorizontal: 3,
+                        }}
+                        icon={
+                          (
+                            <ClockConfirmArrival />
+                          )
+                          // checkDelayedTime ? (
+                          //   <ClockConfirmArrivalwhite />
+                          // ) : (
+                          //   <ClockConfirmArrival />
+                          // )
+                        }
+                        title={'Start Picking Up'}
+                      />
+                    </View>
+                  )}
                   {/* confirm Pickup departure */}
                   {item.status == 'done' && (
                     <View
@@ -926,7 +1623,6 @@ const index = ({ navigation }) => {
                       />
                     </View>
                   )}
-
                   {item.status == 'departure' && (
                     <View
                       style={{
@@ -981,7 +1677,7 @@ const index = ({ navigation }) => {
                           marginHorizontal: 3,
                         }}
                         icon={<ConfirmDeparture />}
-                        title={'Departure Confirmed'}
+                        title={'Pickup Confirmed'}
                       />
                     </View>
                   )}
@@ -1004,6 +1700,7 @@ const index = ({ navigation }) => {
                 horizontal
                 snapToInterval={itemWidth + itemSpacing}
                 decelerationRate="fast"
+                scrollEventThrottle={SCROLL_EVENT_THROTTLE}
                 showsHorizontalScrollIndicator={false}>
                 {singleShiftDelivery?.map((item, index) => (
                   <View
@@ -1070,7 +1767,7 @@ const index = ({ navigation }) => {
                         </CustomText>
                       </TouchableOpacity>
                       <View style={{ flexDirection: 'row', marginVertical: 10 }}>
-                        {(item.status == 'done' || item.status == 'departure') || <TouchableOpacity
+                        {((item.status == 'arrival') && (item.status != 'pending')) && <TouchableOpacity
                           // onPress={() => setShowOrderDetail(!showOrderDetail)}>
                           onPress={() =>
                             navigation.navigate(route.PackageDetailsDelivery, {
@@ -1094,8 +1791,80 @@ const index = ({ navigation }) => {
                         width: '100%',
                         padding: 5,
                       }}>
-                      {/* confirm Pickup departure */}
-                      {item.status == 'done' && (
+
+                      {/* Arrival  buttons when available to deliver that he picked*/}
+                      {item.status == 'pending' && (
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly',
+                            marginVertical: 10,
+                          }}>
+                          <CustomButton
+                            onPress={() => setChooseDelayTime(true)}
+                            buttonStyle={{
+                              backgroundColor: color.errorRed,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: 40,
+                              width: '48%',
+                            }}
+                            textStyle={{
+                              fontWeight: '600',
+                              fontSize: 11,
+                              color: color.white,
+                              marginHorizontal: 10,
+                            }}
+                            icon={<Clockreport />}
+                            title={'Report Delay'}
+                          />
+                          <CustomButton
+                            onPress={async () => {
+
+                              await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipmentId, deliveryId: item._id, status: 'arrival' }))
+                              dispatch(getSingleShiftDelivery(param?.shipmentId))
+
+                            }}
+                            buttonStyle={{
+                              backgroundColor: color.white,
+                              // backgroundColor: checkDelayedTime
+                              //   ? color.successGreen
+                              //   : color.white,
+                              borderWidth: 2.5,
+                              borderColor: color.successGreen,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              height: 40,
+                              width: '48%',
+                            }}
+                            textStyle={{
+                              fontWeight: '600',
+                              fontSize: 11,
+                              color: color.successGreen,
+                              // color: checkDelayedTime
+                              // ? color.white
+                              // : color.successGreen,
+                              marginHorizontal: 3,
+                            }}
+                            icon={
+                              (
+                                <ClockConfirmArrival />
+                              )
+                              // checkDelayedTime ? (
+                              //   <ClockConfirmArrivalwhite />
+                              // ) : (
+                              //   <ClockConfirmArrival />
+                              // )
+                            }
+                            title={'Confirm Arrival'}
+                          />
+                        </View>
+                      )}
+                      {/* confirm delivery departure */}
+                      {(item.status == 'done') && (
                         <View
                           style={{
                             flexDirection: 'row',
@@ -1157,7 +1926,6 @@ const index = ({ navigation }) => {
                           />
                         </View>
                       )}
-
                       {item.status == 'departure' && (
                         <View
                           style={{
@@ -1185,10 +1953,11 @@ const index = ({ navigation }) => {
                               marginHorizontal: 3,
                             }}
                             icon={<ConfirmDeparture />}
-                            title={'Departure Confirmed'}
+                            title={'Delivery Confirmed'}
                           />
                         </View>
                       )}
+
                     </View>
                   </View>
                 ))}
@@ -1241,48 +2010,3 @@ const styles = StyleSheet.create({
   },
 });
 export default index;
-
-// {/* Map Card at the Bottom  */}
-// <View style={styles.card}>
-// {/*card progress header */}
-// <View style={{ alignSelf: 'center', width: '100%', }}>
-//     {currentIndex != 0 && <TouchableOpacity style={{ position: 'absolute', left: 10 }}><SquarePrev onPress={handlePreviousPress} /></TouchableOpacity>}
-//     <Progress.Bar progress={currentIndex == 0 ? 0.1 : progressValue} style={{ alignSelf: 'center', height: 10, borderRadius: 20 }} height={10} color={color.appLightBlue} width={200} />
-//     {currentIndex != arrDummy.length - 1 && <TouchableOpacity style={{ position: 'absolute', right: 10 }}><SquareNext onPress={handleNextPress} /></TouchableOpacity>}
-// </View>
-// {/* card main header */}
-// <View style={{ width: '100%', flexDirection: 'row', marginTop: 40 }}>
-//     <View style={{ width: '15%', }}>
-//         <View style={{ height: 45, width: 45, borderRadius: 25, backgroundColor: color.appLightBlue, alignItems: 'center', justifyContent: 'center' }}>
-//             <Location />
-//         </View>
-//     </View>
-//     <View style={{ width: '55%', paddingLeft: 7 }}>
-//         <CustomText size={16} style={{ fontWeight: '600', color: color.appBlue }}>{arrDummy[currentIndex].item}</CustomText>
-//         <CustomText size={12} style={{ fontWeight: '500', color: color.appBlue }}>No75, Grand Lake,HDT45H,  sydney, Australia.</CustomText>
-//     </View>
-//     <View style={{ width: '30%', alignItems: 'center', justifyContent: 'center' }}>
-//         <TouchableOpacity onPress={() => navigation.navigate(route.Receipt)} style={{ paddingHorizontal: 4, alignItems: 'center', justifyContent: 'center', height: 30, borderBottomLeftRadius: 12, borderTopRightRadius: 12, borderBottomRightRadius: 12, borderWidth: 1.2, borderColor: color.appBlue }}>
-//             <CustomText size={10} style={{ fontWeight: '600' }}>Confirm Delivery</CustomText>
-//         </TouchableOpacity>
-//         <View style={{ flexDirection: 'row', marginVertical: 10 }}>
-//             <TouchableOpacity onPress={() => setShowOrderDetail(!showOrderDetail)}>
-//                 <MapEye />
-//             </TouchableOpacity>
-//             <TouchableOpacity onPress={() => alert("navigation in progress")}>
-//                 <MapNavigate />
-//             </TouchableOpacity>
-//         </View>
-//     </View>
-
-// </View>
-// {/* card description onClick eyeIcon*/}
-// {showOrderDetail && <View style={{ width: '100%', alignItems: 'center', justifyContent: 'space-around' }}>
-//     <FormText heading={'Article no. :'} description={'20'} />
-//     <FormText heading={'Package Content :'} description={arrDummy[currentIndex].description} />
-//     <FormText heading={'Package Dimensions :'} description={'14 L x 2 H x 20W'} />
-//     <FormText heading={'Receiver Name :'} description={'Abc Name'} />
-//     <FormText heading={'Delivery Navigate :'} description={'No75, Grand Lake,HDT45H,  sydney, Australia.'} />
-// </View>}
-
-// </View>

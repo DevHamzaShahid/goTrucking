@@ -54,6 +54,7 @@ const index = ({ navigation }) => {
   const [delayHours, setDelayHours] = useState(null);
   const [delayMins, setDelayMins] = useState(null);
   const [closeBtn, setClosBtn] = useState(false);
+  const [stopGoingDirectlyBack, setStopGoingDirectlyBack] = useState(false);
 
   const dispatch = useDispatch();
   const truckingState = useSelector(state => state);
@@ -65,7 +66,6 @@ const index = ({ navigation }) => {
   const { loading: acceptRejectLoader } = truckingState?.acceptOrRejectJob || {};
 
 
-  console.log("accept erject loader and daat", acceptRejectLoader, acceptrej);
 
   const parameter = useRoute();
   const param = parameter?.params;
@@ -89,19 +89,35 @@ const index = ({ navigation }) => {
   };
   const confirmDeparture = () => {
     navigation.navigate(route.MyRoutes);
+  };
+  console.log("stopGoingDirectlyBack", stopGoingDirectlyBack);
 
-  };
   const onClickAccept = async () => {
-    await dispatch(acceptOrRejectJob({ id: param.shiftId, status: 'accept' }));
-    acceptrej && navigation.navigate('Home');
+    try {
+      await dispatch(acceptOrRejectJob({ id: param.shiftId, status: 'accept' }))
+      setStopGoingDirectlyBack(true);
+    } catch (error) {
+      console.error('Error accepting job:', error);
+      // Handle the error appropriately (e.g., show an error message to the user)
+    }
   };
+
   const onClickReject = async () => {
     await dispatch(acceptOrRejectJob({ id: param.shiftId, status: 'reject' }));
-    acceptrej && navigation.navigate('Home');
+    setStopGoingDirectlyBack(true)
   };
+
+  useEffect(() => {
+    if (acceptrej && stopGoingDirectlyBack) {
+      navigation.navigate(route.Home);
+      setStopGoingDirectlyBack(false)
+    }
+  }, [acceptrej, stopGoingDirectlyBack]);
+  
   useEffect(() => {
     console.log(delayHours, ' ', delayMins);
   }, [delayHours, delayMins]);
+
   return (
     <Block>
 

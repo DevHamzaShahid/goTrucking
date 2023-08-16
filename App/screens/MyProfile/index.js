@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import React, { useEffect } from 'react';
 import CustomText from '../../components/CustomText';
 import Block from '../../components/Block';
@@ -13,7 +13,7 @@ import { getProfile } from '../../redux/actions/auth';
 import { useIsFocused } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 
-arrDummy = [
+const arrDummy = [
   {
     id: '12',
     iconName: 'car',
@@ -143,37 +143,43 @@ const index = ({ navigation }) => {
       </View>
 
       {/* Body */}
-      <View style={{ width: '80%', alignSelf: 'center', marginVertical: 50 }}>
-        {arrDummy?.map(item => (
-          <View
-            style={{
-              flexDirection: 'row',
-              height: 60,
-              alignItems: 'center',
-              borderBottomColor: color.textGrey,
-              borderBottomWidth: 1,
-            }}>
-            <View style={{ width: '20%', height: 30, alignItems: 'center' }}>
-              <Icon name={item.iconName} color={color.appBlue} size={30} />
+      <ScrollView>
+        <View style={{ width: '80%', alignSelf: 'center', marginVertical: 50 }}>
+          {arrDummy?.map(item => (
+            <View
+              style={{
+                flexDirection: 'row',
+                height: 60,
+                alignItems: 'center',
+                borderBottomColor: color.textGrey,
+                borderBottomWidth: 1,
+              }}>
+              <View style={{ width: '20%', height: 30, alignItems: 'center' }}>
+                <Icon name={item.iconName} color={color.appBlue} size={30} />
+              </View>
+              <View style={{ width: '70%', height: 60, justifyContent: 'center' }}>
+                <CustomText
+                  size={13}
+                  style={{ fontWeight: '600', color: color.appBlue }}>
+                  {item.heading}
+                </CustomText>
+                <CustomText
+                  size={10}
+                  style={{ fontWeight: '500', color: color.textGrey }}>
+                  {item.description}
+                </CustomText>
+              </View>
+              <View style={{ width: '10%', height: 60, justifyContent: 'center' }}>
+                <Icon onPress={() => {
+                  if (item.description=='Logout') {
+                    dispatch({ type: 'USER_TOKEN', payload: null });
+                  }
+                }} name={item.rightIcon} color={color.appBlue} size={30} />
+              </View>
             </View>
-            <View style={{ width: '70%', height: 60, justifyContent: 'center' }}>
-              <CustomText
-                size={13}
-                style={{ fontWeight: '600', color: color.appBlue }}>
-                {item.heading}
-              </CustomText>
-              <CustomText
-                size={10}
-                style={{ fontWeight: '500', color: color.textGrey }}>
-                {item.description}
-              </CustomText>
-            </View>
-            <View style={{ width: '10%', height: 60, justifyContent: 'center' }}>
-              <Icon name={item.rightIcon} color={color.appBlue} size={30} />
-            </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      </ScrollView>
     </Block>
   );
 };

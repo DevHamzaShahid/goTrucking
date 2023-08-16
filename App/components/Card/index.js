@@ -1,6 +1,6 @@
-import {View, Text, TouchableOpacity, ScrollView} from 'react-native';
-import React, {useState} from 'react';
-import {color} from '../../utils/colors';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { color } from '../../utils/colors';
 import Location from '../../asset/svgIcons/Location.svg';
 import CustomButton from '../CustomButton';
 import CustomText from '../CustomText';
@@ -10,8 +10,8 @@ import ClockConfirmArrival from '../../asset/svgIcons/clockConfirmArrival';
 import ClockConfirmArrivalwhite from '../../asset/svgIcons/clockConfirmArrivalwhite.svg';
 import ConfirmDeparture from '../../asset/svgIcons/ConfirmDeparture.svg';
 import PackageDetail from '../../asset/svgIcons/PackageDetail.svg';
-import {route} from '../../Routes';
-import {useNavigation} from '@react-navigation/native';
+import { route } from '../../Routes';
+import { useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../components/CustomAlert';
 const index = ({
   data,
@@ -51,7 +51,7 @@ const index = ({
             marginVertical: 10,
           }}>
           {/* Card Header */}
-          <View style={{flexDirection: 'row', width: '100%'}}>
+          <View style={{ flexDirection: 'row', width: '100%' }}>
             {/* avatar */}
             <View
               style={{
@@ -92,7 +92,7 @@ const index = ({
               </CustomText>
               <CustomText
                 size={14}
-                style={{color: color.appBlue, fontWeight: '600'}}>
+                style={{ color: color.appBlue, fontWeight: '600' }}>
                 ID : 8837373828
               </CustomText>
             </View>
@@ -117,8 +117,8 @@ const index = ({
                 }}>
                 <CustomText
                   size={12}
-                  style={{fontWeight: '600', color: color.white}}>
-                  Navigate
+                  style={{ fontWeight: '600', color: color.white }}>
+                  Location
                 </CustomText>
                 <Navigate />
               </View>
@@ -142,12 +142,12 @@ const index = ({
               }}>
               <CustomText
                 size={12}
-                style={{color: color.textGrey, fontWeight: '500'}}>
+                style={{ color: color.textGrey, fontWeight: '500' }}>
                 Time
               </CustomText>
               <CustomText
                 size={13}
-                style={{color: color.appBlue, fontWeight: '600'}}>
+                style={{ color: color.appBlue, fontWeight: '600' }}>
                 7am - 8:30am
               </CustomText>
             </View>
@@ -160,12 +160,12 @@ const index = ({
               }}>
               <CustomText
                 size={12}
-                style={{color: color.textGrey, fontWeight: '500'}}>
+                style={{ color: color.textGrey, fontWeight: '500' }}>
                 Total Packages
               </CustomText>
               <CustomText
                 size={13}
-                style={{color: color.appBlue, fontWeight: '600'}}>
+                style={{ color: color.appBlue, fontWeight: '600' }}>
                 {item.packageCount}
               </CustomText>
             </View>
@@ -178,12 +178,12 @@ const index = ({
               }}>
               <CustomText
                 size={12}
-                style={{color: color.textGrey, fontWeight: '500'}}>
+                style={{ color: color.textGrey, fontWeight: '500' }}>
                 Package Volume
               </CustomText>
               <CustomText
                 size={13}
-                style={{color: color.appBlue, fontWeight: '600'}}>
+                style={{ color: color.appBlue, fontWeight: '600' }}>
                 {item.totalPackageWeight} Kg
               </CustomText>
             </View>
@@ -210,7 +210,7 @@ const index = ({
             </CustomText>
             <CustomText
               size={14}
-              style={{color: color.appBlue, fontWeight: '500'}}>
+              style={{ color: color.appBlue, fontWeight: '500' }}>
               Handle with care
             </CustomText>
           </View>

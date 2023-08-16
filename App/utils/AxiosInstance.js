@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { config } from '../config';
+import { store } from '../redux/store';
 
 // Set config defaults when creating the instance
 
@@ -10,9 +11,9 @@ export const Axios = axios.create({
 // Add a request interceptor
 Axios.interceptors.request.use(
   request => {
-    const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YmQ3Njc0NmI5ZTZlMDAyMTM5NWRmNyIsImlhdCI6MTY5MDI2NjA2OX0.Lc749CylwXQJPjyOMl1FO-Wt6Soe0mHoDCxfRtgmviI"
-    // const AUTH_TOKEN =
-    //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzNDVjMjY5NjE5YzdkMDAyMzZlZjczNSIsImlhdCI6MTY2NTU3MjA3NX0.Qgqp2N9mweDuoQBiFG17baQAbQJ7x2Q-HOWU0SEl6yo';
+    // const AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0YmQ3Njc0NmI5ZTZlMDAyMTM5NWRmNyIsImlhdCI6MTY5MDI2NjA2OX0.Lc749CylwXQJPjyOMl1FO-Wt6Soe0mHoDCxfRtgmviI"
+
+    const AUTH_TOKEN = store.getState().userToken.token
     console.log(request);
     request.headers = {
       ...request.headers,
