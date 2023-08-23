@@ -15,11 +15,15 @@ import { ConfirmDeliveryDeparture } from './confirmDeliveryDeparture';
 import { ConfirmAllPackagesPickedUp } from './confirmAllPackagesPickedup';
 import shipmentReducer from './shipmentId';
 import { GetDirectionLine } from './getDirectionLine';
+import { uploadMultipleImages } from './uploadMultipleImages';
+import { UploadImagesPath } from './getAllPickupPackages copy 2';
+import { pickupDelayReport } from './PickupDelayReport';
+import { deliveryDelayReport } from './deliveryDelayReport';
 
 export default combineReducers({
-  userToken:UserToken,
+  userToken: UserToken,
   userLogin: userLoginReducer,
-  signUp:userSignupReducer,
+  signUp: userSignupReducer,
   getProfile: GetProfile,
   updateProfile: UpdateProfile,
   uploadPhoto: UploadPhoto,
@@ -35,5 +39,9 @@ export default combineReducers({
   confirmDeliveryDeparturereducer: ConfirmDeliveryDeparture,
   confirmAllPackagesArePickedup: ConfirmAllPackagesPickedUp,
   shipmentId: shipmentReducer,
-  getdirectionLine:GetDirectionLine
+  getdirectionLine: GetDirectionLine,
+  uploadedMultipleImages: uploadMultipleImages,
+  uploadIMagesPath: UploadImagesPath,
+  PickupDelayReport: pickupDelayReport,
+  DeliveryDelayReport:deliveryDelayReport
 });

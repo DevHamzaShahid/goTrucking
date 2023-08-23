@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { color } from '../../utils/colors';
@@ -20,6 +20,7 @@ import CustomActivityIndicator from '../../components/CustomLoader';
 import { getAllShifts, getSingleShift } from '../../redux/actions/getShifts';
 import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 import { resetState } from '../../redux/actions/resetReduxState';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Index = ({ navigation }) => {
   // hitApis/dispatch
@@ -57,8 +58,6 @@ const Index = ({ navigation }) => {
   const [shipmentId, setShipmentId] = useState('');
   const parameter = useRoute();
   const param = parameter?.params;
-
-
 
 
   const PickupAlertNext = () => {
@@ -133,11 +132,20 @@ const Index = ({ navigation }) => {
     dispatch({ type: 'SET_SHIPMENT_ID', payload: "3245632456tf345643" });
   }, [isFocused])
 
+
+  // reset redux state selected entities (why? coz it sets delivered when come back from map as it still persists single shift data thats why realy important to remove that)
   useEffect(() => {
-    
-      dispatch(resetState());
-    
-  }, [isFocused, navigation, dispatch])
+    // setTimeout(() => {
+    //   (allShifts && truckingState?.getProfile.data) && dispatch(resetState());
+    // }, 4000)
+    (allShifts && truckingState?.getProfile.data)&&isFocused && dispatch(resetState())
+  }, [allShifts && truckingState?.getProfile.data])
+
+
+
+
+
+
 
   return (
     <Block>
@@ -287,7 +295,7 @@ const Index = ({ navigation }) => {
         </View>
         <View style={styles.rightContainer}>
           <View style={styles.profileContainer1}>
-            <View style={styles.profileContainer2}>
+            <TouchableOpacity onPress={()=>navigation.navigate('ProfileStack',{screen:route.EditProfile})} style={styles.profileContainer2}>
               {/* <Profile height={182} width={182} style={styles.profilePhoto} /> */}
               <Image
                 source={{ uri: profilePhoto }}
@@ -295,7 +303,7 @@ const Index = ({ navigation }) => {
                 width={184}
                 style={styles.profilePhoto}
               />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -306,10 +314,11 @@ const Index = ({ navigation }) => {
         <CustomText style={styles.email} size={18}>
           {email}
         </CustomText>
-        <CustomText size={45} style={styles.name}>
-          {firstName}
+        <CustomText size={40} style={styles.name}>
+          {/* {firstName}
           {'\n'}
-          {lastName}
+          {lastName} */}
+          {fullName}
         </CustomText>
       </View>
 

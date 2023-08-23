@@ -60,6 +60,7 @@ const index = ({
             alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center',
+            paddingHorizontal:15
           }}>
           <CustomText size={23} style={{fontWeight: '700', color: color.white}}>
             {Title}
@@ -92,7 +93,7 @@ const index = ({
             position: 'absolute',
             bottom: -25,
           }}
-          textStyle={{color: AlertThemeColor, fontSize: 22, fontWeight: '700'}}
+          textStyle={{color: AlertThemeColor, fontSize: 16, fontWeight: '700'}}
         />
       </View>
     </View>

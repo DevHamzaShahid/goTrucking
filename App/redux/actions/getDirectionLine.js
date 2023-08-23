@@ -1,6 +1,6 @@
 import { config } from "../../config";
 import { Axios } from "../../utils/AxiosInstance";
-import { GET_DIRECTIONLINE_FAILED, GET_DIRECTIONLINE_REQUEST, GET_DIRECTIONLINE_SUCCESS } from "../constants/getDirectionLine";
+import { GET_DIRECTIONLINE_FAILED, GET_DIRECTIONLINE_REQUEST, GET_DIRECTIONLINE_SUCCESS, RESET_DIRECTIONLINE_STATE } from "../constants/getDirectionLine";
 
 // get Direction line (routing)
 export const getDirectionLine = (shipmentId) => async dispatch => {
@@ -8,7 +8,7 @@ export const getDirectionLine = (shipmentId) => async dispatch => {
         dispatch({
             type: GET_DIRECTIONLINE_REQUEST,
         });
-        const { data } = await Axios.get(`${config.SERVER_IP}api/shipping/shippment/64d811ae504fb5002159b915`);
+        const { data } = await Axios.get(`${config.SERVER_IP}api/shipping/shippment/location/${shipmentId}`);
         dispatch({
             type: GET_DIRECTIONLINE_SUCCESS,
             payload: data,
@@ -20,3 +20,8 @@ export const getDirectionLine = (shipmentId) => async dispatch => {
         });
     }
 };
+
+
+export const resetDirectionLineState = () => ({
+    type: RESET_DIRECTIONLINE_STATE,
+  });

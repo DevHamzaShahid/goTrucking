@@ -25,28 +25,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 
-const arrDummy = [
-  {
-    id: '234',
-    time: '3:22',
-  },
-  {
-    id: '23c4',
-    time: '3:22',
-  },
-  {
-    id: '23cd4',
-    time: '3:22',
-  },
-  {
-    id: '233324',
-    time: '3:22',
-  },
-  {
-    id: '234324',
-    time: '3:22',
-  },
-];
 const index = ({ navigation }) => {
   const [successErrorAlert, setSuccessErrorAlert] = useState(false);
   const [readyForPickup, setReadyForPickup] = useState(false);
@@ -65,7 +43,7 @@ const index = ({ navigation }) => {
   const { data: acceptrej } = truckingState?.acceptOrRejectJob || [];
   const { loading: acceptRejectLoader } = truckingState?.acceptOrRejectJob || {};
 
-
+console.log("singleShiftsingleShiftsingleShiftsingleShift",singleShift);
 
   const parameter = useRoute();
   const param = parameter?.params;
@@ -113,7 +91,7 @@ const index = ({ navigation }) => {
       setStopGoingDirectlyBack(false)
     }
   }, [acceptrej, stopGoingDirectlyBack]);
-  
+
   useEffect(() => {
     console.log(delayHours, ' ', delayMins);
   }, [delayHours, delayMins]);

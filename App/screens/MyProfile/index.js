@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getProfile } from '../../redux/actions/auth';
 import { useIsFocused } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
+import { resetDirectionLineState } from '../../redux/actions/getDirectionLine';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const arrDummy = [
   {
@@ -108,7 +110,7 @@ const index = ({ navigation }) => {
       {/*Profile header */}
       <View>
         <RoundTop width={'100%'} style={{ marginTop: -160 }} />
-        <View
+        <TouchableOpacity
           style={{
             alignItems: 'center',
             height: 152,
@@ -119,7 +121,7 @@ const index = ({ navigation }) => {
             position: 'absolute',
             top: 120,
             left: -20,
-          }}>
+          }} onPress={()=>navigation.navigate(route.EditProfile)}>
           {/* <ProfileImage height={150} width={150} /> */}
           <Image
             source={{ uri: profilePhoto }}
@@ -127,7 +129,7 @@ const index = ({ navigation }) => {
             width={150}
             style={{ borderRadius: 100 }}
           />
-        </View>
+        </TouchableOpacity>
         <View style={{ position: 'absolute', top: 130, left: 150 }}>
           <CustomText size={32} style={{ fontWeight: '700', color: color.white }}>
             {fullName}
@@ -170,9 +172,11 @@ const index = ({ navigation }) => {
                 </CustomText>
               </View>
               <View style={{ width: '10%', height: 60, justifyContent: 'center' }}>
-                <Icon onPress={() => {
+                <Icon onPress={async() => {
                   if (item.description=='Logout') {
                     dispatch({ type: 'USER_TOKEN', payload: null });
+                    dispatch(resetDirectionLineState());
+                    await AsyncStorage.removeItem('alertShown');
                   }
                 }} name={item.rightIcon} color={color.appBlue} size={30} />
               </View>

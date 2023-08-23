@@ -17,29 +17,7 @@ import {
   getAllPickupPackages,
   pickupPointDepartureOrDone,
 } from '../../redux/actions/getAllpackagesFromPickup';
-import {all} from 'axios';
-const arrDummy = [
-  {
-    id: '234',
-    item: 'Gloves Box',
-  },
-  {
-    id: '23c4',
-    item: 'Grocery',
-  },
-  {
-    id: '23cd4',
-    item: 'Leather Jackets',
-  },
-  {
-    id: '233324',
-    item: 'Footballs',
-  },
-  {
-    id: '234324',
-    item: 'Leather Jackets box',
-  },
-];
+
 const index = ({navigation}) => {
   const [pickupConfirmed, setPickupConfirmed] = useState(false);
   const [showNotificationAlert, setShowNotificationAlert] = useState(false);

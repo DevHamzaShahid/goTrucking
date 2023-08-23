@@ -4,7 +4,7 @@ import rootReducer from "./rootReducer";
 const rootReducerWithReset = (state, action) => {
     if (action.type === RESET_STATE) {
         // Preserve specific reducers from resetting
-        const { shipmentId, userToken, getProfile } = state;
+        const { shipmentId, userToken, getProfile, getAllShifts, getdirectionLine,uploadedMultipleImages} = state;
 
         // Create a new state with preserved reducers
         return {
@@ -15,7 +15,7 @@ const rootReducerWithReset = (state, action) => {
             signUp: {},
             updateProfile: {},
             uploadPhoto: {},
-            getAllShifts: {},
+            getAllShifts,
             getSingleShift: {},
             acceptOrRejectJob: {},
             getALLPickupPackages: {},
@@ -26,7 +26,8 @@ const rootReducerWithReset = (state, action) => {
             confirmPickupDeparturereducer: {},
             confirmDeliveryDeparturereducer: {},
             confirmAllPackagesArePickedup: {},
-            getdirectionLine: {}
+            getdirectionLine,
+            uploadedMultipleImages
         }
     }
 

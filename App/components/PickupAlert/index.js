@@ -8,10 +8,11 @@ import { TouchableOpacity, View } from 'react-native'
 import CustomText from '../../components/CustomText'
 const index = ({ closeButton,description,title,PickupAlertNext }) => {
     return (
-        <LinearGradient
+        <View style={{position:'absolute',zIndex:999,height:'100%',width:'100%',backgroundColor:'rgba(0,0,0,0.4)'}}>
+             <LinearGradient
             start={{ x: 0.0, y: 0.25 }}
             end={{ x: 0.5, y: 1.0 }}
-            style={{ position: 'absolute', width: '85%', height: dimensions / 2 * 0.75, alignSelf: 'center', borderRadius: 10, marginTop: dimensions / 2 * 0.55,zIndex:999 }}
+            style={{ width: '85%', height: dimensions / 2 * 0.75, alignSelf: 'center', borderRadius: 10, marginTop: dimensions / 2 * 0.55, }}
             locations={[0, 0.1, 0.8, 0.85, 1]}
             colors={['#0095EA', '#0095EA', '#1B4160', '#1B4160']}>
 
@@ -31,6 +32,7 @@ const index = ({ closeButton,description,title,PickupAlertNext }) => {
             {/* Lets Start button */}
             <CustomButton onPress={()=>PickupAlertNext()} title={'Let’s Start    >'} buttonStyle={{ alignItems: 'center', backgroundColor: 'transparent', height: 30, width: 150, position: 'absolute', bottom: 20, right: 20, justifyContent: 'center', borderRadius: 8, borderColor: color.white, borderWidth: 2 }} textStyle={{ color: color.white, fontSize: 14, fontWeight: '500' }} />
         </LinearGradient>
+       </View>
     )
 }
 

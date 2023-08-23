@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   //userDetail Container
   UserDetailContainer: {
     position: 'absolute',
-    marginTop: 126,
+    marginTop: 160,
     paddingHorizontal: 20,
   },
   email: {color: color.white},

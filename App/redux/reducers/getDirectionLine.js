@@ -1,4 +1,4 @@
-import { GET_DIRECTIONLINE_FAILED, GET_DIRECTIONLINE_REQUEST, GET_DIRECTIONLINE_SUCCESS } from "../constants/getDirectionLine";
+import { GET_DIRECTIONLINE_FAILED, GET_DIRECTIONLINE_REQUEST, GET_DIRECTIONLINE_SUCCESS, RESET_DIRECTIONLINE_STATE } from "../constants/getDirectionLine";
 
 // GEt direction line 
 export const GetDirectionLine = (state = {}, action) => {
@@ -17,7 +17,15 @@ export const GetDirectionLine = (state = {}, action) => {
                 loading: false,
                 error: action.payload,
             };
+        case RESET_DIRECTIONLINE_STATE:
+            return {
+                loading: false,
+                data: null,
+            };
         default:
             return state;
     }
 };
+
+
+

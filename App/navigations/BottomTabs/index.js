@@ -32,10 +32,16 @@ export function MyTabs() {
                     width: '95%',
                     alignSelf: 'center',
                 },
+                
             }}
+            tabBarOptions={{
+                activeTintColor: color.white,
+                inactiveTintColor: color.textGrey,
+              }}
         >
             <Tab.Screen name="HomeStack" component={HomeStack} options={{
                 headerShown: false,
+                
                 tabBarIcon: ({ focused, color, size }) => {
                     const isFocused = useIsFocused()
                     if (isFocused) {

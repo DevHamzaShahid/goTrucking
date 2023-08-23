@@ -13,6 +13,7 @@ import PackageDetail from '../../asset/svgIcons/PackageDetail.svg';
 import { route } from '../../Routes';
 import { useNavigation } from '@react-navigation/native';
 import CustomAlert from '../../components/CustomAlert';
+import { openGoogleMaps } from '../../utils/helperFunction';
 const index = ({
   data,
   requireButtonType,
@@ -27,7 +28,7 @@ const index = ({
   const closeSuccessErrorAlert = () => {
     setShowAlert(false);
   };
-
+  console.log("daatta single shift", data);
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {showAlert && (
@@ -104,6 +105,13 @@ const index = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: 4,
+              }} onPress={() => {
+                let latitude = item?.lat;
+                let longitude = item?.lng;
+                openGoogleMaps(
+                  latitude,
+                  longitude,
+                )
               }}>
               <View
                 style={{

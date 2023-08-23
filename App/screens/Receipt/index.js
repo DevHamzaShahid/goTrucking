@@ -6,6 +6,7 @@ import NoPicSelected from '../../asset/svgs/TakePicture'
 import CustomButton from '../../components/CustomButton'
 import { color } from '../../utils/colors'
 import MultipleImagePicker from '../../components/MultipleImagePicker'
+import CustomActivityIndicator from '../../components/CustomLoader'
 const index = () => {
     const [isImageSelected, setIsImageSelected] = useState(true);
 
@@ -13,8 +14,8 @@ const index = () => {
         <Block>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{ alignItems: 'center', justifyContent: 'center', marginVertical: 50 }}>
-                    {isImageSelected&&<NoPicSelected />}
-                    <MultipleImagePicker setIsImageSelected={setIsImageSelected}/>
+                    {isImageSelected && <NoPicSelected />}
+                    <MultipleImagePicker setIsImageSelected={setIsImageSelected} />
                 </View>
             </ScrollView>
         </Block>

@@ -160,14 +160,14 @@ const index = () => {
           onChangeText={text => setInputData({ ...inputData, fullName: text })}
         />
         <CustomTextInput
-          placeholder="Enter your name"
+          placeholder="Enter your email"
           ContainerStyle={{ width: '70%', height: 40 }}
           rightIcon={'pencil'}
           value={inputData.email}
           onChangeText={text => setInputData({ ...inputData, email: text })}
         />
         <CustomTextInput
-          placeholder="Enter your name"
+          placeholder="Enter your phone number"
           ContainerStyle={{ width: '70%', height: 40 }}
           rightIcon={'pencil'}
           value={inputData.mobileNumber}
@@ -176,7 +176,7 @@ const index = () => {
           }
         />
         <CustomTextInput
-          placeholder="Enter your name"
+          placeholder="Enter your address"
           ContainerStyle={{ width: '70%', height: 40 }}
           rightIcon={'pencil'}
           value={inputData.address}

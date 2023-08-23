@@ -1,5 +1,6 @@
-import {config} from '../../config';
-import {Axios} from '../../utils/AxiosInstance';
+import { config } from '../../config';
+import { Axios } from '../../utils/AxiosInstance';
+import { UpLOADIMAGES_PATH_FAILED, UpLOADIMAGES_PATH_REQUEST, UpLOADIMAGES_PATH_SUCCESS } from '../constants/UploadImagespath';
 import {
   CONFIRMDELIVERYDEPARTURE_FAILED,
   CONFIRMDELIVERYDEPARTURE_REQUEST,
@@ -12,9 +13,9 @@ export const confirmDeliveryDeparturee = ids => async dispatch => {
     dispatch({
       type: CONFIRMDELIVERYDEPARTURE_REQUEST,
     });
-    const {data} = await Axios.put(
+    const { data } = await Axios.put(
       `${config.SERVER_IP}api/shipping/shippment/delivery/${ids.shipmentId}/${ids.deliveryId}`,
-      {status: ids.status},
+      { status: ids.status },
     );
     dispatch({
       type: CONFIRMDELIVERYDEPARTURE_SUCCESS,
@@ -23,6 +24,31 @@ export const confirmDeliveryDeparturee = ids => async dispatch => {
   } catch (error) {
     dispatch({
       type: CONFIRMDELIVERYDEPARTURE_FAILED,
+      payload: error.message,
+    });
+  }
+};
+
+
+// confirm upload images
+export const UploadImagesPath = param => async dispatch => {
+  console.log("hhhhhhhhhhhhitparam>>>", param);
+  try {
+    dispatch({
+      type: UpLOADIMAGES_PATH_REQUEST,
+    });
+    const { data } = await Axios.put(
+      `${config.SERVER_IP}api/shipping/shippment/delivery/${param.shipmentId}/${param.deliveryId}`,
+      { status: "done", images: param.photoPaths },
+    );
+    console.log("hitting results",data);
+    dispatch({
+      type: UpLOADIMAGES_PATH_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: UpLOADIMAGES_PATH_FAILED,
       payload: error.message,
     });
   }

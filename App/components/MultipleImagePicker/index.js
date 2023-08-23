@@ -7,9 +7,18 @@ import { color } from "../../utils/colors";
 import CustomButton from "../CustomButton";
 import { dimensions } from "../../Dimensions";
 import DeliveredAlert from '../../components/deliveredAlert'
+import { UploadMultipleImages } from "../../redux/actions/UploadMultipleImages";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { UploadImagesPath } from "../../redux/actions/confirmDeliveryDeparturee";
+import CustomActivityIndicator from "../CustomLoader";
 
-const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
+const MultipleImagePicker = ({ setIsImageSelected }) => {
     const dispatch = useDispatch()
+    const parameter = useRoute();
+    const navigation = useNavigation()
+    const param = parameter?.params;
+
+    console.log("hehehhehehhehehhe", param);
     const [imageList, setImageList] = useState([])
     const [isModalVisible, setModalVisible] = useState(false);
     const [reFresh, setRefresh] = useState(0);
@@ -17,6 +26,41 @@ const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
     const [hideSlctBtnWhileUploading, setHideSlctBtnWhileUploading] = useState(false)
     const [delivered, setDelivered] = useState(false)
     const [showDeliveredAlert, setShowDeliveredAlert] = useState(false)
+    const [sendPhotosPath, setSendPhotosPath] = useState(false)
+
+    const truckingState = useSelector(state => state);
+    //get Upoloaded delivery photos path
+    const { data: uploadedPhotosPath } =
+        truckingState?.uploadedMultipleImages || [];
+    const { loading: RawPhotosLoader } =
+        truckingState?.uploadedMultipleImages || {};
+    const photo = uploadedPhotosPath
+
+
+    //get response of those paths are uploaded
+    const { data: uploadedPhotosPathResponse } =
+        truckingState?.uploadIMagesPath || [];
+    const { loading: RawPhotosresponseLoader } =
+        truckingState?.uploadIMagesPath || {};
+    const photoresponse = uploadedPhotosPathResponse
+    console.log("photoresponse?.messagephotoresponse?.messagephotoresponse?.message", photoresponse?.message);
+    useEffect(() => {
+        (async()=>{if (sendPhotosPath && photo?.paths) {
+           await dispatch(UploadImagesPath({ ...param, photoPaths: photo?.paths }))
+            // setSendPhotosPath(true)//to awake next useeffect
+        }})()
+    }, [photo?.paths,photoresponse?.message,sendPhotosPath])
+    
+    useEffect(() => {
+        if (sendPhotosPath && photoresponse?.message) {
+            setSendPhotosPath(false)
+            setDelivered(true)
+            setTimeout(() => {
+                navigation.goBack()
+            }, 1000)
+        }
+    }, [photoresponse?.message,photo?.paths, sendPhotosPath])
+
 
     const openPicker = () => {
         ImageCropPicker.openPicker({
@@ -73,21 +117,26 @@ const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
         setImageList(newArray); // set the state using the new array
     }
     const uploadPhotoHandler = async () => {
-        setActiveLoader(true)
-        setHideSlctBtnWhileUploading(true)
+        // setActiveLoader(true)
+        // setHideSlctBtnWhileUploading(true)
         if (imageList != null) {
-            var formdata = new FormData();
-            imageList.map((item) => {
-                formdata.append('image', {
-                    uri: item.uri,
-                    name: item.name,
-                    type: item.type,
-                });
-            })
-            //uploading multiple selected images
-            await dispatch(UploadOrderMultipleImageAction(formdata));
-            setRefresh(reFresh + 2)
+            try {
+                var formdata = new FormData();
+                imageList.map((item) => {
+                    formdata.append('image', {
+                        uri: item.uri,
+                        name: item.name,
+                        type: item.type,
+                    });
+                })
+                //uploading multiple selected images
+                await dispatch(UploadMultipleImages(formdata));
+                setSendPhotosPath(true)
+            } catch (error) {
+                alert(error)
+            }
         }
+
     };
     // check if image is selected or not then show the selected images or the default static imagesvg
     useEffect(() => {
@@ -101,6 +150,7 @@ const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
     return (
         <>
             <View style={{ flexDirection: 'row', }}>
+                {(RawPhotosLoader || RawPhotosresponseLoader) && <CustomActivityIndicator />}
                 <ScrollView>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'center' }}>
                         {
@@ -123,7 +173,22 @@ const MultipleImagePicker = ({ navigation, setIsImageSelected }) => {
             {showDeliveredAlert && <DeliveredAlert setShowDeliveredAlert={setShowDeliveredAlert} />}
             <CustomButton title={'Take a Picture'} onPress={openCamera} buttonStyle={{ marginVertical: 20, backgroundColor: color.appLightBlue, height: 50, width: '70%', borderRadius: 50 }} textStyle={{ color: color.white, fontSize: 19, fontWeight: '500' }} />
             <CustomButton title={'Choose a Picture'} onPress={openPicker} buttonStyle={{ backgroundColor: color.white, height: 50, width: '70%', borderRadius: 50, borderWidth: 2, borderColor: color.appBlue }} textStyle={{ color: color.appBlue, fontSize: 19, fontWeight: '500' }} />
-            <CustomButton title={delivered ? 'Delivered' : "Deliver"} onPress={() => { if (imageList.length == 0) { alert('please select image to deliver') } else { setDelivered(!delivered), setShowDeliveredAlert(true) } }} buttonStyle={{ marginVertical: 20, backgroundColor: (delivered ? color.appBlue : color.white), height: 50, width: '70%', borderRadius: 50, borderWidth: 2, borderColor: color.appBlue }} textStyle={{ color: (delivered ? color.white : color.appBlue), fontSize: 19, fontWeight: '500' }} />
+            <CustomButton title={delivered ? 'Delivered' : "Deliver"} onPress={() => {
+                if (!delivered) {
+                    if (imageList?.length == 0) {
+                        alert('please select image to deliver')
+                    }
+                    else if (imageList?.length > 5) {
+                        alert('Choose only 5 images')
+                    }
+                    else {
+                        // setDelivered(!delivered), setShowDeliveredAlert(true)
+                        uploadPhotoHandler()
+                    }
+                } else {
+                    alert("already delivered")
+                }
+            }} buttonStyle={{ marginVertical: 20, backgroundColor: (delivered ? color.appBlue : color.white), height: 50, width: '70%', borderRadius: 50, borderWidth: 2, borderColor: color.appBlue }} textStyle={{ color: (delivered ? color.white : color.appBlue), fontSize: 19, fontWeight: '500' }} />
             {/* <TouchableOpacity onPress={() => openPicker() } style={{ backgroundColor: color.app_green, height: 50, width: '80%', borderColor: '#000', borderWidth: 1, borderRadius: 5, alignItems: 'center', justifyContent: 'center', alignSelf: 'center', }}>
                 <Text style={{ color: 'red', fontWeight: 'bold' }}>
                     Select Images

@@ -1,3 +1,4 @@
+import { Linking, Platform } from "react-native";
 import GetLocation from "react-native-get-location"
 
 export const fetchMyLocation = async () => {
@@ -15,7 +16,19 @@ export const fetchMyLocation = async () => {
   }
 };
 
+export const openGoogleMaps = (latitude, longitude) => {
+  if (Platform.OS === 'android') {
+    const url = `geo:${latitude},${longitude}`;
+    Linking.openURL(url);
+  } else if (Platform.OS === 'ios') {
+    Linking.openURL(`maps://app?daddr=${latitude},${longitude}&dirflg=d&t=m`)
+  }
 
+};
+
+// export const openGoogleMaps = (latitude, longitude) => {
+//   Linking.openURL(`maps://app?daddr=${latitude},${longitude}&dirflg=d&t=m`)
+// };
 // export const fetchMyLocation = () => {
 //   try {
 //     const location = GetLocation?.getCurrentPosition({ enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 });
