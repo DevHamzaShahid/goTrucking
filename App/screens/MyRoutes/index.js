@@ -706,7 +706,8 @@ const index = ({ navigation }) => {
     latitude: 37.785834,
     longitude: -122.406417,
   });
-  const [selectedMarkerIndex, setSelectedMarkerIndex] = useState(0);
+  // const [selectedPickupMarkerIndex, setSelectedPickupMarkerIndex] = useState(0);
+  // const [selectedDeliveryMarkerIndex, setSelectedDeliveryMarkerIndex] = useState(0);
   const scrollViewRef = useRef(null);
   const mapRef = useRef(null);
 
@@ -814,12 +815,11 @@ const index = ({ navigation }) => {
       // Store alertShown value in AsyncStorage
       AsyncStorage.setItem('alertShown', 'true')
         .catch(error => console.error('AsyncStorage error:', error));
-
     }
     // setAllPickuppackages(allpickedUp);
     return () => {
       // setAlertShown(false);
-      setDeliveryStatus('');
+      // setDeliveryStatus('');
       allpickedUp = false;
     };
   }, [singleShift, navigation, singleShiftDelivery]);
@@ -834,13 +834,18 @@ const index = ({ navigation }) => {
 
   const sendDelayReport = async () => {
     console.log("send Report", delayHours, delayMins, delayReportPickupAndDeliveryData);
-    if (delayReportPickupAndDeliveryData?.delayType == 'pickup') {
-      await dispatch(pickupDelayReport({ shipmentId: param?.shipmentId, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+    if (checkDelayedTime) {
+      if (delayReportPickupAndDeliveryData?.delayType == 'pickup') {
+        await dispatch(pickupDelayReport({ shipmentId: param?.shipmentId, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+      }
+      else if (delayReportPickupAndDeliveryData?.delayType == 'delivery') {
+        await dispatch(deliveryDelayReport({ shipmentId: param?.shipmentId, deliveryId: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+      }
+      setChooseDelayTime(false)
     }
-    else if (delayReportPickupAndDeliveryData?.delayType == 'delivery') {
-      await dispatch(deliveryDelayReport({ shipmentId: param?.shipmentId, deliveryId: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+    else {
+      alert('Choose time')
     }
-    setChooseDelayTime(false)
   }
 
   const closeSuccessErrorAlert = async () => {
@@ -888,16 +893,16 @@ const index = ({ navigation }) => {
     }
   }, [singleShiftDelivery]);
 
-
-
   useEffect(() => {
     const pickupCoords = singleShift?.map(item => ({
       lat: item.lat && item.lat,
       lng: item.lng && item.lng,
+      name: item.name
     }));
     const deliveryCoords = singleShiftDelivery?.map(item => ({
       lat: item.lat && item.lat,
       lng: item.lng && item.lng,
+      name: item.name
     }));
     pickupCoords && setSingleShiftCoords(pickupCoords)
     deliveryCoords && setSingleDeliveryCoords(deliveryCoords)
@@ -961,7 +966,7 @@ const index = ({ navigation }) => {
 
   //clicking on markers scrolling the horizontal list
   const handlePickupMarkerClick = (index) => {
-    setSelectedMarkerIndex(index);
+    // setSelectedPickupMarkerIndex(index);
     scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
     mapRef.current.animateToRegion({
       latitude: singleShiftCoords[index]?.lat,
@@ -971,7 +976,7 @@ const index = ({ navigation }) => {
     }, ANIMATION_DURATION);
   };
   const handleDeliveryMarkerClick = (index) => {
-    setSelectedMarkerIndex(index);
+    // setSelectedDeliveryMarkerIndex(index);
     scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
     mapRef.current.animateToRegion({
       latitude: singleDeliveryCoords[index]?.lat,
@@ -985,7 +990,7 @@ const index = ({ navigation }) => {
   const handlePickupHorizontalListScroll = (event) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.floor(contentOffsetX / getCardWidth());
-    setSelectedMarkerIndex(index);
+    // setSelectedPickupMarkerIndex(index);
     mapRef.current.animateToRegion({
       latitude: singleShiftCoords[index]?.lat,
       longitude: singleShiftCoords[index]?.lng,
@@ -993,10 +998,11 @@ const index = ({ navigation }) => {
       longitudeDelta: LONGITUDE_DELTA,
     }, ANIMATION_DURATION);
   };
+  // console.log("slectedMarkerIndex", selectedMarkerIndex);
   const handleDeliveryHorizontalListScroll = (event) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.floor(contentOffsetX / getCardWidth());
-    setSelectedMarkerIndex(index);
+    // setSelectedDeliveryMarkerIndex(index);
     mapRef.current.animateToRegion({
       latitude: singleDeliveryCoords[index]?.lat,
       longitude: singleDeliveryCoords[index]?.lng,
@@ -1006,7 +1012,7 @@ const index = ({ navigation }) => {
   };
   const getCardWidth = () => {
     const screenWidth = Dimensions.get('window').width;
-    return screenWidth * 0.8; // 80% of the screen width
+    return screenWidth * 0.95; // 80% of the screen width
   };
 
   useEffect(() => {
@@ -1206,7 +1212,7 @@ const index = ({ navigation }) => {
                   alignSelf: 'center',
                   height: 40,
                   width: '60%',
-                  backgroundColor: color.appBlue,
+                  backgroundColor: checkDelayedTime ? color.appBlue : '#CCCCCC',
                 }}
                 textStyle={{ color: color.white, fontWeight: '500' }}
               />
@@ -1262,7 +1268,7 @@ const index = ({ navigation }) => {
                 latitude: coords?.lat,
                 longitude: coords?.lng,
               }}
-              title="Pickup Point"
+              title={coords.name}
               onPress={() => handlePickupMarkerClick(index)}
             >
               <PickupPin />
@@ -1274,7 +1280,7 @@ const index = ({ navigation }) => {
                 latitude: coords?.lat,
                 longitude: coords?.lng,
               }}
-              title="Delivery Point"
+              title={coords.name}
               onPress={() => handleDeliveryMarkerClick(index)}
             >
               <DeliveryPin />
@@ -1547,7 +1553,7 @@ const index = ({ navigation }) => {
 
                   {/* Buttons */}
                   {/* Arrival  buttons when pickuopin progress of the shipment */}
-                  {item.status == 'pending' && (
+                  {(item.status == 'pending' || item.status == 'delay') && (
                     <View
                       style={{
                         flexDirection: 'row',
@@ -1961,7 +1967,7 @@ const index = ({ navigation }) => {
                         </View>
                       )}
                       {/* Arrival  buttons when available to deliver that he picked*/}
-                      {item.status == 'pending' && (
+                      {(item.status == 'pending' || item.status == 'delay') && (
                         <View
                           style={{
                             flexDirection: 'row',
@@ -2135,7 +2141,6 @@ const index = ({ navigation }) => {
                           />
                         </View>
                       )}
-
                     </View>
                   </View>
                 ))}

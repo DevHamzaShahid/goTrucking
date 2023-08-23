@@ -103,9 +103,10 @@ const Index = ({ navigation }) => {
       onClickViewDetails(item._id);
     } else if (item.status == 'start') {
       setShipmentId(item._id);
+      dispatch({ type: 'SET_SHIPMENT_ID', payload: item._id });
       navigation.navigate(route.MyRoutes, {
-        requireButtonType: 'arrival',
-        shipmentId: item._id,
+        requireButtonType: 'arrival',//not using for now
+        shipmentId: item?._id,
       });
     }
     else if (item.status == 'delivering') {
@@ -128,9 +129,6 @@ const Index = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    dispatch({ type: 'SET_SHIPMENT_ID', payload: "3245632456tf345643" });
-  }, [isFocused])
 
 
   // reset redux state selected entities (why? coz it sets delivered when come back from map as it still persists single shift data thats why realy important to remove that)
@@ -138,7 +136,7 @@ const Index = ({ navigation }) => {
     // setTimeout(() => {
     //   (allShifts && truckingState?.getProfile.data) && dispatch(resetState());
     // }, 4000)
-    (allShifts && truckingState?.getProfile.data)&&isFocused && dispatch(resetState())
+    (allShifts && truckingState?.getProfile.data) && isFocused && dispatch(resetState())
   }, [allShifts && truckingState?.getProfile.data])
 
 
@@ -295,7 +293,7 @@ const Index = ({ navigation }) => {
         </View>
         <View style={styles.rightContainer}>
           <View style={styles.profileContainer1}>
-            <TouchableOpacity onPress={()=>navigation.navigate('ProfileStack',{screen:route.EditProfile})} style={styles.profileContainer2}>
+            <TouchableOpacity onPress={() => navigation.navigate('ProfileStack', { screen: route.EditProfile })} style={styles.profileContainer2}>
               {/* <Profile height={182} width={182} style={styles.profilePhoto} /> */}
               <Image
                 source={{ uri: profilePhoto }}
