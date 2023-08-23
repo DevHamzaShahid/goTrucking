@@ -1,22 +1,22 @@
-import {View, Text, TouchableOpacity, ScrollView, Alert} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Block from '../../components/Block';
-import {dimensions} from '../../Dimensions';
-import {color} from '../../utils/colors';
+import { dimensions } from '../../Dimensions';
+import { color } from '../../utils/colors';
 import Package from '../../asset/svgIcons/PackageDetails.svg';
 import CustomText from '../../components/CustomText';
 import NotificationAlert from '../../components/NotificationAlert';
 import CustomAlert from '../../components/CustomAlert';
-import {route} from '../../Routes';
+import { route } from '../../Routes';
 import FormText from '../../components/FormText';
-import {useDispatch, useSelector} from 'react-redux';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import {
   deliveryDepartureOrDone,
   getAllDeliveryPackages,
 } from '../../redux/actions/getAllPackagesFromDelivery';
-import {confirmDeliveryPackages} from '../../redux/actions/confirmPackageDelivery';
+import { confirmDeliveryPackages } from '../../redux/actions/confirmPackageDelivery';
 const arrDummy = [
   {
     id: '234',
@@ -39,7 +39,7 @@ const arrDummy = [
     item: 'Leather Jackets box',
   },
 ];
-const index = ({navigation}) => {
+const index = ({ navigation }) => {
   const [showNotificationAlert, setShowNotificationAlert] = useState(false);
   const [oneTimeShowNotiAlert, setOneTimeShowNotiAlert] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
@@ -56,17 +56,24 @@ const index = ({navigation}) => {
 
   //getAllPickupPackages
 
-  const {data: allDeliveryPackages} =
+  const { data: allDeliveryPackages } =
     truckingState?.getAllDeliveryPackages?.data || [];
-  const {loading: getALLPickupLoader} =
+  const { loading: getALLPickupLoader } =
     truckingState?.getAllDeliveryPackages || {};
 
   // confirm packages pickup
 
-  const {data: confirmPickupResponse, success: confirmDeliveredSuccess} =
+  const { data: confirmPickupResponse, success: confirmDeliveredSuccess } =
     truckingState?.confirmPackagesDelivery?.data || [];
-  const {loading: confirmPackagesDeliveryLoader} =
+  const { loading: confirmPackagesDeliveryLoader } =
     truckingState?.confirmPackagesDelivery || {};
+
+
+  const { data: singleShiftDelivery } =
+    truckingState?.getSingleshiftDelivery?.data || [];
+  const { loading: getSingleShiftDeliveryLoader } =
+    truckingState?.getSingleshiftDelivery || {};
+
 
   useEffect(() => {
     dispatch(
@@ -79,24 +86,28 @@ const index = ({navigation}) => {
 
   useEffect(() => {
     // Check if alldeliveered packages has a value
-    if (allDeliveryPackages) {
-      const allPickup = allDeliveryPackages?.every(
-        obj => obj.status === 'delivered',
-      );
-      // Show alert when data is fetched and value is available
-      if (dataFetched) {
-        if (allPickup) {
-          dispatch(
-            deliveryDepartureOrDone({
-              shipmentId: param.shipmentId,
-              deliveryId: param.deliveryId,
-              status: 'done',
-            }),
-          );
+    const allPackagesDelivered = singleShiftDelivery?.find(obj => obj._id === param.deliveryId)
+    // check if stus is done then donot hit deliveryDepartureOrDone api
+    if (allPackagesDelivered?.status != 'done') {
+      if (allDeliveryPackages) {
+        const allPickup = allDeliveryPackages?.every(
+          obj => obj.status === 'delivered',
+        );
+        // Show alert when data is fetched and value is available
+        if (dataFetched) {
+          if (allPickup) {
+            dispatch(
+              deliveryDepartureOrDone({
+                shipmentId: param.shipmentId,
+                deliveryId: param.deliveryId,
+                status: 'done',
+              }),
+            );
+          }
+        } else {
+          // Data has been fetched, update the state to true
+          setDataFetched(true);
         }
-      } else {
-        // Data has been fetched, update the state to true
-        setDataFetched(true);
       }
     }
   }, [allDeliveryPackages, dataFetched]);
@@ -215,17 +226,17 @@ const index = ({navigation}) => {
                   }}>
                   <CustomText
                     size={15}
-                    style={{color: color.white, fontWeight: '700'}}>
+                    style={{ color: color.white, fontWeight: '700' }}>
                     {obj.article_name}
                   </CustomText>
                   <CustomText
                     size={12}
-                    style={{color: color.white, fontWeight: '500'}}>
+                    style={{ color: color.white, fontWeight: '500' }}>
                     ID : {obj._id}
                   </CustomText>
                 </View>
                 <View
-                  style={{height: 60, width: '35%', justifyContent: 'center'}}>
+                  style={{ height: 60, width: '35%', justifyContent: 'center' }}>
                   <TouchableOpacity
                     onPress={async () => {
                       // setShowNotificationAlert(true)
@@ -243,7 +254,7 @@ const index = ({navigation}) => {
                     }}>
                     <CustomText
                       size={11}
-                      style={{color: color.appBlue, fontWeight: '600'}}>
+                      style={{ color: color.appBlue, fontWeight: '600' }}>
                       {/* {cardStates[obj.id] ? 'Confirmed' : 'Confirm Pickup'} */}
                       {obj.status == 'delivered'
                         ? 'Delivered'
@@ -268,7 +279,7 @@ const index = ({navigation}) => {
               </View>
 
               {/* Card Body */}
-              <View style={{marginVertical: 10}} />
+              <View style={{ marginVertical: 10 }} />
               <FormText
                 heading={'Article no. :'}
                 description={obj.article_no}
@@ -286,7 +297,7 @@ const index = ({navigation}) => {
                 heading={'Delivery Navigate :'}
                 description={'No75, Grand Lake,HDT45H,  sydney, Australia.'}
               />
-              <View style={{marginBottom: 10}} />
+              <View style={{ marginBottom: 10 }} />
             </View>
           ))}
         </ScrollView>

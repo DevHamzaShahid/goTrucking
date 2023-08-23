@@ -718,7 +718,6 @@ const index = ({ navigation }) => {
   const checkDelayedTime =
     delayHours != null || delayMins != null ? true : false;
 
-
   //get singleShift
   // used is fouces when comming back to the pickupcards screen it should show the updated singleShift status prnding to done or so
   useEffect(() => {
