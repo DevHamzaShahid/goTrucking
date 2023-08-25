@@ -14,12 +14,31 @@ import RouteWhite from '../../asset/svgIcons/My Routes White.svg'
 import RouteFaded from '../../asset/svgIcons/My Routes Faded.svg'
 import ProfileWhite from '../../asset/svgIcons/My Profile White.svg'
 import ProfileFaded from '../../asset/svgIcons/My Profile Faded.svg'
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { Alert } from 'react-native';
+import { route } from '../../Routes';
 
 const Tab = createBottomTabNavigator();
 const iconSize = 24
 
 export function MyTabs() {
+    const truckingState = useSelector(state => state);
+    const { shipment_Id } = truckingState.shipmentId || ''
+
+    console.log("gettttttt from reduxxx>>>", shipment_Id);
+
+    const navigation = useNavigation()
+    
+    // const handleTabPress = () => {
+    //     if (!shipment_Id) {
+    //     //   navigation.navigate(route.MyRoutes);
+        
+    //       Alert.alert('No Shipment in Progress', 'You clicked on My Routes tab, but no shipment is in progress.', [
+    //         { text: 'OK' }
+    //       ]);
+    //     }
+    //   };
     return (
         <Tab.Navigator
             screenOptions={{
@@ -66,6 +85,7 @@ export function MyTabs() {
                     },
                 }}
             /> */}
+            
             <Tab.Screen name="My Routes" component={RouteStack}
                 options={{
                     headerShown: false,
@@ -79,6 +99,21 @@ export function MyTabs() {
                         }
                     },
                 }}
+                // listeners={{
+                //     tabPress: handleTabPress
+                //   }}
+                // listeners={({ navigation }) => ({
+                //     tabPress: (e) => {
+                //       // Prevent default tab press behavior
+                //       e.preventDefault();
+                      
+                //       // Show an alert when the tab is pressed
+                //       Alert.alert('Tab Pressed', 'You clicked on My Routes tab!', [
+                //         { text: 'OK' }
+                //       ]);
+                //     //   navigation.navigate('RouteStack',{screen:'MyRoutes'})
+                //     }
+                //   })}
             />
             <Tab.Screen name="ProfileStack" component={ProfileStack}
                 options={{

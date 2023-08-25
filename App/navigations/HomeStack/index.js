@@ -3,13 +3,16 @@ import Home from '../../screens/Home'
 import ViewDetails from '../../screens/ViewDetails'
 import { color } from '../../utils/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import BackIcon from 'react-native-vector-icons/MaterialIcons'
 import PackageDetails from '../../screens/PackageDetails'
 import MyRoutes from '../../screens/MyRoutes';
 import Receipt from '../../screens/Receipt';
 import PackageDetailsDelivery from '../../screens/PackageDetailsDelivery'
+import { route } from '../../Routes';
+import { TouchableOpacity } from 'react-native';
 const Stack = createStackNavigator();
 
-export function HomeStack() {
+export function HomeStack({ navigation }) {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
@@ -41,11 +44,16 @@ export function HomeStack() {
                     title: 'Package Details',
                     headerRight: () => (
                         <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    ),
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
+                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                        </TouchableOpacity>
                     )
                 }
                 }
             />
-             <Stack.Screen name="PackageDetailsDelivery" component={PackageDetailsDelivery}
+            <Stack.Screen name="PackageDetailsDelivery" component={PackageDetailsDelivery}
                 options={{
                     headerShown: true,
                     headerStyle: { backgroundColor: color.white },
@@ -57,13 +65,18 @@ export function HomeStack() {
                     title: 'Package Details',
                     headerRight: () => (
                         <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    ),
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
+                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                        </TouchableOpacity>
                     )
                 }
                 }
             />
-            <Stack.Screen name="MyRoutes" component={MyRoutes} options={
+            {/* <Stack.Screen name="MyRoutes" component={MyRoutes} options={
                 { headerShown: false }
-            } />
+            } /> */}
             <Stack.Screen name="Receipt" component={Receipt}
                 options={{
                     headerShown: true,
@@ -76,6 +89,11 @@ export function HomeStack() {
                     title: 'Receipt',
                     headerRight: () => (
                         <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    ),
+                    headerLeft: () => (
+                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
+                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                        </TouchableOpacity>
                     )
                 }
                 }

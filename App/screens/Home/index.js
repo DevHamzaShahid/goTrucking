@@ -54,30 +54,41 @@ const Index = ({ navigation }) => {
 
   const { data } = truckingState?.acceptOrRejectJob?.data || [];
 
+
+
+  //get Direction Line
+  const { data: directionLine } =
+    truckingState?.getdirectionLine || [];
+  const { loading: directionLineLoader } =
+    truckingState?.getdirectionLine || {};
+  const direction = directionLine?.data?.shipmentDetail?.direction
+
   const [readyForPickup, setReadyForPickup] = useState(false);
   const [shipmentId, setShipmentId] = useState('');
   const parameter = useRoute();
-  const param = parameter?.params;
-
+  
 
   const PickupAlertNext = () => {
     dispatch(acceptOrRejectJob({ id: shipmentId, status: 'start' }));
     // active single shifts again to get its response to next screen where currently navigating
-    // dispatch(getSingleShift(shipmentId));
-    navigation.navigate(route.MyRoutes, {
-      requireButtonType: 'arrival',
-      shipmentId,
-    });
+    // navigation.navigate(route.MyRoutes, {
+    //   requireButtonType: 'arrival',
+    //   shipmentId,
+    // });
+    navigation.navigate('My Routes', { screen: 'MyRoutes', params: { shipment_Id: shipmentId } })
     setReadyForPickup(false);
   };
+
   const closePickupAlert = () => {
     setReadyForPickup(false);
   };
+
   const onClickViewDetails = _id => {
     dispatch(getSingleShift(_id));
     navigation.navigate(route.ViewDetails, { shiftId: _id });
     // send shift id to get single shift packages
   };
+
   const checkIfanyotherJobIsInProgress = () => {
     const jobInProgress = allShifts?.some(
       shift =>
@@ -88,7 +99,18 @@ const Index = ({ navigation }) => {
     );
     return jobInProgress
   }
+  // save shipment if any of the shipment in progress status==start >>>> this id will be used when directly click on myRoutes tab
+  useEffect(() => {
+    const startShift = allShifts?.find(shift => shift.status === "start" || shift.status === "delivering");
+    if (startShift?._id) {
+      dispatch({ type: 'SET_SHIPMENT_ID', payload: startShift?._id });
+    } else {
+      dispatch({ type: 'SET_SHIPMENT_ID', payload: null });
+    }
+  }, [allShifts, dispatch])
+
   const onClickShipmentButton = item => {
+    setShipmentId(item?._id)
     if (item.status == 'accept') {
       //onclick startworking
       const inProgress = checkIfanyotherJobIsInProgress()
@@ -101,20 +123,25 @@ const Index = ({ navigation }) => {
       }
     } else if (item.status == 'assign') {//by default assign
       onClickViewDetails(item._id);
-    } else if (item.status == 'start') {
+    } else if (item.status == 'start') {//means pickup
       setShipmentId(item._id);
       dispatch({ type: 'SET_SHIPMENT_ID', payload: item._id });
-      navigation.navigate(route.MyRoutes, {
-        requireButtonType: 'arrival',//not using for now
-        shipmentId: item?._id,
-      });
+      // navigation.navigate(route.MyRoutes)
+      navigation.navigate('My Routes', { screen: 'MyRoutes', params: { shipment_Id: item._id } })
+
+      // navigation.navigate(route.MyRoutes, {
+      //   requireButtonType: 'arrival',//not using for now
+      //   shipmentId: item?._id,
+      // });
     }
     else if (item.status == 'delivering') {
       setShipmentId(item._id);
-      navigation.navigate(route.MyRoutes, {
-        requireButtonType: 'arrival',
-        shipmentId: item._id,
-      });
+      // navigation.navigate('RouteStack',{screen:'MyRoutes'})
+      navigation.navigate('My Routes', { screen: 'MyRoutes', params: { shipment_Id: item._id } })
+      // navigation.navigate(route.MyRoutes, {
+      //   requireButtonType: 'arrival',
+      //   shipmentId: item._id,
+      // });
     }
     else if (item.status == 'delivered') {
       alert("Successfully Delivered")
@@ -136,10 +163,8 @@ const Index = ({ navigation }) => {
     // setTimeout(() => {
     //   (allShifts && truckingState?.getProfile.data) && dispatch(resetState());
     // }, 4000)
-    (allShifts && truckingState?.getProfile.data) && isFocused && dispatch(resetState())
+    (allShifts && truckingState?.getProfile.data ) && isFocused && dispatch(resetState())
   }, [allShifts && truckingState?.getProfile.data])
-
-
 
 
 
@@ -293,7 +318,7 @@ const Index = ({ navigation }) => {
         </View>
         <View style={styles.rightContainer}>
           <View style={styles.profileContainer1}>
-            <TouchableOpacity onPress={() => navigation.navigate('ProfileStack', { screen: route.EditProfile })} style={styles.profileContainer2}>
+            <TouchableOpacity onPress={() => navigation.navigate('ProfileStack')} style={styles.profileContainer2}>
               {/* <Profile height={182} width={182} style={styles.profilePhoto} /> */}
               <Image
                 source={{ uri: profilePhoto }}

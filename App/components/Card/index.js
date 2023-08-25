@@ -89,12 +89,12 @@ const index = ({
                   fontWeight: '500',
                   marginVertical: 1,
                 }}>
-                Pickup Point 1
+                {item.name}
               </CustomText>
               <CustomText
                 size={14}
                 style={{ color: color.appBlue, fontWeight: '600' }}>
-                ID : 8837373828
+                ID : {item._id}
               </CustomText>
             </View>
             {/* navigate button */}
@@ -156,7 +156,7 @@ const index = ({
               <CustomText
                 size={13}
                 style={{ color: color.appBlue, fontWeight: '600' }}>
-                7am - 8:30am
+                {item.time}
               </CustomText>
             </View>
             <View
@@ -219,7 +219,7 @@ const index = ({
             <CustomText
               size={14}
               style={{ color: color.appBlue, fontWeight: '500' }}>
-              Handle with care
+              {item.specialInstructions}
             </CustomText>
           </View>
 

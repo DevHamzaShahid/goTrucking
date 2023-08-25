@@ -43,6 +43,7 @@ import { confirmAllPackagesPcikedUp } from '../../redux/actions/confirmAllPackag
 import { auth } from '@react-native-firebase/auth';
 import { firebase } from '@react-native-firebase/database';
 import DeliveryPin from '../../asset/svgIcons/deliveryMarker.svg';
+import Dpin from '../../asset/svgIcons/Dlipin.svg'
 import { getDirectionLine, resetDirectionLineState } from '../../redux/actions/getDirectionLine';
 import polyline from '@mapbox/polyline';
 import { resetState } from '../../redux/actions/resetReduxState';
@@ -716,6 +717,7 @@ const index = ({ navigation }) => {
   const parameter = useRoute();
   const param = parameter?.params;
   // const {setStateValue} = parameter?.params;
+  console.log("paraamammammmmmm", param?.shipment_Id);
   const checkDelayedTime =
     delayHours != null || delayMins != null ? true : false;
 
@@ -723,9 +725,10 @@ const index = ({ navigation }) => {
   // used is fouces when comming back to the pickupcards screen it should show the updated singleShift status prnding to done or so
   useEffect(() => {
     if (isFocused && !stopFetchingDirectionLineAgain) {
-      dispatch(getSingleShift(param?.shipmentId));
+      dispatch(getSingleShift(param?.shipment_Id||shipment_Id));
     }
   }, [isFocused, stopFetchingDirectionLineAgain, refresher]);
+
 
   //getSingleShift
 
@@ -765,16 +768,18 @@ const index = ({ navigation }) => {
   //confirm all the packages are picked up send confirmation status
   const { data: confirmAllPackagespickup } = truckingState?.confirmAllPackagesArePickedup || [];
 
+  //get saved Shipmentid
+  const { shipment_Id } = truckingState?.shipmentId || ''
 
   // getdirectionLine
   useEffect(() => {
-    if (!direction && !stopFetchingDirectionLineAgain) {
-      dispatch(getDirectionLine(param?.shipmentId))
-    }
-    return () => setStopFetchDirectionLine(false)
+    // if (!direction && !stopFetchingDirectionLineAgain) {
+    dispatch(getDirectionLine(param?.shipment_Id||shipment_Id))
+    // }
+    // return () => setStopFetchDirectionLine(false)
     // setPolyline(direction)
-  }, [])
-
+  }, [param?.shipment_Id||shipment_Id])
+  console.log("directionnnn>>>>++++++++++++++", direction);
 
   useEffect(() => {
     const reversedData = direction?.map(item => ({
@@ -783,16 +788,19 @@ const index = ({ navigation }) => {
     }));
     setPolyline(reversedData)
   }, [direction])
+  console.log("ssssssss=ss=s=s=s==s==s", singleShift, singleShiftDelivery);
+  console.log("ssssssss=ss=s=s=s==s==s coords", singleShiftCoords,singleDeliveryCoords);
 
 
   // back for the map screen
   const handleBackPress = () => {
     const resetAction = CommonActions.reset({
       index: 0, // Reset to the first screen in the stack
-      routes: [{ name: route.Home }], // Replace the stack with the Home screen
+      routes: [{ name: 'HomeStack' }], // Replace the stack with the Home screen
     });
     navigation.dispatch(resetAction);
     // navigation.navigate(route.Home)
+    // navigation.goBack()
   };
 
   // CHECK IF single shift all pickuppoints are pickuped , if pickup and departed then show delivery cards instead
@@ -806,7 +814,7 @@ const index = ({ navigation }) => {
     }
     if (allpickedUp && !alertShown && !allDelivered) {
       // when all packagesare picked up then tell its time for delivering////sending status to admin
-      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipmentId, status: "delivering" }))
+      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipment_Id||shipment_Id, status: "delivering" }))
       // alert('picked up all')
       // setDeliveryStatus('delivery');
       setAllPickedUpAlert(true)
@@ -836,15 +844,12 @@ const index = ({ navigation }) => {
     console.log("send Report", delayHours, delayMins, delayReportPickupAndDeliveryData);
     if (checkDelayedTime) {
       if (delayReportPickupAndDeliveryData?.delayType == 'pickup') {
-        await dispatch(pickupDelayReport({ shipmentId: param?.shipmentId, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+        await dispatch(pickupDelayReport({ shipmentId: param?.shipment_Id||shipment_Id, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
       }
       else if (delayReportPickupAndDeliveryData?.delayType == 'delivery') {
-        await dispatch(deliveryDelayReport({ shipmentId: param?.shipmentId, deliveryId: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+        await dispatch(deliveryDelayReport({ shipmentId: param?.shipment_Id||shipment_Id, deliveryId: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
       }
       setChooseDelayTime(false)
-    }
-    else {
-      alert('Choose time')
     }
   }
 
@@ -899,6 +904,7 @@ const index = ({ navigation }) => {
       lng: item.lng && item.lng,
       name: item.name
     }));
+    console.log("for coords",singleShift);
     const deliveryCoords = singleShiftDelivery?.map(item => ({
       lat: item.lat && item.lat,
       lng: item.lng && item.lng,
@@ -911,7 +917,7 @@ const index = ({ navigation }) => {
   // get delivery points
   useEffect(() => {
     if (isFocused && !stopFetchingDirectionLineAgain) {
-      dispatch(getSingleShiftDelivery(param?.shipmentId));
+      dispatch(getSingleShiftDelivery(param?.shipment_Id||shipment_Id));
     }
   }, [isFocused, stopFetchingDirectionLineAgain, refresher]);
 
@@ -923,7 +929,7 @@ const index = ({ navigation }) => {
     );
     if (allDelivered === true) {
       // when all packages are delivered then tell delivered//sending status to admin
-      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipmentId, status: "delivered" }))
+      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipment_Id||shipment_Id, status: "delivered" }))
       setShowAlert(true);
       // dispatch(resetDirectionLineState());
     }
@@ -941,7 +947,7 @@ const index = ({ navigation }) => {
   const confirmPickupDeparture = async item => {
     await dispatch(
       confirmPickupDeparturee({
-        shipmentId: param.shipmentId,
+        shipmentId: param?.shipment_Id||shipment_Id,
         pickup_Id: item._id,
         status: 'departure',
       }),
@@ -955,7 +961,7 @@ const index = ({ navigation }) => {
     // setTimeout(async() => {
     await dispatch(
       confirmDeliveryDeparturee({
-        shipmentId: param.shipmentId,
+        shipmentId: param?.shipment_Id||shipment_Id,
         deliveryId: item._id,
         status: 'departure',
       }),
@@ -1012,7 +1018,7 @@ const index = ({ navigation }) => {
   };
   const getCardWidth = () => {
     const screenWidth = Dimensions.get('window').width;
-    return screenWidth * 0.95; // 80% of the screen width
+    return deliveryStatus == 'delivery' ? screenWidth * 0.75 : screenWidth * 0.95; // 95% of the screen width
   };
 
   useEffect(() => {
@@ -1069,12 +1075,12 @@ const index = ({ navigation }) => {
   // when user is 50 meters aways from the delivery point and still want to deliver then click anyways
   const continueAnyWays = async () => {
     if (currentDeliveryOrPickupData?.arrivalType == 'pickup') {
-      await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipmentId, pickup_Id: currentDeliveryOrPickupData?._id, status: 'arrival' }))
-      dispatch(getSingleShift(param?.shipmentId))
+      await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, pickup_Id: currentDeliveryOrPickupData?._id, status: 'arrival' }))
+      dispatch(getSingleShift(param?.shipment_Id||shipment_Id))
     }
     else if (currentDeliveryOrPickupData?.arrivalType == 'delivery') {
-      await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipmentId, deliveryId: currentDeliveryOrPickupData?._id, status: 'arrival' }))
-      dispatch(getSingleShiftDelivery(param?.shipmentId))
+      await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, deliveryId: currentDeliveryOrPickupData?._id, status: 'arrival' }))
+      dispatch(getSingleShiftDelivery(param?.shipment_Id||shipment_Id))
     }
     setLocationAlertOnArrival(false)
   };
@@ -1101,124 +1107,9 @@ const index = ({ navigation }) => {
 
 
 
-
-
   return (
     <SafeAreaView flex={1}>
-      <Block>
-        {chooseDelayTime && (
-          <View style={{ height: dimensions, width: dimensionsWidth, backgroundColor: 'rgba(0,0,0,0.7)', zindex: 999 }}>
-            <View
-              style={{
-                position: 'absolute',
-                backgroundColor: color.white,
-                height: 300,
-                width: '90%',
-                alignSelf: 'center',
-                marginTop: (dimensions / 2) * 0.3,
-                borderRadius: 12,
-                borderWidth: 2,
-                borderColor: color.appBlue,
-              }}>
-              {/* loader */}
-              {/* close icon */}
-              <TouchableOpacity
-                onPress={() => closeButton()}
-                style={{
-                  position: 'absolute',
-                  top: 25,
-                  right: 25,
-                  height: 25,
-                  width: 25,
-                  borderRadius: 4,
-                  borderColor: color.appBlue,
-                  borderWidth: 2,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Icon name="close" color={'#1E3A52'} size={22} />
-              </TouchableOpacity>
-
-              {/* delay setclock logo */}
-              <View
-                style={{
-                  backgroundColor: color.appBlue,
-                  height: 100,
-                  width: 100,
-                  borderRadius: 50,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  alignSelf: 'center',
-                  position: 'absolute',
-                  top: -25,
-                }}>
-                <View
-                  style={{
-                    borderWidth: 1.3,
-                    borderColor: color.white,
-                    height: 95,
-                    width: 95,
-                    borderRadius: 50,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
-                  <Clockreport height={60} width={60} />
-                </View>
-              </View>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginTop: 100,
-                }}>
-                {/* Dropdown pickers */}
-                <CustomText
-                  size={18}
-                  style={{ color: color.appBlue, fontWeight: '500' }}>
-                  Please choose your current time
-                </CustomText>
-                <View
-                  style={{ width: 120, position: 'absolute', left: 30, top: 40 }}>
-                  <CustomDropDown
-                    placeholder={'Hours'}
-                    objects={[
-                      { label: '1 hour', value: '1 hour' },
-                      { label: '2 Hours', value: '2 hours' },
-                      { label: '3 Hours', value: '3 hours' },
-                    ]}
-                    onChange={handleHourChange}
-                  />
-                </View>
-                <View
-                  style={{ width: 120, position: 'absolute', right: 30, top: 40 }}>
-                  <CustomDropDown
-                    placeholder={'Mins'}
-                    objects={[
-                      { label: '10 mins', value: '10 mins' },
-                      { label: '15 mins', value: '15 mins' },
-                      { label: '30 mins', value: '30 mins' },
-                    ]}
-                    onChange={handleMinsChange}
-                  />
-                </View>
-              </View>
-              <CustomButton
-                onPress={sendDelayReport}
-                title={'Continue'}
-                buttonStyle={{
-                  zIndex: -2,
-                  position: 'absolute',
-                  bottom: 20,
-                  alignSelf: 'center',
-                  height: 40,
-                  width: '60%',
-                  backgroundColor: checkDelayedTime ? color.appBlue : '#CCCCCC',
-                }}
-                textStyle={{ color: color.white, fontWeight: '500' }}
-              />
-            </View>
-          </View>
-        )}
+      {param?.shipment_Id||shipment_Id ? <Block>
         {/* Custom Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBackPress}>
@@ -1283,7 +1174,8 @@ const index = ({ navigation }) => {
               title={coords.name}
               onPress={() => handleDeliveryMarkerClick(index)}
             >
-              <DeliveryPin />
+              <Dpin />
+              {/* <DeliveryPin/> */}
             </Marker>
           ))}
           {myLiveLocation && <Marker coordinate={myLiveLocation} title="Driver">
@@ -1366,7 +1258,8 @@ const index = ({ navigation }) => {
           <View
             style={{
               position: 'absolute',
-              bottom: 20,
+              bottom: 10,
+              zIndex: 0
             }}>
             <ScrollView
               ref={scrollViewRef}
@@ -1588,8 +1481,8 @@ const index = ({ navigation }) => {
                           const onLocation = await checkUserInDestinationOrNot(item)
                           console.log("ONlocation=>>>>>>>", onLocation);
                           if (onLocation <= 50) {
-                            await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipmentId, pickup_Id: item._id, status: 'arrival' }))
-                            dispatch(getSingleShift(param?.shipmentId))
+                            await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, pickup_Id: item._id, status: 'arrival' }))
+                            dispatch(getSingleShift(param?.shipment_Id||shipment_Id))
                           }
                           else {
                             // show alert and ask if he want to still continue/anyways
@@ -1646,7 +1539,7 @@ const index = ({ navigation }) => {
                         onPress={() => {
                           setStopFetchDirectionLine(false)
                           navigation.navigate(route.PackageDetails, {
-                            shipmentId: param.shipmentId,
+                            shipmentId: param?.shipment_Id||shipment_Id,
                             pickup_Id: item._id,
                           });
                         }}
@@ -1700,7 +1593,7 @@ const index = ({ navigation }) => {
                         // navigation.navigate(route.PackageDetails,)
                         {
                           navigation.navigate(route.PackageDetails, {
-                            shipmentId: param.shipmentId,
+                            shipmentId: param?.shipment_Id||shipment_Id,
                             pickup_Id: item._id,
                           });
                         }
@@ -1815,6 +1708,7 @@ const index = ({ navigation }) => {
               style={{
                 position: 'absolute',
                 bottom: 20,
+                zIndex: 0
               }}>
               <ScrollView
                 ref={scrollViewRef}
@@ -1871,8 +1765,8 @@ const index = ({ navigation }) => {
                       />
                     )} */}
                       {/* confirm delivery */}
-                      {item.status == 'done' && <TouchableOpacity
-                        onPress={() => navigation.navigate(route.Receipt, { shipmentId: param?.shipmentId, deliveryId: item._id })}
+                      {(item.status == 'done' && item?.deliveryImages == null) && <TouchableOpacity
+                        onPress={() => navigation.navigate(route.Receipt, { shipmentId: param?.shipment_Id||shipment_Id, deliveryId: item._id })}
                         style={{
                           paddingHorizontal: 4,
                           alignItems: 'center',
@@ -1893,7 +1787,7 @@ const index = ({ navigation }) => {
                           onPress={() => {
                             setStopFetchDirectionLine(false)
                             navigation.navigate(route.PackageDetailsDelivery, {
-                              shipmentId: param?.shipmentId,
+                              shipmentId: param?.shipment_Id||shipment_Id,
                               deliveryId: item._id,
                             })
                           }
@@ -1926,7 +1820,7 @@ const index = ({ navigation }) => {
                             onPress={() => {
                               setStopFetchDirectionLine(false)
                               navigation.navigate(route.PackageDetailsDelivery, {
-                                shipmentId: param?.shipmentId,
+                                shipmentId: param?.shipment_Id||shipment_Id,
                                 deliveryId: item._id,
                               })
                             }}
@@ -2002,8 +1896,8 @@ const index = ({ navigation }) => {
                               const onLocation = await checkUserInDestinationOrNot(item)
                               console.log("ONlocation=>>>>>>>delivery", onLocation);
                               if (onLocation <= 50) {
-                                await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipmentId, deliveryId: item._id, status: 'arrival' }))
-                                dispatch(getSingleShiftDelivery(param?.shipmentId))
+                                await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, deliveryId: item._id, status: 'arrival' }))
+                                dispatch(getSingleShiftDelivery(param?.shipment_Id||shipment_Id))
                               }
                               else {
                                 // show alert and ask if he want to still continue/anyways
@@ -2064,7 +1958,7 @@ const index = ({ navigation }) => {
                               navigation.navigate(
                                 route.PackageDetailsDelivery,
                                 {
-                                  shipmentId: param?.shipmentId,
+                                  shipmentId: param?.shipment_Id||shipment_Id,
                                   deliveryId: item._id,
                                 },
                               );
@@ -2147,7 +2041,137 @@ const index = ({ navigation }) => {
               </ScrollView>
             </View>
           )}
+        {/* choose time if late (delay time) */}
+        {chooseDelayTime && (
+          <View style={{ height: dimensions, width: dimensionsWidth, backgroundColor: 'rgba(0,0,0,0.7)', zindex: 2 }}>
+            <View
+              style={{
+                position: 'absolute',
+                backgroundColor: color.white,
+                height: 300,
+                width: '90%',
+                alignSelf: 'center',
+                marginTop: (dimensions / 2) * 0.3,
+                borderRadius: 12,
+                borderWidth: 2,
+                borderColor: color.appBlue,
+              }}>
+              {/* loader */}
+              {/* close icon */}
+              <TouchableOpacity
+                onPress={() => closeButton()}
+                style={{
+                  position: 'absolute',
+                  top: 25,
+                  right: 25,
+                  height: 25,
+                  width: 25,
+                  borderRadius: 4,
+                  borderColor: color.appBlue,
+                  borderWidth: 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Icon name="close" color={'#1E3A52'} size={22} />
+              </TouchableOpacity>
+
+              {/* delay setclock logo */}
+              <View
+                style={{
+                  backgroundColor: color.appBlue,
+                  height: 100,
+                  width: 100,
+                  borderRadius: 50,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  alignSelf: 'center',
+                  position: 'absolute',
+                  top: -25,
+                }}>
+                <View
+                  style={{
+                    borderWidth: 1.3,
+                    borderColor: color.white,
+                    height: 95,
+                    width: 95,
+                    borderRadius: 50,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Clockreport height={60} width={60} />
+                </View>
+              </View>
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: 100,
+                }}>
+                {/* Dropdown pickers */}
+                <CustomText
+                  size={18}
+                  style={{ color: color.appBlue, fontWeight: '500' }}>
+                  Please choose your current time
+                </CustomText>
+                <View
+                  style={{ width: 120, position: 'absolute', left: 30, top: 40 }}>
+                  <CustomDropDown
+                    placeholder={'Hours'}
+                    objects={[
+                      { label: '1 hour', value: '1 hour' },
+                      { label: '2 Hours', value: '2 hours' },
+                      { label: '3 Hours', value: '3 hours' },
+                    ]}
+                    onChange={handleHourChange}
+                  />
+                </View>
+                <View
+                  style={{ width: 120, position: 'absolute', right: 30, top: 40 }}>
+                  <CustomDropDown
+                    placeholder={'Mins'}
+                    objects={[
+                      { label: '10 mins', value: '10 mins' },
+                      { label: '15 mins', value: '15 mins' },
+                      { label: '30 mins', value: '30 mins' },
+                    ]}
+                    onChange={handleMinsChange}
+                  />
+                </View>
+              </View>
+              <CustomButton
+                onPress={sendDelayReport}
+                title={'Continue'}
+                buttonStyle={{
+                  zIndex: -2,
+                  position: 'absolute',
+                  bottom: 20,
+                  alignSelf: 'center',
+                  height: 40,
+                  width: '60%',
+                  backgroundColor: checkDelayedTime ? color.appBlue : '#CCCCCC',
+                }}
+                textStyle={{ color: color.white, fontWeight: '500' }}
+              />
+            </View>
+          </View>
+        )}
       </Block>
+
+        :
+        <Block>
+          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+            <CustomText>
+              No Shipment in Progress
+            </CustomText>
+          </View>
+          {(confirmPickupDepartureLoader ||
+            getSingleShiftLoader ||
+            getSingleShiftDeliveryLoader ||
+            confirmDeliveryDepartureLoader ||
+            directionLineLoader
+          ) && <CustomActivityIndicator />}
+        </Block>
+      }
     </SafeAreaView>
   );
 };

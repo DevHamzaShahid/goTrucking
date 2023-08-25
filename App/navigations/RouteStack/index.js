@@ -12,7 +12,11 @@ const Stack = createStackNavigator();
 const index = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Receipt" component={Tracking}
+            <Stack.Screen name="MyRoutes" component={MyRoutes} options={
+                { headerShown: false }
+            } />
+
+            {/* <Stack.Screen name="Receipt" component={Tracking}
                 options={{
                     headerShown: true,
                     headerStyle: { backgroundColor: color.white },
@@ -27,8 +31,8 @@ const index = () => {
                     )
                 }
                 }
-            />
-             {/* <Stack.Screen name="PackageDetails" component={PackageDetails}
+            /> */}
+            {/* <Stack.Screen name="PackageDetails" component={PackageDetails}
                 options={{
                     headerShown: true,
                     headerStyle: { backgroundColor: color.white },

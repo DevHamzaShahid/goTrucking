@@ -32,7 +32,8 @@ export const userSignupAction = (creds) => async dispatch => {
       payload: data,
     });
   } catch (error) {
-    dispatch({
+    // alert(error)
+       dispatch({
       type: USER_SIGNUP_FAILED,
       payload: error.message,
     });

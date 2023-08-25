@@ -253,11 +253,11 @@ const index = ({navigation}) => {
               />
               <FormText
                 heading={'Package Content :'}
-                description={'Lorem Ipsum, Lorem Ipsum'}
+                description={obj.article_content}
               />
               <FormText
                 heading={'Package Dimensions :'}
-                description={'14 L x 2 H x 20W'}
+                description={`${obj.package_length} L x ${obj.package_height} H x ${obj.package_width} W`}  //{'14 L x 2 H x 20W'}
               />
               <FormText heading={'Receiver Name :'} description={'Abc Name'} />
               <FormText

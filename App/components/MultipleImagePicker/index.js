@@ -11,6 +11,7 @@ import { UploadMultipleImages } from "../../redux/actions/UploadMultipleImages";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { UploadImagesPath } from "../../redux/actions/confirmDeliveryDeparturee";
 import CustomActivityIndicator from "../CustomLoader";
+import { route } from "../../Routes";
 
 const MultipleImagePicker = ({ setIsImageSelected }) => {
     const dispatch = useDispatch()
@@ -45,21 +46,30 @@ const MultipleImagePicker = ({ setIsImageSelected }) => {
     const photoresponse = uploadedPhotosPathResponse
     console.log("photoresponse?.messagephotoresponse?.messagephotoresponse?.message", photoresponse?.message);
     useEffect(() => {
-        (async()=>{if (sendPhotosPath && photo?.paths) {
-           await dispatch(UploadImagesPath({ ...param, photoPaths: photo?.paths }))
-            // setSendPhotosPath(true)//to awake next useeffect
-        }})()
-    }, [photo?.paths,photoresponse?.message,sendPhotosPath])
-    
+        (async () => {
+            if (sendPhotosPath && photo?.paths) {
+                await dispatch(UploadImagesPath({ ...param, photoPaths: photo?.paths }))
+                // setSendPhotosPath(true)//to awake next useeffect
+            }
+        })()
+
+        
+    }, [photo?.paths, photoresponse?.message, sendPhotosPath])
+
     useEffect(() => {
         if (sendPhotosPath && photoresponse?.message) {
             setSendPhotosPath(false)
             setDelivered(true)
             setTimeout(() => {
-                navigation.goBack()
+                navigation.navigate(route.MyRoutes)
             }, 1000)
+            
+                setImageList([])
+                setDelivered(false)
+                setSendPhotosPath(false)
+            
         }
-    }, [photoresponse?.message,photo?.paths, sendPhotosPath])
+    }, [photoresponse?.message, photo?.paths, sendPhotosPath])
 
 
     const openPicker = () => {

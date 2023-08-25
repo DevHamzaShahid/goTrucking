@@ -12,6 +12,7 @@ import { dimensionsWidth } from '../../Dimensions'
 import { useDispatch, useSelector } from 'react-redux'
 import { userLoginAction } from '../../redux/actions/auth'
 import CustomActivityIndicator from '../../components/CustomLoader'
+import { isValidEmail, isValidPassword } from '../../helper'
 
 const index = ({ navigation }) => {
 
@@ -34,7 +35,7 @@ const index = ({ navigation }) => {
                 }
             }
             else {
-                alert(error)
+                alert("Wrong email address or password")
             }
         }
     }, [truckingState?.userLogin?.data, loggedIn]);
@@ -44,8 +45,18 @@ const index = ({ navigation }) => {
             alert("Please enter email or password")
         }
         else {
-            await dispatch(userLoginAction(inputData))
-            setLoggedIn(true)
+            if (isValidEmail(inputData.email)) {
+                // if (isValidPassword(inputData.password)) {
+                    await dispatch(userLoginAction(inputData))
+                    setLoggedIn(true)
+                // }
+                // else {
+                //     alert('Make sure password is 8-digit and alphanumeric')
+                // }
+            } else {
+                alert('Please enter email in correct format')
+            }
+
         }
     }
 
@@ -71,6 +82,7 @@ const index = ({ navigation }) => {
 
                     {/* textInputs */}
                     <CustomTextInput
+                        autoCapitalize={false}
                         placeholder="Email"
                         ContainerStyle={{
                             width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',

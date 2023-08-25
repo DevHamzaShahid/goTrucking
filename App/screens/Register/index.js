@@ -11,6 +11,8 @@ import { route } from '../../Routes'
 import { userSignupAction } from '../../redux/actions/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import CustomActivityIndicator from '../../components/CustomLoader'
+import { isValidEmail, isValidPassword } from '../../helper'
+
 
 const initialInputData = {
     fullName: '',
@@ -28,25 +30,32 @@ const index = ({ navigation }) => {
         mobileNumber: '',
         password: '',
     });
-    const [signedUp,setSetSignedup]=useState(false)
-
+    const [signedUp, setSetSignedup] = useState(false)
     useEffect(() => {
-        if (signedUp)
-        {
-            error && alert(error)
+        if (signedUp) {
+            error && alert('User Already exist with this email address or phone number')
             if (truckingState.signUp.data) {
                 alert("succesfully registered")
                 setInputData(initialInputData)
             }
         }
-    }, [truckingState.signUp.data, error, success,signedUp])
+    }, [truckingState.signUp.data, error, success, signedUp])
     const signUp = async () => {
         if (inputData.fullName == '' || inputData.mobileNumber == '' || inputData.email == '' || inputData.password == '') {
-            alert("Please enter name,Phone Number, email or password")
+            alert("All feilds are required")
         }
         else {
-            await dispatch(userSignupAction(inputData))
-            setSetSignedup(true)
+            if (isValidEmail(inputData.email)) {
+                if (isValidPassword(inputData.password)) {
+                    await dispatch(userSignupAction(inputData))
+                    setSetSignedup(true)
+                }
+                else {
+                    alert('Make sure password is 8-digit and alphanumeric')
+                }
+            } else {
+                alert('Please enter email in correct format')
+            }
         }
     }
     return (
@@ -85,6 +94,8 @@ const index = ({ navigation }) => {
                     />
                     <CustomTextInput
                         placeholder="Email"
+                        autoCapitalize={false}
+
                         ContainerStyle={{
                             width: '90%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
                             shadowOffset: {
@@ -100,6 +111,7 @@ const index = ({ navigation }) => {
                     />
                     <CustomTextInput
                         placeholder="Phone Number"
+                        keyboardType='number-pad'
                         ContainerStyle={{
                             width: '90%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
                             shadowOffset: {
