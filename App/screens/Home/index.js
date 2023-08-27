@@ -21,7 +21,7 @@ import { getAllShifts, getSingleShift } from '../../redux/actions/getShifts';
 import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 import { resetState } from '../../redux/actions/resetReduxState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import NoJobs from '../../asset/svgs/noJobAssigned.svg'
 const Index = ({ navigation }) => {
   // hitApis/dispatch
   const isFocused = useIsFocused();
@@ -55,7 +55,6 @@ const Index = ({ navigation }) => {
   const { data } = truckingState?.acceptOrRejectJob?.data || [];
 
 
-
   //get Direction Line
   const { data: directionLine } =
     truckingState?.getdirectionLine || [];
@@ -66,8 +65,9 @@ const Index = ({ navigation }) => {
   const [readyForPickup, setReadyForPickup] = useState(false);
   const [shipmentId, setShipmentId] = useState('');
   const parameter = useRoute();
-  
-
+  const filteredShifts = allShifts?.filter(shift => shift.status !== 'delivered')
+  const reversedShifts = filteredShifts?.slice()?.reverse();
+  console.log("reversedShiftsreversedShiftsreversedShifts", reversedShifts);
   const PickupAlertNext = () => {
     dispatch(acceptOrRejectJob({ id: shipmentId, status: 'start' }));
     // active single shifts again to get its response to next screen where currently navigating
@@ -163,9 +163,8 @@ const Index = ({ navigation }) => {
     // setTimeout(() => {
     //   (allShifts && truckingState?.getProfile.data) && dispatch(resetState());
     // }, 4000)
-    (allShifts && truckingState?.getProfile.data ) && isFocused && dispatch(resetState())
+    (allShifts && truckingState?.getProfile.data) && isFocused && dispatch(resetState())
   }, [allShifts && truckingState?.getProfile.data])
-
 
 
 
@@ -189,7 +188,7 @@ const Index = ({ navigation }) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.ScrollView}>
-        {allShifts?.map(item => (
+        {reversedShifts?.length>0 ? reversedShifts?.map(item => (
           <View style={{ marginTop: 20 }}>
             <View style={styles.BlueBackCard} />
             <View style={styles.MainCardContainer}>
@@ -296,7 +295,26 @@ const Index = ({ navigation }) => {
               />
             </View>
           </View>
-        ))}
+        ))
+          :
+
+          ((!getProfileLoader && !getAllShiftsLoader) && <View style={{ backgroundColor:color.white,marginTop: 20, borderWidth: 1, borderColor:'#CCCCCC', alignSelf: 'center', justifyContent: 'center', alignItems: 'center', height: 400, width: '80%' ,borderRadius:15}} >
+            {/* <NoJobs /> */}
+            <View style={{position:'absolute',top:20,zIndex:999,width:'70%'}}>
+              <CustomText size={20} style={{fontWeight:'600'}}>
+                No Jobs Assigned at
+                the Moment.
+              </CustomText>
+              <CustomText size={16}>
+              Reach out to your contractor for new jobs or wait for them to assign.
+              </CustomText>
+            </View>
+            <Image
+              source={require('../../asset/pngs/NoJobs.png')}
+              style={{ height: '100%', width: '100%' ,borderRadius:15}}
+            />
+          </View>)
+        }
         <View style={{ marginBottom: 100 }} />
       </ScrollView>
 

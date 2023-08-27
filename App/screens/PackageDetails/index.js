@@ -259,10 +259,10 @@ const index = ({navigation}) => {
                 heading={'Package Dimensions :'}
                 description={`${obj.package_length} L x ${obj.package_height} H x ${obj.package_width} W`}  //{'14 L x 2 H x 20W'}
               />
-              <FormText heading={'Receiver Name :'} description={'Abc Name'} />
+              <FormText heading={'Receiver Name :'} description={obj.reciverName} />
               <FormText
                 heading={'Delivery Navigate :'}
-                description={'No75, Grand Lake,HDT45H,  sydney, Australia.'}
+                description={obj.address}
               />
               <View style={{marginBottom: 10}} />
             </View>

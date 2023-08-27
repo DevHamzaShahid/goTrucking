@@ -16,7 +16,7 @@ import ProfileWhite from '../../asset/svgIcons/My Profile White.svg'
 import ProfileFaded from '../../asset/svgIcons/My Profile Faded.svg'
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import { Alert } from 'react-native';
+import { Alert, View } from 'react-native';
 import { route } from '../../Routes';
 
 const Tab = createBottomTabNavigator();
@@ -40,6 +40,7 @@ export function MyTabs() {
     //     }
     //   };
     return (
+        <View style={{ flex: 1, backgroundColor: color.white }}>
         <Tab.Navigator
             screenOptions={{
                 tabBarStyle: {
@@ -130,5 +131,7 @@ export function MyTabs() {
                 }}
             />
         </Tab.Navigator>
+        </View>
+
     );
 }

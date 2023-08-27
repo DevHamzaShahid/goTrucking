@@ -11,7 +11,7 @@ const middlewareList = [logger, thunk];
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['userToken'], //Put those reducers here you for which want to persist the data
+  whitelist: ['userToken','getdirectionLine'], //Put those reducers here you for which want to persist the data
   // whitelist: ['userToken'], //Put those reducers here you for which want to persist the data
   blacklist: [],
   timeout: null,

@@ -28,7 +28,7 @@ import PackageDetail from '../../asset/svgIcons/PackageDetail.svg';
 import ConfirmDeparture from '../../asset/svgIcons/ConfirmDeparture.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import PickupPin from '../../asset/svgIcons/destinationMarker.svg';
-import { fetchMyLocation } from '../../utils/helperFunction';
+import { fetchMyLocation, openGoogleMaps } from '../../utils/helperFunction';
 import Truck from '../../asset/svgIcons/Truck.svg';
 import { GoogleMapKey } from '../../utils/keys';
 import MapViewDirections from 'react-native-maps-directions';
@@ -36,6 +36,7 @@ import {
   getSingleShift,
   getSingleShiftDelivery,
 } from '../../redux/actions/getShifts';
+import NoRoute from '../../asset/svgs/noRoute.svg'
 import { confirmPickupDeparturee } from '../../redux/actions/confirmPickupDeparture';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { confirmDeliveryDeparturee } from '../../redux/actions/confirmDeliveryDeparturee';
@@ -725,7 +726,7 @@ const index = ({ navigation }) => {
   // used is fouces when comming back to the pickupcards screen it should show the updated singleShift status prnding to done or so
   useEffect(() => {
     if (isFocused && !stopFetchingDirectionLineAgain) {
-      dispatch(getSingleShift(param?.shipment_Id||shipment_Id));
+      dispatch(getSingleShift(param?.shipment_Id || shipment_Id));
     }
   }, [isFocused, stopFetchingDirectionLineAgain, refresher]);
 
@@ -774,11 +775,11 @@ const index = ({ navigation }) => {
   // getdirectionLine
   useEffect(() => {
     // if (!direction && !stopFetchingDirectionLineAgain) {
-    dispatch(getDirectionLine(param?.shipment_Id||shipment_Id))
+    dispatch(getDirectionLine(param?.shipment_Id || shipment_Id))
     // }
     // return () => setStopFetchDirectionLine(false)
     // setPolyline(direction)
-  }, [param?.shipment_Id||shipment_Id])
+  }, [param?.shipment_Id || shipment_Id])
   console.log("directionnnn>>>>++++++++++++++", direction);
 
   useEffect(() => {
@@ -789,7 +790,7 @@ const index = ({ navigation }) => {
     setPolyline(reversedData)
   }, [direction])
   console.log("ssssssss=ss=s=s=s==s==s", singleShift, singleShiftDelivery);
-  console.log("ssssssss=ss=s=s=s==s==s coords", singleShiftCoords,singleDeliveryCoords);
+  console.log("ssssssss=ss=s=s=s==s==s coords", singleShiftCoords, singleDeliveryCoords);
 
 
   // back for the map screen
@@ -814,7 +815,7 @@ const index = ({ navigation }) => {
     }
     if (allpickedUp && !alertShown && !allDelivered) {
       // when all packagesare picked up then tell its time for delivering////sending status to admin
-      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipment_Id||shipment_Id, status: "delivering" }))
+      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipment_Id || shipment_Id, status: "delivering" }))
       // alert('picked up all')
       // setDeliveryStatus('delivery');
       setAllPickedUpAlert(true)
@@ -844,10 +845,10 @@ const index = ({ navigation }) => {
     console.log("send Report", delayHours, delayMins, delayReportPickupAndDeliveryData);
     if (checkDelayedTime) {
       if (delayReportPickupAndDeliveryData?.delayType == 'pickup') {
-        await dispatch(pickupDelayReport({ shipmentId: param?.shipment_Id||shipment_Id, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+        await dispatch(pickupDelayReport({ shipmentId: param?.shipment_Id || shipment_Id, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
       }
       else if (delayReportPickupAndDeliveryData?.delayType == 'delivery') {
-        await dispatch(deliveryDelayReport({ shipmentId: param?.shipment_Id||shipment_Id, deliveryId: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
+        await dispatch(deliveryDelayReport({ shipmentId: param?.shipment_Id || shipment_Id, deliveryId: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
       }
       setChooseDelayTime(false)
     }
@@ -904,7 +905,7 @@ const index = ({ navigation }) => {
       lng: item.lng && item.lng,
       name: item.name
     }));
-    console.log("for coords",singleShift);
+    console.log("for coords", singleShift);
     const deliveryCoords = singleShiftDelivery?.map(item => ({
       lat: item.lat && item.lat,
       lng: item.lng && item.lng,
@@ -917,7 +918,7 @@ const index = ({ navigation }) => {
   // get delivery points
   useEffect(() => {
     if (isFocused && !stopFetchingDirectionLineAgain) {
-      dispatch(getSingleShiftDelivery(param?.shipment_Id||shipment_Id));
+      dispatch(getSingleShiftDelivery(param?.shipment_Id || shipment_Id));
     }
   }, [isFocused, stopFetchingDirectionLineAgain, refresher]);
 
@@ -929,7 +930,7 @@ const index = ({ navigation }) => {
     );
     if (allDelivered === true) {
       // when all packages are delivered then tell delivered//sending status to admin
-      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipment_Id||shipment_Id, status: "delivered" }))
+      dispatch(confirmAllPackagesPcikedUp({ id: param?.shipment_Id || shipment_Id, status: "delivered" }))
       setShowAlert(true);
       // dispatch(resetDirectionLineState());
     }
@@ -947,7 +948,7 @@ const index = ({ navigation }) => {
   const confirmPickupDeparture = async item => {
     await dispatch(
       confirmPickupDeparturee({
-        shipmentId: param?.shipment_Id||shipment_Id,
+        shipmentId: param?.shipment_Id || shipment_Id,
         pickup_Id: item._id,
         status: 'departure',
       }),
@@ -961,7 +962,7 @@ const index = ({ navigation }) => {
     // setTimeout(async() => {
     await dispatch(
       confirmDeliveryDeparturee({
-        shipmentId: param?.shipment_Id||shipment_Id,
+        shipmentId: param?.shipment_Id || shipment_Id,
         deliveryId: item._id,
         status: 'departure',
       }),
@@ -1067,20 +1068,21 @@ const index = ({ navigation }) => {
 
     const dist = geolib?.getDistance(currentLocation, orderCords, {
       unit: "km",
-    }); //unit is not working here thats why dividing by 1000 to convert meters to km
-
-    return dist / 1000
+    });
+    //unit is not working here thats why divide dist by 1000 to convert meters to km if needed
+    console.log("dist dist / 1000dist / 1000dist / 1000dist / 1000dist / 1000", dist);
+    return dist //in metres
   }
 
   // when user is 50 meters aways from the delivery point and still want to deliver then click anyways
   const continueAnyWays = async () => {
     if (currentDeliveryOrPickupData?.arrivalType == 'pickup') {
-      await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, pickup_Id: currentDeliveryOrPickupData?._id, status: 'arrival' }))
-      dispatch(getSingleShift(param?.shipment_Id||shipment_Id))
+      await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id || shipment_Id, pickup_Id: currentDeliveryOrPickupData?._id, status: 'arrival' }))
+      dispatch(getSingleShift(param?.shipment_Id || shipment_Id))
     }
     else if (currentDeliveryOrPickupData?.arrivalType == 'delivery') {
-      await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, deliveryId: currentDeliveryOrPickupData?._id, status: 'arrival' }))
-      dispatch(getSingleShiftDelivery(param?.shipment_Id||shipment_Id))
+      await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id || shipment_Id, deliveryId: currentDeliveryOrPickupData?._id, status: 'arrival' }))
+      dispatch(getSingleShiftDelivery(param?.shipment_Id || shipment_Id))
     }
     setLocationAlertOnArrival(false)
   };
@@ -1109,7 +1111,7 @@ const index = ({ navigation }) => {
 
   return (
     <SafeAreaView flex={1}>
-      {param?.shipment_Id||shipment_Id ? <Block>
+      {param?.shipment_Id || shipment_Id ? <Block>
         {/* Custom Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={handleBackPress}>
@@ -1152,7 +1154,8 @@ const index = ({ navigation }) => {
           zoomEnabled={true}
           showsScale={true}
           showsBuildings={true}
-          initialRegion={initialRegion}>
+          // initialRegion={initialRegion}>
+          initialRegion={myLiveLocation}>
           {singleShiftCoords?.map((coords, index) => (
             <Marker
               coordinate={{
@@ -1329,7 +1332,15 @@ const index = ({ navigation }) => {
                         justifyContent: 'center',
                         borderTopRightRadius: 15,
                       }}>
-                      <View
+                      <TouchableOpacity
+                        onPress={() => {
+                          let latitude = item?.lat;
+                          let longitude = item?.lng;
+                          openGoogleMaps(
+                            latitude,
+                            longitude,
+                          )
+                        }}
                         style={{
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -1339,7 +1350,7 @@ const index = ({ navigation }) => {
                           borderRadius: 4,
                         }}>
                         <Navigate />
-                      </View>
+                      </TouchableOpacity>
                     </View>
                   </View>
 
@@ -1481,8 +1492,8 @@ const index = ({ navigation }) => {
                           const onLocation = await checkUserInDestinationOrNot(item)
                           console.log("ONlocation=>>>>>>>", onLocation);
                           if (onLocation <= 50) {
-                            await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, pickup_Id: item._id, status: 'arrival' }))
-                            dispatch(getSingleShift(param?.shipment_Id||shipment_Id))
+                            await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id || shipment_Id, pickup_Id: item._id, status: 'arrival' }))
+                            dispatch(getSingleShift(param?.shipment_Id || shipment_Id))
                           }
                           else {
                             // show alert and ask if he want to still continue/anyways
@@ -1539,7 +1550,7 @@ const index = ({ navigation }) => {
                         onPress={() => {
                           setStopFetchDirectionLine(false)
                           navigation.navigate(route.PackageDetails, {
-                            shipmentId: param?.shipment_Id||shipment_Id,
+                            shipmentId: param?.shipment_Id || shipment_Id,
                             pickup_Id: item._id,
                           });
                         }}
@@ -1593,7 +1604,7 @@ const index = ({ navigation }) => {
                         // navigation.navigate(route.PackageDetails,)
                         {
                           navigation.navigate(route.PackageDetails, {
-                            shipmentId: param?.shipment_Id||shipment_Id,
+                            shipmentId: param?.shipment_Id || shipment_Id,
                             pickup_Id: item._id,
                           });
                         }
@@ -1766,7 +1777,7 @@ const index = ({ navigation }) => {
                     )} */}
                       {/* confirm delivery */}
                       {(item.status == 'done' && item?.deliveryImages == null) && <TouchableOpacity
-                        onPress={() => navigation.navigate(route.Receipt, { shipmentId: param?.shipment_Id||shipment_Id, deliveryId: item._id })}
+                        onPress={() => navigation.navigate(route.Receipt, { shipmentId: param?.shipment_Id || shipment_Id, deliveryId: item._id })}
                         style={{
                           paddingHorizontal: 4,
                           alignItems: 'center',
@@ -1820,7 +1831,7 @@ const index = ({ navigation }) => {
                             onPress={() => {
                               setStopFetchDirectionLine(false)
                               navigation.navigate(route.PackageDetailsDelivery, {
-                                shipmentId: param?.shipment_Id||shipment_Id,
+                                shipmentId: param?.shipment_Id || shipment_Id,
                                 deliveryId: item._id,
                               })
                             }}
@@ -1896,8 +1907,8 @@ const index = ({ navigation }) => {
                               const onLocation = await checkUserInDestinationOrNot(item)
                               console.log("ONlocation=>>>>>>>delivery", onLocation);
                               if (onLocation <= 50) {
-                                await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id||shipment_Id, deliveryId: item._id, status: 'arrival' }))
-                                dispatch(getSingleShiftDelivery(param?.shipment_Id||shipment_Id))
+                                await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id || shipment_Id, deliveryId: item._id, status: 'arrival' }))
+                                dispatch(getSingleShiftDelivery(param?.shipment_Id || shipment_Id))
                               }
                               else {
                                 // show alert and ask if he want to still continue/anyways
@@ -1958,7 +1969,7 @@ const index = ({ navigation }) => {
                               navigation.navigate(
                                 route.PackageDetailsDelivery,
                                 {
-                                  shipmentId: param?.shipment_Id||shipment_Id,
+                                  shipmentId: param?.shipment_Id || shipment_Id,
                                   deliveryId: item._id,
                                 },
                               );
@@ -2159,11 +2170,25 @@ const index = ({ navigation }) => {
 
         :
         <Block>
-          <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-            <CustomText>
-              No Shipment in Progress
-            </CustomText>
-          </View>
+          {(!confirmPickupDepartureLoader &&
+            !getSingleShiftLoader &&
+            !getSingleShiftDeliveryLoader &&
+            !confirmDeliveryDepartureLoader &&
+            !directionLineLoader
+          ) &&
+            <>
+              <View style={{ top: 50, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', position: 'absolute' }}>
+                <CustomText size={17}>
+                  There is no new job
+                </CustomText>
+                <CustomText style-={{ fontWeight: 'bold' }} size={28}>
+                  No New Route Found
+                </CustomText>
+              </View>
+              <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <NoRoute />
+              </View>
+            </>}
           {(confirmPickupDepartureLoader ||
             getSingleShiftLoader ||
             getSingleShiftDeliveryLoader ||
