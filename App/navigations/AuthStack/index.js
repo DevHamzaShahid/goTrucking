@@ -4,12 +4,32 @@ import { route } from "../../Routes";
 import { color } from "../../utils/colors";
 import Login from '../../screens/Login'
 import { MyTabs } from "../BottomTabs";
+import ForgetPassword from '../../screens/Forgetpassword'
+import ResetPassword from '../../screens/ResetPassword'
 const Stack = createStackNavigator();
 
 export function AuthStack() {
     return (
         <Stack.Navigator>
             <Stack.Screen name="Login" component={Login}
+                options={{
+                    headerShown: false,
+                    headerStyle: { backgroundColor: color.white },
+                    headerShadowVisible: false,
+                    headerBackTitleVisible: false,
+                }
+                }
+            />
+             <Stack.Screen name="ForgetPassword" component={ForgetPassword}
+                options={{
+                    headerShown: false,
+                    headerStyle: { backgroundColor: color.white },
+                    headerShadowVisible: false,
+                    headerBackTitleVisible: false,
+                }
+                }
+            />
+             <Stack.Screen name="ResetPassword" component={ResetPassword}
                 options={{
                     headerShown: false,
                     headerStyle: { backgroundColor: color.white },

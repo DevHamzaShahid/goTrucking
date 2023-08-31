@@ -22,6 +22,12 @@ import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 import { resetState } from '../../redux/actions/resetReduxState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NoJobs from '../../asset/svgs/noJobAssigned.svg'
+import { defaultImage } from '../../utils/helperFunction';
+import { Axios } from '../../utils/AxiosInstance';
+import { config } from '../../config';
+import messaging from '@react-native-firebase/messaging'
+import { getFCMToken } from '../../helper';
+
 const Index = ({ navigation }) => {
   // hitApis/dispatch
   const isFocused = useIsFocused();
@@ -41,7 +47,7 @@ const Index = ({ navigation }) => {
 
   // get profile
 
-  const { fullName, email, city, profilePhoto, firstName, lastName } =
+  const { fullName, email, city, profilePhoto, firstName, lastName, totalJobs } =
     truckingState?.getProfile.data || {};
   const { loading: getProfileLoader } = truckingState?.getProfile || {};
 
@@ -67,7 +73,6 @@ const Index = ({ navigation }) => {
   const parameter = useRoute();
   const filteredShifts = allShifts?.filter(shift => shift.status !== 'delivered')
   const reversedShifts = filteredShifts?.slice()?.reverse();
-  console.log("reversedShiftsreversedShiftsreversedShifts", reversedShifts);
   const PickupAlertNext = () => {
     dispatch(acceptOrRejectJob({ id: shipmentId, status: 'start' }));
     // active single shifts again to get its response to next screen where currently navigating
@@ -157,7 +162,6 @@ const Index = ({ navigation }) => {
   };
 
 
-
   // reset redux state selected entities (why? coz it sets delivered when come back from map as it still persists single shift data thats why realy important to remove that)
   useEffect(() => {
     // setTimeout(() => {
@@ -167,7 +171,9 @@ const Index = ({ navigation }) => {
   }, [allShifts && truckingState?.getProfile.data])
 
 
-
+  useEffect(() => {
+    getFCMToken()
+  }, [])
 
   return (
     <Block>
@@ -188,7 +194,7 @@ const Index = ({ navigation }) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={styles.ScrollView}>
-        {reversedShifts?.length>0 ? reversedShifts?.map(item => (
+        {reversedShifts?.length > 0 ? reversedShifts?.map(item => (
           <View style={{ marginTop: 20 }}>
             <View style={styles.BlueBackCard} />
             <View style={styles.MainCardContainer}>
@@ -240,7 +246,7 @@ const Index = ({ navigation }) => {
                   <View style={styles.separatorVertical} />
                   <View style={styles.box}>
                     <CustomText size={13} style={styles.text}>
-                      Delivery{'\n'}Navigates
+                      No of{'\n'}Deliveries
                     </CustomText>
                     <CustomText size={10} style={styles.textSmall}>
                       {item.totalDelivery} Navigates
@@ -263,7 +269,7 @@ const Index = ({ navigation }) => {
                       Total{'\n'}Distance
                     </CustomText>
                     <CustomText size={10} style={styles.textSmall}>
-                      {item.totalDistance} KM
+                      {item.estimationDistance || '-'} KM
                     </CustomText>
                   </View>
                   <View style={styles.separatorVertical} />
@@ -298,20 +304,20 @@ const Index = ({ navigation }) => {
         ))
           :
 
-          ((!getProfileLoader && !getAllShiftsLoader) && <View style={{ backgroundColor:color.white,marginTop: 20, borderWidth: 1, borderColor:'#CCCCCC', alignSelf: 'center', justifyContent: 'center', alignItems: 'center', height: 400, width: '80%' ,borderRadius:15}} >
+          ((!getProfileLoader && !getAllShiftsLoader) && <View style={{ backgroundColor: color.white, marginTop: 20, borderWidth: 1, borderColor: '#CCCCCC', alignSelf: 'center', justifyContent: 'center', alignItems: 'center', height: 400, width: '80%', borderRadius: 15 }} >
             {/* <NoJobs /> */}
-            <View style={{position:'absolute',top:20,zIndex:999,width:'70%'}}>
-              <CustomText size={20} style={{fontWeight:'600'}}>
+            <View style={{ position: 'absolute', top: 20, zIndex: 999, width: '70%' }}>
+              <CustomText size={20} style={{ fontWeight: '600' }}>
                 No Jobs Assigned at
                 the Moment.
               </CustomText>
               <CustomText size={16}>
-              Reach out to your contractor for new jobs or wait for them to assign.
+                Reach out to your contractor for new jobs or wait for them to assign.
               </CustomText>
             </View>
             <Image
               source={require('../../asset/pngs/NoJobs.png')}
-              style={{ height: '100%', width: '100%' ,borderRadius:15}}
+              style={{ height: '100%', width: '100%', borderRadius: 15 }}
             />
           </View>)
         }
@@ -327,11 +333,11 @@ const Index = ({ navigation }) => {
 
       <View style={styles.container}>
         <View style={styles.leftContainer}>
-          <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate(route.Notifications)} style={styles.iconContainer}>
             <Icon name="bell" size={30} color={color.white} />
-          </View>
+          </TouchableOpacity>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>0 Jobs Completed</Text>
+            <Text style={styles.buttonText}>{totalJobs} Jobs Completed</Text>
           </View>
         </View>
         <View style={styles.rightContainer}>
@@ -339,7 +345,7 @@ const Index = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.navigate('ProfileStack')} style={styles.profileContainer2}>
               {/* <Profile height={182} width={182} style={styles.profilePhoto} /> */}
               <Image
-                source={{ uri: profilePhoto }}
+                source={{ uri: profilePhoto || defaultImage }}
                 height={182}
                 width={184}
                 style={styles.profilePhoto}

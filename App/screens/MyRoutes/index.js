@@ -5,6 +5,8 @@ import {
   SafeAreaView,
   ScrollView,
   Dimensions,
+  Image,
+  Platform,
 } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Block from '../../components/Block';
@@ -36,7 +38,7 @@ import {
   getSingleShift,
   getSingleShiftDelivery,
 } from '../../redux/actions/getShifts';
-import NoRoute from '../../asset/svgs/noRoute.svg'
+// import NoRoute from '../../asset/svgs/noRoute.svg'
 import { confirmPickupDeparturee } from '../../redux/actions/confirmPickupDeparture';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { confirmDeliveryDeparturee } from '../../redux/actions/confirmDeliveryDeparturee';
@@ -52,500 +54,10 @@ import { CONFIRMALLPACKAGESPICKEDUP_SUCCESS } from '../../redux/constants/Confir
 import { pickupDelayReport } from '../../redux/actions/pickupDelayReport';
 import { deliveryDelayReport } from '../../redux/actions/deliveryDelayReport';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import GetLocation from 'react-native-get-location';
 const geolib = require("geolib");
+import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 
-
-
-// const direction1 = [
-//   {
-//     "latitude": 37.77494,
-//     "longitude": -122.41945
-//   },
-//   {
-//     "latitude": 37.77504,
-//     "longitude": -122.41931
-//   },
-//   {
-//     "latitude": 37.77513,
-//     "longitude": -122.41919
-//   },
-//   {
-//     "latitude": 37.7753,
-//     "longitude": -122.41899
-//   },
-//   {
-//     "latitude": 37.77555,
-//     "longitude": -122.41866
-//   },
-//   {
-//     "latitude": 37.77566,
-//     "longitude": -122.41852
-//   },
-//   {
-//     "latitude": 37.77576,
-//     "longitude": -122.41849
-//   },
-//   {
-//     "latitude": 37.77588,
-//     "longitude": -122.41833
-//   },
-//   {
-//     "latitude": 37.776,
-//     "longitude": -122.41818
-//   },
-//   {
-//     "latitude": 37.7765,
-//     "longitude": -122.41757
-//   },
-//   {
-//     "latitude": 37.7764,
-//     "longitude": -122.41733
-//   },
-//   {
-//     "latitude": 37.7761,
-//     "longitude": -122.41695
-//   },
-//   {
-//     "latitude": 37.77576,
-//     "longitude": -122.41651
-//   },
-//   {
-//     "latitude": 37.77553,
-//     "longitude": -122.41624
-//   },
-//   {
-//     "latitude": 37.77528,
-//     "longitude": -122.41592
-//   },
-//   {
-//     "latitude": 37.77517,
-//     "longitude": -122.41579
-//   },
-//   {
-//     "latitude": 37.77484,
-//     "longitude": -122.41539
-//   },
-//   {
-//     "latitude": 37.77473,
-//     "longitude": -122.41524
-//   },
-//   {
-//     "latitude": 37.77448,
-//     "longitude": -122.41493
-//   },
-//   {
-//     "latitude": 37.77403,
-//     "longitude": -122.41437
-//   },
-//   {
-//     "latitude": 37.77394,
-//     "longitude": -122.41426
-//   },
-//   {
-//     "latitude": 37.7737,
-//     "longitude": -122.41396
-//   },
-//   {
-//     "latitude": 37.77355,
-//     "longitude": -122.41378
-//   },
-//   {
-//     "latitude": 37.77281,
-//     "longitude": -122.41284
-//   },
-//   {
-//     "latitude": 37.77251,
-//     "longitude": -122.41246
-//   },
-//   {
-//     "latitude": 37.77246,
-//     "longitude": -122.41239
-//   },
-//   {
-//     "latitude": 37.77208,
-//     "longitude": -122.41192
-//   },
-//   {
-//     "latitude": 37.77157,
-//     "longitude": -122.41129
-//   },
-//   {
-//     "latitude": 37.77127,
-//     "longitude": -122.41091
-//   },
-//   {
-//     "latitude": 37.77107,
-//     "longitude": -122.41066
-//   },
-//   {
-//     "latitude": 37.771,
-//     "longitude": -122.41056
-//   },
-//   {
-//     "latitude": 37.77067,
-//     "longitude": -122.41013
-//   },
-//   {
-//     "latitude": 37.77037,
-//     "longitude": -122.40973
-//   },
-//   {
-//     "latitude": 37.77032,
-//     "longitude": -122.40967
-//   },
-//   {
-//     "latitude": 37.76982,
-//     "longitude": -122.40905
-//   },
-//   {
-//     "latitude": 37.7694,
-//     "longitude": -122.40858
-//   },
-//   {
-//     "latitude": 37.76928,
-//     "longitude": -122.40843
-//   },
-//   {
-//     "latitude": 37.76916,
-//     "longitude": -122.40829
-//   },
-//   {
-//     "latitude": 37.76918,
-//     "longitude": -122.40794
-//   },
-//   {
-//     "latitude": 37.76919,
-//     "longitude": -122.4078
-//   },
-//   {
-//     "latitude": 37.7692,
-//     "longitude": -122.40761
-//   },
-//   {
-//     "latitude": 37.76922,
-//     "longitude": -122.4074
-//   },
-//   {
-//     "latitude": 37.76924,
-//     "longitude": -122.40723
-//   },
-//   {
-//     "latitude": 37.76924,
-//     "longitude": -122.40719
-//   },
-//   {
-//     "latitude": 37.76926,
-//     "longitude": -122.40689
-//   },
-//   {
-//     "latitude": 37.76927,
-//     "longitude": -122.40675
-//   },
-//   {
-//     "latitude": 37.76929,
-//     "longitude": -122.40665
-//   },
-//   {
-//     "latitude": 37.7693,
-//     "longitude": -122.40659
-//   },
-//   {
-//     "latitude": 37.76937,
-//     "longitude": -122.40634
-//   },
-//   {
-//     "latitude": 37.76942,
-//     "longitude": -122.40624
-//   },
-//   {
-//     "latitude": 37.76944,
-//     "longitude": -122.40621
-//   },
-//   {
-//     "latitude": 37.76959,
-//     "longitude": -122.40595
-//   },
-//   {
-//     "latitude": 37.76961,
-//     "longitude": -122.40591
-//   },
-//   {
-//     "latitude": 37.76962,
-//     "longitude": -122.40588
-//   },
-//   {
-//     "latitude": 37.76963,
-//     "longitude": -122.40586
-//   },
-//   {
-//     "latitude": 37.76964,
-//     "longitude": -122.4058
-//   },
-//   {
-//     "latitude": 37.76965,
-//     "longitude": -122.4057
-//   },
-//   {
-//     "latitude": 37.76968,
-//     "longitude": -122.40565
-//   },
-//   {
-//     "latitude": 37.76968,
-//     "longitude": -122.40559
-//   },
-//   {
-//     "latitude": 37.7697,
-//     "longitude": -122.40544
-//   },
-//   {
-//     "latitude": 37.76971,
-//     "longitude": -122.40521
-//   },
-//   {
-//     "latitude": 37.76972,
-//     "longitude": -122.40497
-//   },
-//   {
-//     "latitude": 37.76974,
-//     "longitude": -122.4045
-//   },
-//   {
-//     "latitude": 37.76975,
-//     "longitude": -122.40443
-//   },
-//   {
-//     "latitude": 37.76977,
-//     "longitude": -122.40435
-//   },
-//   {
-//     "latitude": 37.76974,
-//     "longitude": -122.40427
-//   },
-//   {
-//     "latitude": 37.76976,
-//     "longitude": -122.4041
-//   },
-//   {
-//     "latitude": 37.76978,
-//     "longitude": -122.40405
-//   },
-//   {
-//     "latitude": 37.7698,
-//     "longitude": -122.404
-//   },
-//   {
-//     "latitude": 37.76979,
-//     "longitude": -122.40395
-//   },
-//   {
-//     "latitude": 37.76979,
-//     "longitude": -122.4039
-//   },
-//   {
-//     "latitude": 37.76979,
-//     "longitude": -122.40387
-//   },
-//   {
-//     "latitude": 37.76982,
-//     "longitude": -122.40382
-//   },
-//   {
-//     "latitude": 37.76984,
-//     "longitude": -122.40379
-//   },
-//   {
-//     "latitude": 37.76988,
-//     "longitude": -122.40376
-//   },
-//   {
-//     "latitude": 37.76992,
-//     "longitude": -122.40376
-//   },
-//   {
-//     "latitude": 37.76996,
-//     "longitude": -122.40377
-//   },
-//   {
-//     "latitude": 37.77,
-//     "longitude": -122.40379
-//   },
-//   {
-//     "latitude": 37.77002,
-//     "longitude": -122.40382
-//   },
-//   {
-//     "latitude": 37.77003,
-//     "longitude": -122.40386
-//   },
-//   {
-//     "latitude": 37.77004,
-//     "longitude": -122.40389
-//   },
-//   {
-//     "latitude": 37.77018,
-//     "longitude": -122.40372
-//   },
-//   {
-//     "latitude": 37.771,
-//     "longitude": -122.40269
-//   },
-//   {
-//     "latitude": 37.77114,
-//     "longitude": -122.4025
-//   },
-//   {
-//     "latitude": 37.77133,
-//     "longitude": -122.40227
-//   },
-//   {
-//     "latitude": 37.77147,
-//     "longitude": -122.40209
-//   },
-//   {
-//     "latitude": 37.77162,
-//     "longitude": -122.4019
-//   },
-//   {
-//     "latitude": 37.77181,
-//     "longitude": -122.40168
-//   },
-//   {
-//     "latitude": 37.7721,
-//     "longitude": -122.40134
-//   },
-//   {
-//     "latitude": 37.7722,
-//     "longitude": -122.40122
-//   },
-//   {
-//     "latitude": 37.77238,
-//     "longitude": -122.401
-//   },
-//   {
-//     "latitude": 37.77292,
-//     "longitude": -122.40031
-//   },
-//   {
-//     "latitude": 37.77342,
-//     "longitude": -122.39966
-//   },
-//   {
-//     "latitude": 37.77351,
-//     "longitude": -122.39955
-//   },
-//   {
-//     "latitude": 37.77361,
-//     "longitude": -122.39943
-//   },
-//   {
-//     "latitude": 37.77486,
-//     "longitude": -122.39784
-//   },
-//   {
-//     "latitude": 37.77534,
-//     "longitude": -122.39723
-//   },
-//   {
-//     "latitude": 37.77561,
-//     "longitude": -122.39689
-//   },
-//   {
-//     "latitude": 37.7759,
-//     "longitude": -122.39653
-//   },
-//   {
-//     "latitude": 37.77645,
-//     "longitude": -122.39581
-//   },
-//   {
-//     "latitude": 37.77664,
-//     "longitude": -122.39556
-//   },
-//   {
-//     "latitude": 37.77706,
-//     "longitude": -122.39504
-//   },
-//   {
-//     "latitude": 37.77712,
-//     "longitude": -122.39495
-//   },
-//   {
-//     "latitude": 37.77717,
-//     "longitude": -122.39488
-//   },
-//   {
-//     "latitude": 37.77748,
-//     "longitude": -122.3945
-//   },
-//   {
-//     "latitude": 37.77791,
-//     "longitude": -122.39397
-//   },
-//   {
-//     "latitude": 37.77796,
-//     "longitude": -122.39389
-//   },
-//   {
-//     "latitude": 37.77824,
-//     "longitude": -122.39356
-//   },
-//   {
-//     "latitude": 37.77843,
-//     "longitude": -122.3933
-//   },
-//   {
-//     "latitude": 37.77868,
-//     "longitude": -122.39298
-//   },
-//   {
-//     "latitude": 37.77885,
-//     "longitude": -122.39276
-//   },
-//   {
-//     "latitude": 37.77912,
-//     "longitude": -122.39244
-//   },
-//   {
-//     "latitude": 37.77929,
-//     "longitude": -122.39222
-//   },
-//   {
-//     "latitude": 37.77975,
-//     "longitude": -122.39165
-//   },
-//   {
-//     "latitude": 37.78019,
-//     "longitude": -122.39108
-//   },
-//   {
-//     "latitude": 37.78061,
-//     "longitude": -122.39054
-//   },
-//   {
-//     "latitude": 37.78034,
-//     "longitude": -122.39018
-//   },
-//   {
-//     "latitude": 37.78022,
-//     "longitude": -122.39004
-//   },
-//   {
-//     "latitude": 37.78018,
-//     "longitude": -122.38999
-//   },
-//   {
-//     "latitude": 37.77994,
-//     "longitude": -122.38967
-//   },
-//   {
-//     "latitude": 37.77975,
-//     "longitude": -122.38993
-//   },
-//   {
-//     "latitude": 37.77969,
-//     "longitude": -122.39001
-//   }
-// // ]
 // const direction1=[[-45.460626,3.069363],[-45.317803,3.071252],[-45.269464,3.004909],[-45.271660999999995,3.0806929999999997],[-45.566094,3.0655829999999997],[-45.348565,3.1127219999999998],[-45.300225,3.168981],[-45.23211,3.146518],[-45.552910999999995,3.157756],[-45.1596,3.1988469999999998],[-45.056329,3.0825799999999997],[-45.02337,3.174588],[-44.882745,3.107078],[-45.128839,2.974431],[-44.970635,3.016314],[-45.467217,3.25088],[-45.240358,3.5116009999999998],[-45.200807,3.390294],[-45.238161,3.3133559999999997],[-44.904176,3.42124]]
 
 
@@ -672,7 +184,7 @@ const itemWidth = dimensionsWidth * 0.88;
 const itemSpacing = 20;
 const magneticOffset = (itemWidth + itemSpacing) / 2;
 
-const ANIMATION_DURATION = 500;
+const ANIMATION_DURATION = 700;
 const SCROLL_EVENT_THROTTLE = 1;
 
 const LATITUDE_DELTA = 0.04864195044303443;
@@ -704,21 +216,39 @@ const index = ({ navigation }) => {
   const [currentDeliveryOrPickupData, setCurrentDeliveryOrPickupData] = useState({});
   const [delayReportPickupAndDeliveryData, setDelayReportPickupAndDeliveryData] = useState({});
   const [getPolyline, setPolyline] = useState([]);
-  const [myLiveLocation, setMyLiveLocation] = useState({
-    latitude: 37.785834,
-    longitude: -122.406417,
-  });
+  const [locationPermission, setLocationPermission] = useState('');
+  const [myLocationFocused, setMylocationFocused] = useState(true)
+  const [isDragging, setIsDragging] = useState(false);
+  // const [myLiveLocation, setMyLiveLocation] = useState({
+  //   latitude: 37.785834,
+  //   longitude: -122.406417,
+  // });
+  const [myLiveLocation, setMyLiveLocation] = useState(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const [locationAnimated, setLocationAnimated] = useState(false)
+  // let mapRegion = {
+  //   latitude: 37.785834, // Default latitude
+  //   longitude: -122.406417, // Default longitude
+  //   latitudeDelta: 0.01,
+  //   longitudeDelta: 0.01,
+  // };
   // const [selectedPickupMarkerIndex, setSelectedPickupMarkerIndex] = useState(0);
   // const [selectedDeliveryMarkerIndex, setSelectedDeliveryMarkerIndex] = useState(0);
   const scrollViewRef = useRef(null);
   const mapRef = useRef(null);
+  const shouldAnimateToMarker = useRef(false);
+
+  const [initialRegion, setInitialRegion] = useState(null);
+  const [currentRegion, setCurrentRegion] = useState(initialRegion);
+
+
+
 
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
   const parameter = useRoute();
   const param = parameter?.params;
   // const {setStateValue} = parameter?.params;
-  console.log("paraamammammmmmm", param?.shipment_Id);
   const checkDelayedTime =
     delayHours != null || delayMins != null ? true : false;
 
@@ -772,6 +302,26 @@ const index = ({ navigation }) => {
   //get saved Shipmentid
   const { shipment_Id } = truckingState?.shipmentId || ''
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   // getdirectionLine
   useEffect(() => {
     // if (!direction && !stopFetchingDirectionLineAgain) {
@@ -780,7 +330,6 @@ const index = ({ navigation }) => {
     // return () => setStopFetchDirectionLine(false)
     // setPolyline(direction)
   }, [param?.shipment_Id || shipment_Id])
-  console.log("directionnnn>>>>++++++++++++++", direction);
 
   useEffect(() => {
     const reversedData = direction?.map(item => ({
@@ -789,8 +338,36 @@ const index = ({ navigation }) => {
     }));
     setPolyline(reversedData)
   }, [direction])
-  console.log("ssssssss=ss=s=s=s==s==s", singleShift, singleShiftDelivery);
-  console.log("ssssssss=ss=s=s=s==s==s coords", singleShiftCoords, singleDeliveryCoords);
+
+
+
+
+
+  const askForPermission = () => {
+    if (locationPermission != "granted") {
+      request(PERMISSIONS.IOS.LOCATION_WHEN_IN_USE).then((result) => {
+        setLocationPermission(result)
+      }).catch((error) => {
+        console.log(error);
+      })
+    }
+  }
+
+
+  useEffect(() => {
+    askForPermission()
+  }, [locationPermission])
+
+
+
+
+
+
+
+
+
+
+
 
 
   // back for the map screen
@@ -842,7 +419,6 @@ const index = ({ navigation }) => {
 
 
   const sendDelayReport = async () => {
-    console.log("send Report", delayHours, delayMins, delayReportPickupAndDeliveryData);
     if (checkDelayedTime) {
       if (delayReportPickupAndDeliveryData?.delayType == 'pickup') {
         await dispatch(pickupDelayReport({ shipmentId: param?.shipment_Id || shipment_Id, pickup_Id: delayReportPickupAndDeliveryData?._id, status: 'delay', delayTime: `${delayHours} ${delayMins}` }))
@@ -869,35 +445,74 @@ const index = ({ navigation }) => {
   };
   // AsyncStorage.getAllKeys().then((data) => console.log("all keyyysyysys", data))
 
-  //Fetch users live location 
+
+
   useEffect(() => {
-    if (singleShiftDelivery != undefined) {
-      let retryCount = 0; // Initialize retry count
-      const maxRetries = 3; // Maximum number of retries
-      const intervalId = setInterval(async () => {
-        try {
-          const location = await fetchMyLocation();
-          setMyLiveLocation(location);
-          // console.log("locatiojnnnn", location);
-          // if (userData && userData._id) {
-          //   firebase.database().ref(`driver_livelocation/${userData._id}`).set(location);
-          // }
-          retryCount = 0; // Reset retry count on successful location fetch
-        } catch (error) {
-          console.error('Location fetch error:', error);
-          retryCount++;
-
-          if (retryCount >= maxRetries) {
-            clearInterval(intervalId); // Stop retrying after max retries
+    const locationUpdateInterval = setInterval(() => {
+      askForPermission()
+      GetLocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 15000,
+      })
+        .then(location => {
+          const { latitude, longitude } = location;
+          if (latitude && longitude && !locationAnimated) {
+            setInitialRegion({
+              latitude,
+              longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            });
+            setLocationAnimated(true);
           }
-        }
-      }, 5000);
+          setMyLiveLocation({ latitude, longitude });
+          console.log('Live Location:', latitude, longitude);
+        })
+        .catch(error => console.log('Error getting location:', error));
+    }, 3000);
 
-      return () => {
-        clearInterval(intervalId); // Clear the interval when the component unmounts
-      };
+    return () => {
+      clearInterval(locationUpdateInterval);
+    };
+  }, [locationAnimated]);
+
+  useEffect(() => {
+    // Reset locationAnimated to false when navigating away from the screen
+    if (!isFocused) {
+      setLocationAnimated(false);
     }
-  }, [singleShiftDelivery]);
+  }, [isFocused]);
+
+
+  // useEffect(() => {
+  //   GetLocation.getCurrentPosition({
+  //     enableHighAccuracy: true,
+  //     timeout: 15000,
+  //   })
+  //     .then(location => {
+  //       const { latitude, longitude } = location;
+  //       setInitialRegion({
+  //         latitude,
+  //         longitude,
+  //         latitudeDelta: 0.0922,
+  //         longitudeDelta: 0.0421,
+  //       });
+  //       setMyLiveLocation({ latitude, longitude });
+  //       if (mapRef) {
+  //         mapRef?.current?.animateToRegion({
+  //           latitude,
+  //           longitude,
+  //           latitudeDelta: 0.0922,
+  //           longitudeDelta: 0.0421,
+  //         });
+  //       }
+  //     })
+  //     .catch(error => console.log('Error getting location:', error));
+  // }, [directionLineLoader]);
+
+
+
+
 
   useEffect(() => {
     const pickupCoords = singleShift?.map(item => ({
@@ -973,6 +588,7 @@ const index = ({ navigation }) => {
 
   //clicking on markers scrolling the horizontal list
   const handlePickupMarkerClick = (index) => {
+    setMylocationFocused(false)
     // setSelectedPickupMarkerIndex(index);
     scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
     mapRef.current.animateToRegion({
@@ -983,6 +599,7 @@ const index = ({ navigation }) => {
     }, ANIMATION_DURATION);
   };
   const handleDeliveryMarkerClick = (index) => {
+    setMylocationFocused(false)
     // setSelectedDeliveryMarkerIndex(index);
     scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
     mapRef.current.animateToRegion({
@@ -993,12 +610,15 @@ const index = ({ navigation }) => {
     }, ANIMATION_DURATION);
   };
 
+
   // on scrolling moving to the markers
   const handlePickupHorizontalListScroll = (event) => {
+    setMylocationFocused(false)
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.floor(contentOffsetX / getCardWidth());
+
     // setSelectedPickupMarkerIndex(index);
-    mapRef.current.animateToRegion({
+    mapRef?.current?.animateToRegion({
       latitude: singleShiftCoords[index]?.lat,
       longitude: singleShiftCoords[index]?.lng,
       latitudeDelta: LATITUDE_DELTA,
@@ -1007,10 +627,11 @@ const index = ({ navigation }) => {
   };
   // console.log("slectedMarkerIndex", selectedMarkerIndex);
   const handleDeliveryHorizontalListScroll = (event) => {
+    setMylocationFocused(false)
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.floor(contentOffsetX / getCardWidth());
     // setSelectedDeliveryMarkerIndex(index);
-    mapRef.current.animateToRegion({
+    mapRef?.current?.animateToRegion({
       latitude: singleDeliveryCoords[index]?.lat,
       longitude: singleDeliveryCoords[index]?.lng,
       latitudeDelta: LATITUDE_DELTA,
@@ -1024,38 +645,23 @@ const index = ({ navigation }) => {
 
   useEffect(() => {
     // When the component mounts or markers change, fit all markers on the screen
-    if (singleShiftCoords?.length > 0) {
+    if (singleShiftCoords?.length > 0 && singleDeliveryCoords > 0) {
       const coordinates = singleShiftCoords?.map((marker) => ({
         latitude: marker.lat,
         longitude: marker.lng,
       }));
-      mapRef?.current?.fitToCoordinates(coordinates, {
+      const deliveryCoordinates = singleDeliveryCoords?.map((marker) => ({
+        latitude: marker.lat,
+        longitude: marker.lng,
+      }));
+      mapRef?.current?.fitToCoordinates({ ...coordinates, ...deliveryCoordinates, latitude: myLiveLocation.latitude, longitude: myLiveLocation.longitude }, {
         edgePadding: { top: 50, right: 50, bottom: 50, left: 50 }, // Adjust padding as needed
         animated: true,
       });
     }
-  }, [singleShiftCoords, isFocused]);
+  }, [singleShiftCoords, isFocused, singleDeliveryCoords]);
 
-  // const convertInnerArraysToObjects = (array) => {
-  //   const newArray = [];
-  //   for (const innerArray of array) {
-  //     const object = {};
-  //     object.latitude = innerArray[1];
-  //     object.longitude = innerArray[0];
-  //     newArray.push(object);
-  //   }
-  //   return newArray;
-  // };
 
-  // useEffect(() => {
-  //   const encode = polyline.encode(direction1)
-  //   console.log("encodedededededed", encode);
-  //   const decodedPolyline = polyline?.decode(encode);
-  //   console.log("decodedPolyline", decodedPolyline);
-  //   const newArray = convertInnerArraysToObjects(decodedPolyline);
-  //   console.log("newnewArraynewArraynewArray", newArray);
-  //   setPolyline(newArray)
-  // }, [])
   const checkUserInDestinationOrNot = (item) => {
     const currentLocation = {
       latitude: myLiveLocation?.latitude,
@@ -1104,10 +710,50 @@ const index = ({ navigation }) => {
   }, []);
 
 
+  const recenterMyLocation = () => {
+    setMylocationFocused(true)
+    const newMapRegion = {
+      latitude: myLiveLocation?.latitude,
+      longitude: myLiveLocation?.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    };
+    mapRef?.current?.animateCamera({
+      center: newMapRegion,
+      zoom: 15, // Adjust the zoom level as needed
+    });
+  }
+
+
+  const updateMapRegion = () => {
+    if (mapRef.current) {
+      const camera = {
+        center: myLiveLocation,
+        zoom: 15, // Adjust as needed
+      };
+      mapRef.current.animateCamera(camera);
+    }
+  };
+
+
+  if (myLocationFocused) { updateMapRegion() }
+  console.log("myLocationFocusedmyLocationFocusedmyLocationFocusedmyLocationFocused", myLocationFocused);
 
 
 
+  const handleRegionChange = (region) => {
+    // Check if the user is dragging the map.
+    if (region) {
+      setIsDragging(true);
+      console.log("sdsadsadsadsadsadsad>>>>>>>>>>><>33333", region);
+    }
+  };
 
+  useEffect(() => {
+    if (isDragging) {
+      setMylocationFocused(false);
+    }
+  }, [isDragging]);
 
   return (
     <SafeAreaView flex={1}>
@@ -1145,17 +791,30 @@ const index = ({ navigation }) => {
             </View>
           </View>
         </View>
-
+        <TouchableOpacity style={{ position: 'absolute', top: 10, right: 20, zIndex: 999 }} onPress={recenterMyLocation}>
+          {/* <MapBackBtn height={45} width={45} /> */}
+          <Image
+            style={{ height: 50, width: 50 }}
+            size={30}
+            resizeMode={"contain"}
+            source={require("../../asset/ImageIcons/Recenter-Button.png")}
+          />
+        </TouchableOpacity>
         {/* Map */}
-        <MapView
+        {initialRegion && <MapView
           ref={mapRef}
           style={styles.map}
           provider={PROVIDER_GOOGLE}
           zoomEnabled={true}
           showsScale={true}
           showsBuildings={true}
-          // initialRegion={initialRegion}>
-          initialRegion={myLiveLocation}>
+          initialRegion={initialRegion}
+          showsUserLocation={true}
+          onRegion={handleRegionChange}
+          onPress={() => setMylocationFocused(false)}
+          onLongPress={() => setMylocationFocused(false)}
+          onDoublePress={() => setMylocationFocused(false)}
+        >
           {singleShiftCoords?.map((coords, index) => (
             <Marker
               coordinate={{
@@ -1181,7 +840,7 @@ const index = ({ navigation }) => {
               {/* <DeliveryPin/> */}
             </Marker>
           ))}
-          {myLiveLocation && <Marker coordinate={myLiveLocation} title="Driver">
+          {myLiveLocation && <Marker coordinate={myLiveLocation} title="Driver" >
             <Truck />
           </Marker>}
 
@@ -1209,7 +868,7 @@ const index = ({ navigation }) => {
             strokeWidth={6}
             strokeColor="green"
           /> */}
-        </MapView>
+        </MapView>}
         {(confirmPickupDepartureLoader ||
           getSingleShiftLoader ||
           getSingleShiftDeliveryLoader ||
@@ -1709,6 +1368,7 @@ const index = ({ navigation }) => {
                   )}
                 </View>
               ))}
+              {Platform.OS == 'android' && <View style={{ width: dimensionsWidth / 1.15 + (dimensionsWidth / 2) * 0.25 }} />}
             </ScrollView>
           </View>
         )
@@ -2049,6 +1709,7 @@ const index = ({ navigation }) => {
                     </View>
                   </View>
                 ))}
+                {Platform.OS == 'android' && <View style={{ width: dimensionsWidth / 1.15 + (dimensionsWidth / 2) * 0.25 }} />}
               </ScrollView>
             </View>
           )}
@@ -2186,7 +1847,12 @@ const index = ({ navigation }) => {
                 </CustomText>
               </View>
               <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                <NoRoute />
+                {/* <NoRoute /> */}
+                <Image
+                  source={require('../../asset/pngs/myrouteNojob.png')}
+                  resizeMode='contain'
+                  style={{ height: '100%', width: '100%' }}
+                />
               </View>
             </>}
           {(confirmPickupDepartureLoader ||

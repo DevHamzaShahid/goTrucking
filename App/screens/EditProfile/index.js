@@ -15,8 +15,7 @@ import polyline from '@mapbox/polyline';
 import axios from 'axios';
 import { GoogleMapKey } from '../../utils/keys';
 import { dimensions, dimensionsWidth } from '../../Dimensions';
-const defaultImage =
-  'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+import { defaultImage } from '../../utils/helperFunction';
 
 const index = () => {
   //   const startLatitude = 31.5497;
@@ -136,7 +135,7 @@ const index = () => {
         <TouchableOpacity
           style={{ position: 'absolute', zIndex: 2, top: 10, right: 2 }}
           onPress={() => setShowImagePickerModal(true)}>
-          <Icon name="camera" size={24} color={color.textGrey} />
+          <Icon name="camera" size={24} color={color.appBlue} />
         </TouchableOpacity>
         <Image
           source={{

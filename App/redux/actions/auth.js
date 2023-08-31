@@ -1,8 +1,14 @@
 import axios from 'axios';
 import {
+  FORGET_PASSWORD_FAILED,
+  FORGET_PASSWORD_REQUEST,
+  FORGET_PASSWORD_SUCCESS,
   GET_PROFILE_FAILED,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
+  RESET_PASSWORD_FAILED,
+  RESET_PASSWORD_REQUEST,
+  RESET_PASSWORD_SUCCESS,
   UPDATE_PROFILE_FAILED,
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
@@ -33,7 +39,7 @@ export const userSignupAction = (creds) => async dispatch => {
     });
   } catch (error) {
     // alert(error)
-       dispatch({
+    dispatch({
       type: USER_SIGNUP_FAILED,
       payload: error.message,
     });
@@ -116,6 +122,51 @@ export const uploadPhoto = photo => async dispatch => {
   } catch (error) {
     dispatch({
       type: UPLOAD_PHOTO_FAILED,
+      payload: error.message,
+    });
+  }
+};
+
+
+
+//Forgot paswword send email
+export const forgetPassword = (email) => async dispatch => {
+  try {
+    dispatch({
+      type: FORGET_PASSWORD_REQUEST,
+    });
+    const { data } = await Axios.post(`${config.SERVER_IP}api/users/forgotpassword`,{ email});
+    console.log("after sending emial to forgot pasword", data);
+    dispatch({
+      type: FORGET_PASSWORD_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    // alert(error)
+    dispatch({
+      type: FORGET_PASSWORD_FAILED,
+      payload: error.message,
+    });
+  }
+};
+
+
+//Reset paswword send otp and both passwords
+export const resetPassword = (resetData) => async dispatch => {
+  try {
+    dispatch({
+      type: RESET_PASSWORD_REQUEST,
+    });
+    const { data } = await Axios.patch(`${config.SERVER_IP}api/users/resetpassword`, resetData);
+    console.log("after sending otp and passwords to rest pasword", data);
+    dispatch({
+      type: RESET_PASSWORD_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    // alert(error)
+    dispatch({
+      type: RESET_PASSWORD_FAILED,
       payload: error.message,
     });
   }

@@ -2,9 +2,9 @@ import { View, Text } from 'react-native'
 import React from 'react'
 import styles from './style'
 
-const index = ({ children, style, size }) => {
+const index = ({ children, style, size,numberOfLines }) => {
     return (
-        <Text style={[styles.text, style, { fontSize: size }]}>{children}</Text>
+        <Text numberOfLines={numberOfLines} style={[styles.text, style, { fontSize: size }]}>{children}</Text>
     )
 }
 

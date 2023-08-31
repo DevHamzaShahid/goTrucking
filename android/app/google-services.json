@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "550508924197",
+    "firebase_url": "https://gotrucking-b3785-default-rtdb.firebaseio.com",
     "project_id": "gotrucking-b3785",
     "storage_bucket": "gotrucking-b3785.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "550508924197-58tg2qrhkdrjj22pukdi12lv3mujg10h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gotrucking",
+            "certificate_hash": "8bc18a19fe4d63008e6cc53f445d01e6ac058b85"
+          }
+        },
         {
           "client_id": "550508924197-92gs5k8lfm7r1k71sgiiljat1nsjen75.apps.googleusercontent.com",
           "client_type": 3

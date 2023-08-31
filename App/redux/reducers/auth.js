@@ -1,7 +1,13 @@
 import {
+  FORGET_PASSWORD_FAILED,
+  FORGET_PASSWORD_REQUEST,
+  FORGET_PASSWORD_SUCCESS,
   GET_PROFILE_FAILED,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
+  RESET_PASSWORD_FAILED,
+  RESET_PASSWORD_REQUEST,
+  RESET_PASSWORD_SUCCESS,
   UPDATE_PROFILE_FAILED,
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
@@ -132,6 +138,51 @@ export const UploadPhoto = (state = {}, action) => {
         data: action.payload,
       };
     case UPLOAD_PHOTO_FAILED:
+      return {
+        loading: false,
+        error: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+//ForgotPassword
+export const forgotPassword = (state = {}, action) => {
+  switch (action.type) {
+    case FORGET_PASSWORD_REQUEST:
+      return {
+        loading: true,
+      };
+    case FORGET_PASSWORD_SUCCESS:
+      return {
+        loading: false,
+        data: action.payload,
+      };
+    case FORGET_PASSWORD_FAILED:
+      return {
+        loading: false,
+        error: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+
+//ResetPassword
+export const resetPassword = (state = {}, action) => {
+  switch (action.type) {
+    case RESET_PASSWORD_REQUEST:
+      return {
+        loading: true,
+      };
+    case RESET_PASSWORD_SUCCESS:
+      return {
+        loading: false,
+        data: action.payload,
+      };
+    case RESET_PASSWORD_FAILED:
       return {
         loading: false,
         error: action.payload,

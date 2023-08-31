@@ -10,9 +10,10 @@ import Block from '../../components/Block'
 import { route } from '../../Routes'
 import { dimensionsWidth } from '../../Dimensions'
 import { useDispatch, useSelector } from 'react-redux'
-import { userLoginAction } from '../../redux/actions/auth'
+import { forgetPassword, userLoginAction } from '../../redux/actions/auth'
 import CustomActivityIndicator from '../../components/CustomLoader'
 import { isValidEmail, isValidPassword } from '../../helper'
+import { resetState } from '../../redux/actions/resetReduxState'
 
 const index = ({ navigation }) => {
 
@@ -20,49 +21,42 @@ const index = ({ navigation }) => {
     const dispatch = useDispatch()
 
     const truckingState = useSelector(state => state);
-    const { loading: loginLoader, error } = truckingState.userLogin
+    const { loading: ForgotPasswordLoader, error, data } = truckingState?.ForgetPassword
     const [inputData, setInputData] = useState({
         email: '',
         password: '',
     });
 
-    useEffect(() => {
-        if (loggedIn) {
-            if (!error) {
-                if (truckingState?.userLogin?.data?.token) {
-                    dispatch({ type: 'USER_TOKEN', payload: truckingState?.userLogin?.data?.token });
-                    navigation.navigate("MyTabs")
-                }
-            }
-            else {
-                alert("Wrong email address or password")
-            }
-        }
-    }, [truckingState?.userLogin?.data, loggedIn]);
 
-    const logIn = async () => {
-        if (inputData.email == '' || inputData.password == '') {
-            alert("Please enter email or password")
+    console.log("loader", ForgotPasswordLoader, error, data);
+    const Send = async () => {
+        if (inputData.email == '') {
+            alert("Please enter an email address")
         }
         else {
             if (isValidEmail(inputData.email)) {
-                // if (isValidPassword(inputData.password)) {
-                await dispatch(userLoginAction(inputData))
-                setLoggedIn(true)
-                // }
-                // else {
-                //     alert('Make sure password is 8-digit and alphanumeric')
-                // }
+                ////////////////////////////////
+                dispatch(forgetPassword(inputData?.email))
+                // navigation.navigate(route.ResetPassword)
             } else {
                 alert('Please enter email in correct format')
             }
 
         }
     }
+    useEffect(() => {
+        if (data == 'Reset Password Email has been Sent') {
+            dispatch(resetState())
+            navigation.navigate(route.ResetPassword, { email: inputData?.email })
+        }
+        else if (error) {
+            alert("Email not found")
+        }
+    }, [error, data])
 
     return (
         <Block>
-            {loginLoader && <CustomActivityIndicator />}
+            {ForgotPasswordLoader && <CustomActivityIndicator />}
             {/* <BackGroundImage height={'100%'} style={{ position: 'absolute' }} /> */}
             <Image source={require('../../asset/pngs/Authbackground.png')} resizeMode='cover' style={{ height: '100%', width: '100%', position: 'absolute', zIndex: -1 }} />
 
@@ -77,15 +71,17 @@ const index = ({ navigation }) => {
                         GO TRUCKING
                     </CustomText>
                     <CustomText size={22} style={{ fontWeight: '600', color: color.appLightBlue, marginTop: 20 }} >
-                        Login
+                        Forgot Password
                     </CustomText>
-
+                    <CustomText size={16} style={{ fontWeight: '500', color: color.black, marginTop: 20, textAlign: 'center' }} >
+                        Please Enter Your Email Address To Receive a Verification Code
+                    </CustomText>
                     {/* textInputs */}
                     <CustomTextInput
                         autoCapitalize={false}
                         placeholder="Email"
                         ContainerStyle={{
-                            width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
+                            width: '80%', height: 40, marginVertical: 30, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
                             shadowOffset: {
                                 width: 1,
                                 height: 1,
@@ -97,35 +93,10 @@ const index = ({ navigation }) => {
                         value={inputData.email}
                         onChangeText={text => setInputData({ ...inputData, email: text })}
                     />
-                    <CustomTextInput
-                        placeholder="Password"
-                        ContainerStyle={{
-                            width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
-                            shadowOffset: {
-                                width: 1,
-                                height: 1,
-                            },
-                            shadowRadius: 2,
-                            shadowOpacity: 0.6,
-                        }}
-                        leftIcon={'lock'}
-                        value={inputData.password}
-                        onChangeText={text => setInputData({ ...inputData, password: text })}
-                    />
 
-                    <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-around' }}>
-                        <View>
-                            {/* <Text>
-                                Forgot Password
-                            </Text> */}
-                        </View>
-                        <TouchableOpacity onPress={()=>navigation.navigate(route.ForgetPassword)} style={{}}>
-                            <CustomText size={13} style={{ fontWeight: '500', color: color.appLightBlue }}>
-                                Forgot Password
-                            </CustomText>
-                        </TouchableOpacity>
-                    </View>
-                    <CustomButton onPress={logIn} title={"Login"} buttonStyle={{ height: 50, width: '80%', backgroundColor: color.appBlue, marginVertical: 30 }} textStyle={{ color: color.white, fontWeight: '700' }} />
+
+
+                    <CustomButton onPress={Send} title={"Send"} buttonStyle={{ height: 50, width: '80%', backgroundColor: color.appBlue, marginVertical: 30 }} textStyle={{ color: color.white, fontWeight: '700' }} />
 
                     <View style={{ flexDirection: 'row', marginVertical: 30 }}>
                         <CustomText>

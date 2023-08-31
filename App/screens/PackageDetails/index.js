@@ -1,24 +1,24 @@
-import {View, Text, TouchableOpacity, ScrollView, Alert} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import Block from '../../components/Block';
-import {dimensions} from '../../Dimensions';
-import {color} from '../../utils/colors';
+import { dimensions } from '../../Dimensions';
+import { color } from '../../utils/colors';
 import Package from '../../asset/svgIcons/PackageDetails.svg';
 import CustomText from '../../components/CustomText';
 import NotificationAlert from '../../components/NotificationAlert';
 import CustomAlert from '../../components/CustomAlert';
-import {route} from '../../Routes';
+import { route } from '../../Routes';
 import FormText from '../../components/FormText';
-import {useDispatch, useSelector} from 'react-redux';
-import {confirmPickupPackages} from '../../redux/actions/confirmPackagePickup';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { confirmPickupPackages } from '../../redux/actions/confirmPackagePickup';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import {
   getAllPickupPackages,
   pickupPointDepartureOrDone,
 } from '../../redux/actions/getAllpackagesFromPickup';
 
-const index = ({navigation}) => {
+const index = ({ navigation }) => {
   const [pickupConfirmed, setPickupConfirmed] = useState(false);
   const [showNotificationAlert, setShowNotificationAlert] = useState(false);
   const [oneTimeShowNotiAlert, setOneTimeShowNotiAlert] = useState(false);
@@ -38,16 +38,21 @@ const index = ({navigation}) => {
 
   //getAllPickupPackages
 
-  const {data: allPickupPackages} =
+  const { data: allPickupPackages } =
     truckingState?.getALLPickupPackages?.data || [];
-  const {loading: getALLPickupLoader} = truckingState?.getAllShifts || {};
+  const { loading: getALLPickupLoader } = truckingState?.getAllShifts || {};
 
   // confirm packages pickup
 
-  const {data: confirmPickupResponse, success: confirmPickupSuccess} =
+  const { data: confirmPickupResponse, success: confirmPickupSuccess } =
     truckingState?.confirmPackagesPickup?.data || [];
-  const {loading: confirmPackagesPickupLoader} =
+  const { loading: confirmPackagesPickupLoader } =
     truckingState?.confirmPackagesPickup || {};
+  
+  
+  
+  
+    
   useEffect(() => {
     dispatch(
       getAllPickupPackages({
@@ -195,17 +200,17 @@ const index = ({navigation}) => {
                   }}>
                   <CustomText
                     size={15}
-                    style={{color: color.white, fontWeight: '700'}}>
+                    style={{ color: color.white, fontWeight: '700' }}>
                     {obj.article_name}
                   </CustomText>
                   <CustomText
                     size={12}
-                    style={{color: color.white, fontWeight: '500'}}>
+                    style={{ color: color.white, fontWeight: '500' }}>
                     ID : {obj._id}
                   </CustomText>
                 </View>
                 <View
-                  style={{height: 60, width: '35%', justifyContent: 'center'}}>
+                  style={{ height: 60, width: '35%', justifyContent: 'center' }}>
                   <TouchableOpacity
                     onPress={async () => {
                       // setShowNotificationAlert(true)
@@ -223,7 +228,7 @@ const index = ({navigation}) => {
                     }}>
                     <CustomText
                       size={11}
-                      style={{color: color.appBlue, fontWeight: '600'}}>
+                      style={{ color: color.appBlue, fontWeight: '600' }}>
                       {/* {cardStates[obj.id] ? 'Confirmed' : 'Confirm Pickup'} */}
                       {obj.status == 'pickup' ? 'Confirmed' : 'Confirm Pickup'}
                     </CustomText>
@@ -246,7 +251,7 @@ const index = ({navigation}) => {
               </View>
 
               {/* Card Body */}
-              <View style={{marginVertical: 10}} />
+              <View style={{ marginVertical: 10 }} />
               <FormText
                 heading={'Article no. :'}
                 description={obj.article_no}
@@ -259,12 +264,12 @@ const index = ({navigation}) => {
                 heading={'Package Dimensions :'}
                 description={`${obj.package_length} L x ${obj.package_height} H x ${obj.package_width} W`}  //{'14 L x 2 H x 20W'}
               />
-              <FormText heading={'Receiver Name :'} description={obj.reciverName} />
+              <FormText heading={'Receiver Name :'} description={obj.reciverName || '-'} />
               <FormText
                 heading={'Delivery Navigate :'}
-                description={obj.address}
+                description={obj.address || '-'}
               />
-              <View style={{marginBottom: 10}} />
+              <View style={{ marginBottom: 10 }} />
             </View>
           ))}
         </ScrollView>

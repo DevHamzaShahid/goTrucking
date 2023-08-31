@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import UserToken, { GetProfile, UpdateProfile, UploadPhoto, userLoginReducer, userSignupReducer } from './auth';
+import UserToken, { GetProfile, UpdateProfile, UploadPhoto, forgotPassword, resetPassword, userLoginReducer, userSignupReducer } from './auth';
 import {
   GetAllShifts,
   GetSingleShift,
@@ -43,5 +43,7 @@ export default combineReducers({
   uploadedMultipleImages: uploadMultipleImages,
   uploadIMagesPath: UploadImagesPath,
   PickupDelayReport: pickupDelayReport,
-  DeliveryDelayReport:deliveryDelayReport
+  DeliveryDelayReport: deliveryDelayReport,
+  ForgetPassword: forgotPassword,
+  ResetPassword: resetPassword
 });

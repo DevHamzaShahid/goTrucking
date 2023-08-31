@@ -18,13 +18,18 @@ export const fetchMyLocation = async () => {
 
 export const openGoogleMaps = (latitude, longitude) => {
   if (Platform.OS === 'android') {
-    const url = `geo:${latitude},${longitude}`;
+    // const url = `geo:${latitude},${longitude}`;
+    const url = `google.navigation:q=${latitude}+${longitude}`
     Linking.openURL(url);
   } else if (Platform.OS === 'ios') {
     Linking.openURL(`maps://app?daddr=${latitude},${longitude}&dirflg=d&t=m`)
   }
 
 };
+
+export const defaultImage =
+  'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+
 
 // export const openGoogleMaps = (latitude, longitude) => {
 //   Linking.openURL(`maps://app?daddr=${latitude},${longitude}&dirflg=d&t=m`)

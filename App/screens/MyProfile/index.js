@@ -14,6 +14,7 @@ import { useIsFocused } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { resetDirectionLineState } from '../../redux/actions/getDirectionLine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { defaultImage } from '../../utils/helperFunction';
 
 const arrDummy = [
   {
@@ -64,6 +65,7 @@ const index = ({ navigation }) => {
   //selectors
   // get profile
   const ProfileData = useSelector(profile => profile);
+  
   const {
     fullName,
     email,
@@ -121,10 +123,10 @@ const index = ({ navigation }) => {
             position: 'absolute',
             top: 120,
             left: -20,
-          }} onPress={()=>navigation.navigate(route.EditProfile)}>
+          }} onPress={() => navigation.navigate(route.EditProfile)}>
           {/* <ProfileImage height={150} width={150} /> */}
           <Image
-            source={{ uri: profilePhoto }}
+            source={{ uri: profilePhoto || defaultImage }}
             height={150}
             width={150}
             style={{ borderRadius: 100 }}
@@ -172,8 +174,8 @@ const index = ({ navigation }) => {
                 </CustomText>
               </View>
               <View style={{ width: '10%', height: 60, justifyContent: 'center' }}>
-                <Icon onPress={async() => {
-                  if (item.description=='Logout') {
+                <Icon onPress={async () => {
+                  if (item.description == 'Logout') {
                     dispatch({ type: 'USER_TOKEN', payload: null });
                     dispatch(resetDirectionLineState());
                     await AsyncStorage.removeItem('alertShown');

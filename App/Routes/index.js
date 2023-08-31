@@ -8,5 +8,9 @@ export const route = {
     EditProfile: "EditProfile",
     PackageDetailsDelivery: "PackageDetailsDelivery",
     Register: "Register",
-    Login:"Login"
+    Login: "Login",
+    ForgetPassword: "ForgetPassword",
+    ResetPassword: "ResetPassword",
+    Notifications:"Notifications"
+    
 }

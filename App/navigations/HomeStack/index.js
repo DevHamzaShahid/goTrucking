@@ -10,6 +10,7 @@ import Receipt from '../../screens/Receipt';
 import PackageDetailsDelivery from '../../screens/PackageDetailsDelivery'
 import { route } from '../../Routes';
 import { TouchableOpacity } from 'react-native';
+import Notifications from '../../screens/Notifications'
 const Stack = createStackNavigator();
 
 export function HomeStack({ navigation }) {
@@ -32,48 +33,7 @@ export function HomeStack({ navigation }) {
                 }
                 }
             />
-            <Stack.Screen name="PackageDetails" component={PackageDetails}
-                options={{
-                    headerShown: true,
-                    headerStyle: { backgroundColor: color.white },
-                    headerShadowVisible: false,
-                    headerBackTitleVisible: false,
-                    headerTitleStyle: { color: color.black, fontSize: 20, fontWeight: 500 },
-                    headerTintColor: color.appBlue,
-                    headerTitleAlign: 'center',
-                    title: 'Package Details',
-                    headerRight: () => (
-                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                    ),
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
-                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                        </TouchableOpacity>
-                    )
-                }
-                }
-            />
-            <Stack.Screen name="PackageDetailsDelivery" component={PackageDetailsDelivery}
-                options={{
-                    headerShown: true,
-                    headerStyle: { backgroundColor: color.white },
-                    headerShadowVisible: false,
-                    headerBackTitleVisible: false,
-                    headerTitleStyle: { color: color.black, fontSize: 20, fontWeight: 500 },
-                    headerTintColor: color.appBlue,
-                    headerTitleAlign: 'center',
-                    title: 'Package Details',
-                    headerRight: () => (
-                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                    ),
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
-                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                        </TouchableOpacity>
-                    )
-                }
-                }
-            />
+          
             {/* <Stack.Screen name="MyRoutes" component={MyRoutes} options={
                 { headerShown: false }
             } /> */}
@@ -97,6 +57,19 @@ export function HomeStack({ navigation }) {
                     )
                 }
                 }
+            />
+            <Stack.Screen name="Notifications" component={Notifications}
+              options={{
+                headerShown: true,
+                headerStyle: { backgroundColor: color.white },
+                headerShadowVisible: false,
+                headerBackTitleVisible: false,
+                headerTitleStyle: { color: color.black, fontSize: 20, fontWeight: 500 },
+                headerTintColor: color.appBlue,
+                headerTitleAlign: 'center',
+                title: 'Notifications',
+            }
+            }
             />
         </Stack.Navigator>
     );
