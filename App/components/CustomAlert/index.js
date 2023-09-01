@@ -1,17 +1,21 @@
-import {View, Text} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 import CustomText from '../../components/CustomText';
-import {dimensions} from '../../Dimensions';
+import { dimensions } from '../../Dimensions';
 import CustomButton from '../CustomButton';
-import {color} from '../../utils/colors';
+import { color } from '../../utils/colors';
 import Error from '../../asset/svgIcons/Error.svg';
 import Success from '../../asset/svgIcons/success.svg';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+
 const index = ({
   alertType,
   Title,
   description,
   closeSuccessErrorAlert,
   buttonText,
+  setLocationAlertOnArrival,
+  showCrossIcon
 }) => {
   // set color
   const AlertThemeColor =
@@ -53,6 +57,11 @@ const index = ({
           }}>
           {alertType == 'error' ? <Error /> : <Success />}
         </View>
+        {showCrossIcon && <TouchableOpacity style={{ position: 'absolute', right: 15, top: 15 }} onPress={() => {
+          setLocationAlertOnArrival(false);
+        }}>
+          <Icon name="close" color={color.white} size={24} />
+        </TouchableOpacity>}
         {/* description Body */}
         <View
           style={{
@@ -60,9 +69,9 @@ const index = ({
             alignSelf: 'center',
             alignItems: 'center',
             justifyContent: 'center',
-            paddingHorizontal:15
+            paddingHorizontal: 15,
           }}>
-          <CustomText size={23} style={{fontWeight: '700', color: color.white}}>
+          <CustomText size={23} style={{ fontWeight: '700', color: color.white }}>
             {Title}
           </CustomText>
           <CustomText
@@ -93,7 +102,7 @@ const index = ({
             position: 'absolute',
             bottom: -25,
           }}
-          textStyle={{color: AlertThemeColor, fontSize: 16, fontWeight: '700'}}
+          textStyle={{ color: AlertThemeColor, fontSize: 16, fontWeight: '700' }}
         />
       </View>
     </View>

@@ -57,6 +57,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import GetLocation from 'react-native-get-location';
 const geolib = require("geolib");
 import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
+import { gyroscope, orientation, magnetometer } from 'react-native-sensors';
+// import Geolocation from 'react-native-geolocation-service';
 
 // const direction1=[[-45.460626,3.069363],[-45.317803,3.071252],[-45.269464,3.004909],[-45.271660999999995,3.0806929999999997],[-45.566094,3.0655829999999997],[-45.348565,3.1127219999999998],[-45.300225,3.168981],[-45.23211,3.146518],[-45.552910999999995,3.157756],[-45.1596,3.1988469999999998],[-45.056329,3.0825799999999997],[-45.02337,3.174588],[-44.882745,3.107078],[-45.128839,2.974431],[-44.970635,3.016314],[-45.467217,3.25088],[-45.240358,3.5116009999999998],[-45.200807,3.390294],[-45.238161,3.3133559999999997],[-44.904176,3.42124]]
 
@@ -239,8 +241,8 @@ const index = ({ navigation }) => {
   const shouldAnimateToMarker = useRef(false);
 
   const [initialRegion, setInitialRegion] = useState(null);
-  const [currentRegion, setCurrentRegion] = useState(initialRegion);
-
+  const [compassHeading, setCompassHeading] = useState(0);
+  const [but, setbut] = useState(true);
 
 
 
@@ -452,10 +454,10 @@ const index = ({ navigation }) => {
       askForPermission()
       GetLocation.getCurrentPosition({
         enableHighAccuracy: true,
-        timeout: 15000,
+        timeout: 30000,
       })
         .then(location => {
-          const { latitude, longitude } = location;
+          const { latitude, longitude, course, bearing, altitude } = location;
           if (latitude && longitude && !locationAnimated) {
             setInitialRegion({
               latitude,
@@ -465,17 +467,17 @@ const index = ({ navigation }) => {
             });
             setLocationAnimated(true);
           }
-          setMyLiveLocation({ latitude, longitude });
-          console.log('Live Location:', latitude, longitude);
+          setMyLiveLocation({ latitude, longitude, direction: course || bearing });
+          console.log('Live Location:', location);
         })
         .catch(error => console.log('Error getting location:', error));
+
     }, 3000);
 
     return () => {
       clearInterval(locationUpdateInterval);
     };
   }, [locationAnimated]);
-
   useEffect(() => {
     // Reset locationAnimated to false when navigating away from the screen
     if (!isFocused) {
@@ -509,8 +511,6 @@ const index = ({ navigation }) => {
   //     })
   //     .catch(error => console.log('Error getting location:', error));
   // }, [directionLineLoader]);
-
-
 
 
 
@@ -724,7 +724,6 @@ const index = ({ navigation }) => {
     });
   }
 
-
   const updateMapRegion = () => {
     if (mapRef.current) {
       const camera = {
@@ -735,25 +734,20 @@ const index = ({ navigation }) => {
     }
   };
 
-
   if (myLocationFocused) { updateMapRegion() }
-  console.log("myLocationFocusedmyLocationFocusedmyLocationFocusedmyLocationFocused", myLocationFocused);
 
-
-
-  const handleRegionChange = (region) => {
-    // Check if the user is dragging the map.
-    if (region) {
-      setIsDragging(true);
-      console.log("sdsadsadsadsadsadsad>>>>>>>>>>><>33333", region);
+  // rotate along with compas
+  const handleUserLocationChange = event => {
+    if (event.nativeEvent && event.nativeEvent.coordinate) {
+      const { coordinate } = event.nativeEvent;
+      // Calculate the rotation based on the compass heading
+      const rotation = compassHeading - coordinate.heading;
+      setCompassHeading(coordinate.heading);
+      // Update the rotation of your SVG marker here
     }
   };
 
-  useEffect(() => {
-    if (isDragging) {
-      setMylocationFocused(false);
-    }
-  }, [isDragging]);
+
 
   return (
     <SafeAreaView flex={1}>
@@ -809,11 +803,13 @@ const index = ({ navigation }) => {
           showsScale={true}
           showsBuildings={true}
           initialRegion={initialRegion}
-          showsUserLocation={true}
-          onRegion={handleRegionChange}
+          // showsUserLocation={true}
+          // followsUserLocation={true}
+          // onUserLocationChange={handleUserLocationChange}
           onPress={() => setMylocationFocused(false)}
           onLongPress={() => setMylocationFocused(false)}
           onDoublePress={() => setMylocationFocused(false)}
+
         >
           {singleShiftCoords?.map((coords, index) => (
             <Marker
@@ -840,9 +836,23 @@ const index = ({ navigation }) => {
               {/* <DeliveryPin/> */}
             </Marker>
           ))}
-          {myLiveLocation && <Marker coordinate={myLiveLocation} title="Driver" >
-            <Truck />
-          </Marker>}
+          <Marker coordinate={myLiveLocation} flat anchor={{ x: 0.5, y: 0.5 }}>
+            <View
+              style={{
+                transform: [{ rotate: `${myLiveLocation?.direction}deg` }],
+              }}
+            >
+              <Truck />
+            </View>
+          </Marker>
+          {/* <View style={{
+            height: 100, width: 100, backgroundColor: "green",
+            transform: [{ rotate: `${myLiveLocation?.course || myLiveLocation?.direction}deg` }],
+          }}>
+            {myLiveLocation && <Marker coordinate={myLiveLocation} title="Driver" rotation={angle1} >
+              <Truck />
+            </Marker>}
+          </View> */}
 
           <Polyline
             coordinates={getPolyline ? getPolyline : [
@@ -901,9 +911,11 @@ const index = ({ navigation }) => {
           <CustomAlert
             closeSuccessErrorAlert={continueAnyWays}
             alertType="error"
-            buttonText="Confirm Arrival Anyways"
+            buttonText="Confirm Arrival Anyway"
             Title="ERROR"
-            description="We cannot verify your location at the moment. Please check your connection and try again."
+            description="It seems you are not present at this location"
+            setLocationAlertOnArrival={setLocationAlertOnArrival}
+            showCrossIcon={true}
           />
         )}
         {allPickedUpAlert && (
@@ -1150,7 +1162,7 @@ const index = ({ navigation }) => {
                         onPress={async () => {
                           const onLocation = await checkUserInDestinationOrNot(item)
                           console.log("ONlocation=>>>>>>>", onLocation);
-                          if (onLocation <= 50) {
+                          if (onLocation <= 300) {
                             await dispatch(confirmPickupDeparturee({ shipmentId: param?.shipment_Id || shipment_Id, pickup_Id: item._id, status: 'arrival' }))
                             dispatch(getSingleShift(param?.shipment_Id || shipment_Id))
                           }
@@ -1828,7 +1840,6 @@ const index = ({ navigation }) => {
           </View>
         )}
       </Block>
-
         :
         <Block>
           {(!confirmPickupDepartureLoader &&
