@@ -25,7 +25,7 @@
 #   use_frameworks! :linkage => linkage.to_sym
 # end
 
-# target 'goTrucking' do
+# target 'GoTrucking' do
 #   config = use_native_modules!
 
 #   # Flags change depending on the env values.
@@ -45,7 +45,7 @@
 #     :app_path => "#{Pod::Config.instance.installation_root}/.."
 #   )
 
-#   target 'goTruckingTests' do
+#   target 'GoTruckingTests' do
 #     inherit! :complete
 #     # Pods for testing
 #   end
@@ -93,7 +93,7 @@ $RNFirebaseAsStaticFramework = true
 #   use_frameworks! :linkage => linkage.to_sym
 # end
 
-target 'goTrucking' do
+target 'GoTrucking' do
   config = use_native_modules!
   pod 'Google-Maps-iOS-Utils', :git => 'https://github.com/Simon-TechForm/google-maps-ios-utils.git', :branch => 'feat/support-apple-silicon'
 
@@ -116,7 +116,7 @@ target 'goTrucking' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'goTruckingTests' do
+  target 'GoTruckingTests' do
     inherit! :complete
     # Pods for testing
   end

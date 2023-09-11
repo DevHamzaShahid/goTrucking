@@ -1,49 +1,40 @@
 {
   "project_info": {
-    "project_number": "550508924197",
-    "firebase_url": "https://gotrucking-b3785-default-rtdb.firebaseio.com",
-    "project_id": "gotrucking-b3785",
-    "storage_bucket": "gotrucking-b3785.appspot.com"
+    "project_number": "660864118571",
+    "project_id": "gotrucking-5a990",
+    "storage_bucket": "gotrucking-5a990.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:550508924197:android:3b3371ed7b032094825ecc",
+        "mobilesdk_app_id": "1:660864118571:android:7ed7b6f62583288dc75f6e",
         "android_client_info": {
-          "package_name": "com.gotrucking"
+          "package_name": "com.eleven.goTrucking"
         }
       },
       "oauth_client": [
         {
-          "client_id": "550508924197-58tg2qrhkdrjj22pukdi12lv3mujg10h.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.gotrucking",
-            "certificate_hash": "8bc18a19fe4d63008e6cc53f445d01e6ac058b85"
-          }
-        },
-        {
-          "client_id": "550508924197-92gs5k8lfm7r1k71sgiiljat1nsjen75.apps.googleusercontent.com",
+          "client_id": "660864118571-dpl573eqs9fqqq87iv5a9kgnuic0s6ed.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDsnnapVl-hZ7hE-kmG-8fJHcr_yM3-9EM"
+          "current_key": "AIzaSyATk_oMmDHiVeXiq3P62lFg71y9HpiwwWk"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "550508924197-92gs5k8lfm7r1k71sgiiljat1nsjen75.apps.googleusercontent.com",
+              "client_id": "660864118571-dpl573eqs9fqqq87iv5a9kgnuic0s6ed.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "client_id": "550508924197-bd1h7rlfadub81c0od5r2dbpviqbe796.apps.googleusercontent.com",
+              "client_id": "660864118571-or486r50nd2ciinip6n27dn196omevrb.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "org.reactjs.native.example.goTrucking"
+                "bundle_id": "com.eleven.goTrucking"
               }
             }
           ]

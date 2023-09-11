@@ -34,7 +34,7 @@ const index = ({ navigation }) => {
     useEffect(() => {
         if (signedUp) {
             error && alert('User Already exist with this email address or phone number')
-            if (truckingState.signUp.data) {
+            if (truckingState?.signUp.data) {
                 alert("succesfully registered")
                 setInputData(initialInputData)
             }
@@ -54,7 +54,7 @@ const index = ({ navigation }) => {
                     alert('Make sure password is 8-digit and alphanumeric')
                 }
             } else {
-                alert('Please enter email in correct format')
+                alert('Please enter email in correct format. abc@example.com')
             }
         }
     }

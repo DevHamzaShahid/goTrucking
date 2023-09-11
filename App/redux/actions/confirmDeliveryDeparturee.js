@@ -32,7 +32,6 @@ export const confirmDeliveryDeparturee = ids => async dispatch => {
 
 // confirm upload images
 export const UploadImagesPath = param => async dispatch => {
-  console.log("hhhhhhhhhhhhitparam>>>", param);
   try {
     dispatch({
       type: UpLOADIMAGES_PATH_REQUEST,

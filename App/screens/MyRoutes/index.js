@@ -221,6 +221,7 @@ const index = ({ navigation }) => {
   const [locationPermission, setLocationPermission] = useState('');
   const [myLocationFocused, setMylocationFocused] = useState(true)
   const [isDragging, setIsDragging] = useState(false);
+
   // const [myLiveLocation, setMyLiveLocation] = useState({
   //   latitude: 37.785834,
   //   longitude: -122.406417,
@@ -288,12 +289,11 @@ const index = ({ navigation }) => {
     truckingState?.confirmDeliveryDeparturereducer || {};
 
   //get Direction Line
-  const { data: directionLine } =
+  const { data: directionLine, error: errorLine } =
     truckingState?.getdirectionLine || [];
   const { loading: directionLineLoader } =
     truckingState?.getdirectionLine || {};
-  const direction = directionLine?.data?.shipmentDetail?.direction
-
+  const direction = directionLine?.data?.shipmentDetail?.direction?.coordinates
   //get profile
   const { data: userData } =
     truckingState?.getProfile || [];
@@ -318,27 +318,26 @@ const index = ({ navigation }) => {
 
 
 
-
-
-
-
-
-
   // getdirectionLine
   useEffect(() => {
-    // if (!direction && !stopFetchingDirectionLineAgain) {
-    dispatch(getDirectionLine(param?.shipment_Id || shipment_Id))
-    // }
-    // return () => setStopFetchDirectionLine(false)
-    // setPolyline(direction)
-  }, [param?.shipment_Id || shipment_Id])
+    if (isFocused) {
+      dispatch(getDirectionLine(param?.shipment_Id || shipment_Id));
+    }
+  }, [isFocused, param?.shipment_Id || shipment_Id]);
+
+
+
+
 
   useEffect(() => {
-    const reversedData = direction?.map(item => ({
-      latitude: item.longitude,
-      longitude: item.latitude
-    }));
-    setPolyline(reversedData)
+    //reversed coords
+    if (direction) {
+      const reversedData = direction?.map(item => ({
+        latitude: item[1],
+        longitude: item[0]
+      }));
+      setPolyline(reversedData)
+    }
   }, [direction])
 
 
@@ -359,17 +358,6 @@ const index = ({ navigation }) => {
   useEffect(() => {
     askForPermission()
   }, [locationPermission])
-
-
-
-
-
-
-
-
-
-
-
 
 
   // back for the map screen
@@ -590,8 +578,8 @@ const index = ({ navigation }) => {
   const handlePickupMarkerClick = (index) => {
     setMylocationFocused(false)
     // setSelectedPickupMarkerIndex(index);
-    scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
-    mapRef.current.animateToRegion({
+    scrollViewRef?.current?.scrollTo({ x: index * getCardWidth(), animated: true });
+    mapRef?.current?.animateToRegion({
       latitude: singleShiftCoords[index]?.lat,
       longitude: singleShiftCoords[index]?.lng,
       latitudeDelta: LATITUDE_DELTA,
@@ -601,8 +589,8 @@ const index = ({ navigation }) => {
   const handleDeliveryMarkerClick = (index) => {
     setMylocationFocused(false)
     // setSelectedDeliveryMarkerIndex(index);
-    scrollViewRef.current.scrollTo({ x: index * getCardWidth(), animated: true });
-    mapRef.current.animateToRegion({
+    scrollViewRef?.current?.scrollTo({ x: index * getCardWidth(), animated: true });
+    mapRef?.current?.animateToRegion({
       latitude: singleDeliveryCoords[index]?.lat,
       longitude: singleDeliveryCoords[index]?.lng,
       latitudeDelta: LATITUDE_DELTA,
@@ -724,18 +712,22 @@ const index = ({ navigation }) => {
     });
   }
 
+
+// take camera along with the live location
   const updateMapRegion = () => {
-    if (mapRef.current) {
-      const camera = {
-        center: myLiveLocation,
-        zoom: 15, // Adjust as needed
-      };
-      mapRef.current.animateCamera(camera);
+    try {
+      if (mapRef?.current && myLiveLocation) {
+        const camera = {
+          center: myLiveLocation,
+          zoom: 15, // Adjust as needed
+        };
+        mapRef?.current?.animateCamera(camera);
+      }
+    } catch (error) {
+      console.error('Error updating map region:', error);
     }
   };
-
-  if (myLocationFocused) { updateMapRegion() }
-
+  (myLocationFocused) && updateMapRegion()
   // rotate along with compas
   const handleUserLocationChange = event => {
     if (event.nativeEvent && event.nativeEvent.coordinate) {
@@ -803,40 +795,40 @@ const index = ({ navigation }) => {
           showsScale={true}
           showsBuildings={true}
           initialRegion={initialRegion}
-          // showsUserLocation={true}
-          // followsUserLocation={true}
-          // onUserLocationChange={handleUserLocationChange}
+          showsUserLocation={true}
           onPress={() => setMylocationFocused(false)}
           onLongPress={() => setMylocationFocused(false)}
           onDoublePress={() => setMylocationFocused(false)}
 
         >
-          {singleShiftCoords?.map((coords, index) => (
-            <Marker
-              coordinate={{
-                latitude: coords?.lat,
-                longitude: coords?.lng,
-              }}
-              title={coords.name}
-              onPress={() => handlePickupMarkerClick(index)}
-            >
-              <PickupPin />
-            </Marker>
-          ))}
+          {
+            singleShiftCoords?.map((coords, index) => (
+              <Marker
+                coordinate={{
+                  latitude: coords?.lat,
+                  longitude: coords?.lng,
+                }}
+                title={coords?.name}
+                onPress={() => handlePickupMarkerClick(index)}
+              >
+                <PickupPin />
+              </Marker>
+            ))}
           {singleDeliveryCoords?.map((coords, index) => (
             <Marker
               coordinate={{
                 latitude: coords?.lat,
                 longitude: coords?.lng,
               }}
-              title={coords.name}
+              title={coords?.name}
               onPress={() => handleDeliveryMarkerClick(index)}
             >
               <Dpin />
               {/* <DeliveryPin/> */}
             </Marker>
-          ))}
-          <Marker coordinate={myLiveLocation} flat anchor={{ x: 0.5, y: 0.5 }}>
+          ))
+          }
+          {/* <Marker coordinate={myLiveLocation} flat anchor={{ x: 0.5, y: 0.5 }}>
             <View
               style={{
                 transform: [{ rotate: `${myLiveLocation?.direction}deg` }],
@@ -844,7 +836,7 @@ const index = ({ navigation }) => {
             >
               <Truck />
             </View>
-          </Marker>
+          </Marker> */}
           {/* <View style={{
             height: 100, width: 100, backgroundColor: "green",
             transform: [{ rotate: `${myLiveLocation?.course || myLiveLocation?.direction}deg` }],

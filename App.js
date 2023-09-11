@@ -79,6 +79,7 @@ const App = () => {
 
 
     messaging().onMessage(remoteMessage => {
+      console.log("ntoifiifiifif>>>", remoteMessage);
       setNotification(remoteMessage.notification);
       // Increment the notification key to trigger a re-render
       setNotificationKey(prevKey => prevKey + 1);

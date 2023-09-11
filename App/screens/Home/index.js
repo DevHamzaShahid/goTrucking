@@ -106,13 +106,13 @@ const Index = ({ navigation }) => {
   }
   // save shipment if any of the shipment in progress status==start >>>> this id will be used when directly click on myRoutes tab
   useEffect(() => {
-    const startShift = allShifts?.find(shift => shift.status === "start" || shift.status === "delivering");
+   if(isFocused){ const startShift = allShifts?.find(shift => shift.status === "start" || shift.status === "delivering");
     if (startShift?._id) {
       dispatch({ type: 'SET_SHIPMENT_ID', payload: startShift?._id });
     } else {
       dispatch({ type: 'SET_SHIPMENT_ID', payload: null });
-    }
-  }, [allShifts, dispatch])
+    }}
+  }, [allShifts, dispatch,isFocused])
 
   const onClickShipmentButton = item => {
     setShipmentId(item?._id)
@@ -269,7 +269,7 @@ const Index = ({ navigation }) => {
                       Total{'\n'}Distance
                     </CustomText>
                     <CustomText size={10} style={styles.textSmall}>
-                      {item.estimationDistance || '-'} KM
+                      {item.totalDistance || '-'} KM
                     </CustomText>
                   </View>
                   <View style={styles.separatorVertical} />
@@ -337,7 +337,7 @@ const Index = ({ navigation }) => {
             <Icon name="bell" size={30} color={color.white} />
           </TouchableOpacity>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>{totalJobs} Jobs Completed</Text>
+            <Text style={styles.buttonText}>{totalJobs||'-'} Jobs Completed</Text>
           </View>
         </View>
         <View style={styles.rightContainer}>

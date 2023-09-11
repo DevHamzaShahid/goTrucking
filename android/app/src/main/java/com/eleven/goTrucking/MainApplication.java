@@ -1,4 +1,4 @@
-package com.gotrucking;
+package com.eleven.goTrucking;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

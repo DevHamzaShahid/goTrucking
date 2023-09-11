@@ -73,9 +73,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.gotrucking"
+    namespace "com.eleven.goTrucking"
     defaultConfig {
-        applicationId "com.gotrucking"
+        applicationId "com.eleven.goTrucking"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
