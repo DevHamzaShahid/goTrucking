@@ -99,6 +99,7 @@ const index = ({ navigation }) => {
                     />
                     <CustomTextInput
                         placeholder="Password"
+                        secureTextEntry={true}
                         ContainerStyle={{
                             width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
                             shadowOffset: {
@@ -109,6 +110,7 @@ const index = ({ navigation }) => {
                             shadowOpacity: 0.6,
                         }}
                         leftIcon={'lock'}
+                        
                         value={inputData.password}
                         onChangeText={text => setInputData({ ...inputData, password: text })}
                     />

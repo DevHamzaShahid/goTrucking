@@ -28,7 +28,7 @@ export function HomeStack({ navigation }) {
                     headerTitleAlign: 'center',
                     title: 'Pick-up Points',
                     headerRight: () => (
-                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                        <Icon name='bell' onPress={()=>navigation.navigate(route.Notifications)} size={30} color={color.appBlue} style={{ padding: 5 }} />
                     )
                 }
                 }

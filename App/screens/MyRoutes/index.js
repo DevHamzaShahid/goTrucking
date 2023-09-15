@@ -457,9 +457,22 @@ const index = ({ navigation }) => {
           }
           setMyLiveLocation({ latitude, longitude, direction: course || bearing });
           console.log('Live Location:', location);
+          let database = firebase.database();
+          let userLocationRef = database.ref('Driver_livelocation');
+
+          // Create a subnode for the user's location data under their user ID
+          let userRef = userLocationRef.child(userData?._id);
+
+          // Set the location data for the user
+          userRef.set(location)
+            .then(function () {
+              console.log("Data added successfully!");
+            })
+            .catch(function (error) {
+              console.error("Error adding data: " + error);
+            });
         })
         .catch(error => console.log('Error getting location:', error));
-
     }, 3000);
 
     return () => {
@@ -713,7 +726,7 @@ const index = ({ navigation }) => {
   }
 
 
-// take camera along with the live location
+  // take camera along with the live location
   const updateMapRegion = () => {
     try {
       if (mapRef?.current && myLiveLocation) {
