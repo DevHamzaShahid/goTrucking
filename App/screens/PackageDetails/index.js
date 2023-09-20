@@ -48,11 +48,8 @@ const index = ({ navigation }) => {
     truckingState?.confirmPackagesPickup?.data || [];
   const { loading: confirmPackagesPickupLoader } =
     truckingState?.confirmPackagesPickup || {};
-  
-  
-  
-  
-    
+
+
   useEffect(() => {
     dispatch(
       getAllPickupPackages({
@@ -71,6 +68,7 @@ const index = ({ navigation }) => {
       // Show alert when data is fetched and value is available
       if (dataFetched) {
         if (allPickup) {
+          dispatch({ type: 'SET_CONTINUE_BTN', payload: true })
           dispatch(
             pickupPointDepartureOrDone({
               shipmentId: param.shipmentId,
@@ -269,7 +267,12 @@ const index = ({ navigation }) => {
                 heading={'Delivery Navigate :'}
                 description={obj.address || '-'}
               />
+              <FormText
+                heading={'Package Weight :'}
+                description={obj.package_weight || '-'}
+              />
               <View style={{ marginBottom: 10 }} />
+
             </View>
           ))}
         </ScrollView>

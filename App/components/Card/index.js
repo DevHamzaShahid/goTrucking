@@ -28,7 +28,6 @@ const index = ({
   const closeSuccessErrorAlert = () => {
     setShowAlert(false);
   };
-  console.log("daatta single shift", data);
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {showAlert && (

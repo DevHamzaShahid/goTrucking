@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Keyboard } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import BackGroundImage from '../../asset/svgs/Authbackground.svg'
 import Login from '../../asset/svgIcons/login.svg'
 import CustomText from '../../components/CustomText'
@@ -28,7 +28,6 @@ const index = ({ navigation }) => {
     });
 
 
-    console.log("loader", ForgotPasswordLoader, error, data);
     const Send = async () => {
         if (inputData.email == '') {
             alert("Please enter an email address")
@@ -45,7 +44,7 @@ const index = ({ navigation }) => {
         }
     }
     useEffect(() => {
-        if (data == 'Reset Password Email has been Sent') {
+        if (data?.message == 'Reset Password Email has been Sent') {
             dispatch(resetState())
             navigation.navigate(route.ResetPassword, { email: inputData?.email })
         }
@@ -54,6 +53,24 @@ const index = ({ navigation }) => {
         }
     }, [error, data])
 
+
+
+const scrollViewRef=useRef()
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+          'keyboardDidShow',
+          (e) => {
+            // Calculate the scroll offset by subtracting the margin (e.g., 100) from the keyboard height
+            const scrollOffset = e.endCoordinates.height - 100;
+            scrollViewRef.current.scrollTo({ x: 0, y: scrollOffset, animated: true });
+          }
+        );
+    
+        return () => {
+          keyboardDidShowListener.remove();
+        };
+    }, []);
+    
     return (
         <Block>
             {ForgotPasswordLoader && <CustomActivityIndicator />}
@@ -61,7 +78,16 @@ const index = ({ navigation }) => {
             <Image source={require('../../asset/pngs/Authbackground.png')} resizeMode='cover' style={{ height: '100%', width: '100%', position: 'absolute', zIndex: -1 }} />
 
             {/* upper part image with text */}
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+             ref={scrollViewRef}
+             contentContainerStyle={{ flexGrow: 1 }}
+             showsVerticalScrollIndicator={false}
+             keyboardShouldPersistTaps="handled"
+            >
+            <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'null'}
+                >
                 <View style={{ width: "90%", alignSelf: 'center', marginTop: 80, alignItems: 'center', justifyContent: 'center' }}>
                     <Login />
                     <CustomText size={30} style={{ fontWeight: '600', marginTop: 10 }}>
@@ -108,7 +134,8 @@ const index = ({ navigation }) => {
                             </CustomText>
                         </TouchableOpacity>
                     </View>
-                </View>
+                    </View>
+                    </KeyboardAvoidingView>
             </ScrollView>
         </Block>
     )

@@ -26,7 +26,6 @@ export function MyTabs() {
     const truckingState = useSelector(state => state);
     const { shipment_Id } = truckingState.shipmentId || ''
 
-    console.log("gettttttt from reduxxx>>>", shipment_Id);
 
     const navigation = useNavigation()
     

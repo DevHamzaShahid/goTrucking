@@ -47,9 +47,9 @@ export function HomeStack({ navigation }) {
                     headerTintColor: color.appBlue,
                     headerTitleAlign: 'center',
                     title: 'Receipt',
-                    headerRight: () => (
-                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                    ),
+                    // headerRight: () => (
+                    //     <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    // ),
                     headerLeft: () => (
                         <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
                             <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />

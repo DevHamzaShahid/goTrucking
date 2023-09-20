@@ -377,7 +377,7 @@ const index = ({ navigation }) => {
     let allDelivered = singleShiftDelivery?.every(
       obj => obj.status === 'departure',
     );
-    if (allpickedUp) {
+    if (allpickedUp == true) {
       setDeliveryStatus('delivery');
     }
     if (allpickedUp && !alertShown && !allDelivered) {
@@ -521,7 +521,6 @@ const index = ({ navigation }) => {
       lng: item.lng && item.lng,
       name: item.name
     }));
-    console.log("for coords", singleShift);
     const deliveryCoords = singleShiftDelivery?.map(item => ({
       lat: item.lat && item.lat,
       lng: item.lng && item.lng,
@@ -677,7 +676,6 @@ const index = ({ navigation }) => {
       unit: "km",
     });
     //unit is not working here thats why divide dist by 1000 to convert meters to km if needed
-    console.log("dist dist / 1000dist / 1000dist / 1000dist / 1000dist / 1000", dist);
     return dist //in metres
   }
 
@@ -812,7 +810,6 @@ const index = ({ navigation }) => {
           onPress={() => setMylocationFocused(false)}
           onLongPress={() => setMylocationFocused(false)}
           onDoublePress={() => setMylocationFocused(false)}
-
         >
           {
             singleShiftCoords?.map((coords, index) => (
@@ -1582,7 +1579,6 @@ const index = ({ navigation }) => {
                           <CustomButton
                             onPress={async () => {
                               const onLocation = await checkUserInDestinationOrNot(item)
-                              console.log("ONlocation=>>>>>>>delivery", onLocation);
                               if (onLocation <= 50) {
                                 await dispatch(confirmDeliveryDeparturee({ shipmentId: param?.shipment_Id || shipment_Id, deliveryId: item._id, status: 'arrival' }))
                                 dispatch(getSingleShiftDelivery(param?.shipment_Id || shipment_Id))

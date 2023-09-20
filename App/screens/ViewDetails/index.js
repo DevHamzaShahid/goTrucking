@@ -43,7 +43,6 @@ const index = ({ navigation }) => {
   const { data: acceptrej } = truckingState?.acceptOrRejectJob || [];
   const { loading: acceptRejectLoader } = truckingState?.acceptOrRejectJob || {};
 
-console.log("singleShiftsingleShiftsingleShiftsingleShift",singleShift);
 
   const parameter = useRoute();
   const param = parameter?.params;
@@ -68,7 +67,6 @@ console.log("singleShiftsingleShiftsingleShiftsingleShift",singleShift);
   const confirmDeparture = () => {
     navigation.navigate(route.MyRoutes);
   };
-  console.log("stopGoingDirectlyBack", stopGoingDirectlyBack);
 
   const onClickAccept = async () => {
     try {

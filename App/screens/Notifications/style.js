@@ -3,10 +3,11 @@ import { color } from "../../utils/colors";
 const { StyleSheet } = require("react-native");
 
 export const styles = StyleSheet.create( {
-    notificationItem: {
+  notificationItem: {
+      alignSelf:'center',
       flexDirection: 'row',
       alignItems: 'center',
-      width: '100%',
+      width: '95%',
       height: 80,
       backgroundColor: '#e6eaee',
       marginBottom: 5,

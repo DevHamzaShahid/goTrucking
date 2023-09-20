@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, ScrollView, TextInput, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, Image, ScrollView, TextInput, StyleSheet, Keyboard, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import BackGroundImage from '../../asset/svgs/Authbackground.svg'
 import Login from '../../asset/svgIcons/login.svg'
@@ -26,7 +26,6 @@ const index = ({ navigation }) => {
         password: '',
         confirmPassword: ''
     });
-    console.log("reset passwrod data", data, error, resetLoader);
     // for otp
     const [otpValues, setOtpValues] = useState(['', '', '', '']);
     const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
@@ -94,6 +93,22 @@ const index = ({ navigation }) => {
         }
     }
 
+    const scrollViewRef = useRef()
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+            'keyboardDidShow',
+            (e) => {
+                // Calculate the scroll offset by subtracting the margin (e.g., 100) from the keyboard height
+                const scrollOffset = e.endCoordinates.height - 100;
+                scrollViewRef.current.scrollTo({ x: 0, y: scrollOffset, animated: true });
+            }
+        );
+
+        return () => {
+            keyboardDidShowListener.remove();
+        };
+    }, []);
+
 
     return (
         <Block>
@@ -102,79 +117,90 @@ const index = ({ navigation }) => {
             <Image source={require('../../asset/pngs/Authbackground.png')} resizeMode='cover' style={{ height: '100%', width: '100%', position: 'absolute', zIndex: -1 }} />
 
             {/* upper part image with text */}
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={{ width: "90%", alignSelf: 'center', marginTop: 80, alignItems: 'center', justifyContent: 'center' }}>
-                    <Login />
-                    <CustomText size={30} style={{ fontWeight: '600', marginTop: 10 }}>
-                        Welcome To
-                    </CustomText>
-                    <CustomText size={32} style={{ fontWeight: '600' }}>
-                        GO TRUCKING
-                    </CustomText>
-                    <CustomText size={22} style={{ fontWeight: '600', color: color.appLightBlue, marginTop: 20 }} >
-                        Reset Password
-                    </CustomText>
-                    <CustomText size={16} style={{ fontWeight: '500', color: color.black, marginTop: 20, textAlign: 'center' }} >
-                        Please Enter The 4 Digit Code Sent To {param?.email || 'Your Email'}
-                    </CustomText>
+            <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                style={{ flex: 1 }}
+            >
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'null'}
+                >
+                    <View style={{ width: "90%", alignSelf: 'center', marginTop: 80, alignItems: 'center', justifyContent: 'center' }}>
+                        <Login />
+                        <CustomText size={30} style={{ fontWeight: '600', marginTop: 10 }}>
+                            Welcome To
+                        </CustomText>
+                        <CustomText size={32} style={{ fontWeight: '600' }}>
+                            GO TRUCKING
+                        </CustomText>
+                        <CustomText size={22} style={{ fontWeight: '600', color: color.appLightBlue, marginTop: 20 }} >
+                            Reset Password
+                        </CustomText>
+                        <CustomText size={16} style={{ fontWeight: '500', color: color.black, marginTop: 20, textAlign: 'center' }} >
+                            Please Enter The 4 Digit Code Sent To {param?.email || 'Your Email'}
+                        </CustomText>
 
 
 
-                    {/* otp inputs*/}
-                    <View style={styles.container}>
-                        <View style={styles.otpContainer}>
-                            {otpValues.map((value, index) => (
-                                <TextInput
-                                    key={index}
-                                    ref={inputRefs[index]}
-                                    style={styles.otpInput}
-                                    maxLength={1}
-                                    keyboardType="numeric"
-                                    onChangeText={text => handleOtpChange(index, text)}
-                                    value={value}
-                                />
-                            ))}
+                        {/* otp inputs*/}
+                        <View style={styles.container}>
+                            <View style={styles.otpContainer}>
+                                {otpValues.map((value, index) => (
+                                    <TextInput
+                                        key={index}
+                                        ref={inputRefs[index]}
+                                        style={styles.otpInput}
+                                        maxLength={1}
+                                        keyboardType="numeric"
+                                        onChangeText={text => handleOtpChange(index, text)}
+                                        value={value}
+                                    />
+                                ))}
+                            </View>
                         </View>
+
+                        {/* textInputs */}
+                        <CustomTextInput
+                            placeholder="Password"
+                            ContainerStyle={{
+                                width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
+                                shadowOffset: {
+                                    width: 1,
+                                    height: 1,
+                                },
+                                shadowRadius: 2,
+                                shadowOpacity: 0.6,
+                            }}
+                            leftIcon={'lock'}
+                            value={inputData.password}
+                            onChangeText={text => setInputData({ ...inputData, password: text })}
+                        />
+
+                        <CustomTextInput
+                            placeholder="Confirm Password"
+                            ContainerStyle={{
+                                width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
+                                shadowOffset: {
+                                    width: 1,
+                                    height: 1,
+                                },
+                                shadowRadius: 2,
+                                shadowOpacity: 0.6,
+                            }}
+                            leftIcon={'lock'}
+                            value={inputData.confirmPassword}
+                            onChangeText={text => setInputData({ ...inputData, confirmPassword: text })}
+                        />
+
+
+                        <CustomButton onPress={Reset} title={"Reset"} buttonStyle={{ height: 50, width: '80%', backgroundColor: color.appBlue, marginVertical: 30 }} textStyle={{ color: color.white, fontWeight: '700' }} />
+
+
                     </View>
-
-                    {/* textInputs */}
-                    <CustomTextInput
-                        placeholder="Password"
-                        ContainerStyle={{
-                            width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
-                            shadowOffset: {
-                                width: 1,
-                                height: 1,
-                            },
-                            shadowRadius: 2,
-                            shadowOpacity: 0.6,
-                        }}
-                        leftIcon={'lock'}
-                        value={inputData.password}
-                        onChangeText={text => setInputData({ ...inputData, password: text })}
-                    />
-
-                    <CustomTextInput
-                        placeholder="Confirm Password"
-                        ContainerStyle={{
-                            width: '80%', height: 40, borderRadius: 30, borderWidth: 1.2, height: 50, borderColor: '#147FD6', shadowColor: '#147FD6',
-                            shadowOffset: {
-                                width: 1,
-                                height: 1,
-                            },
-                            shadowRadius: 2,
-                            shadowOpacity: 0.6,
-                        }}
-                        leftIcon={'lock'}
-                        value={inputData.confirmPassword}
-                        onChangeText={text => setInputData({ ...inputData, confirmPassword: text })}
-                    />
-
-
-                    <CustomButton onPress={Reset} title={"Reset"} buttonStyle={{ height: 50, width: '80%', backgroundColor: color.appBlue, marginVertical: 30 }} textStyle={{ color: color.white, fontWeight: '700' }} />
-
-
-                </View>
+                </KeyboardAvoidingView>
             </ScrollView>
         </Block>
     )

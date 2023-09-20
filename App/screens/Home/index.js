@@ -260,7 +260,7 @@ const Index = ({ navigation }) => {
                       EST. Tolls
                     </CustomText>
                     <CustomText size={10} style={styles.textSmall}>
-                      Eur. {item.estimationToll}
+                      {item.estimationToll}
                     </CustomText>
                   </View>
                   <View style={styles.separatorVertical} />

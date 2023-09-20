@@ -96,6 +96,7 @@ const index = ({ navigation }) => {
         // Show alert when data is fetched and value is available
         if (dataFetched) {
           if (allPickup) {
+          dispatch({ type: 'SET_CONTINUE_BTN', payload: true })
             dispatch(
               deliveryDepartureOrDone({
                 shipmentId: param.shipmentId,
@@ -279,7 +280,7 @@ const index = ({ navigation }) => {
               </View>
 
               {/* Card Body */}
-              <View style={{marginVertical: 10}} />
+              <View style={{ marginVertical: 10 }} />
               <FormText
                 heading={'Article no. :'}
                 description={obj.article_no}
@@ -292,12 +293,16 @@ const index = ({ navigation }) => {
                 heading={'Package Dimensions :'}
                 description={`${obj.package_length} L x ${obj.package_height} H x ${obj.package_width} W`}  //{'14 L x 2 H x 20W'}
               />
-              <FormText heading={'Receiver Name :'} description={obj.reciverName||'-'} />
+              <FormText heading={'Receiver Name :'} description={obj.reciverName || '-'} />
               <FormText
                 heading={'Delivery Navigate :'}
-                description={obj.address||'-'}
+                description={obj.address || '-'}
               />
-              <View style={{marginBottom: 10}} />
+              <FormText
+                heading={'Package Weight :'}
+                description={obj.package_weight || '-'}
+              />
+              <View style={{ marginBottom: 10 }} />
             </View>
           ))}
         </ScrollView>

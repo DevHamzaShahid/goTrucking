@@ -40,7 +40,6 @@ export const UploadImagesPath = param => async dispatch => {
       `${config.SERVER_IP}api/shipping/shippment/delivery/${param.shipmentId}/${param.deliveryId}`,
       { status: "done", images: param.photoPaths },
     );
-    console.log("hitting results",data);
     dispatch({
       type: UpLOADIMAGES_PATH_SUCCESS,
       payload: data,

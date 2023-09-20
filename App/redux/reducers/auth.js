@@ -5,6 +5,9 @@ import {
   GET_PROFILE_FAILED,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
+  REMOVE_ACCOUNT_FAILED,
+  REMOVE_ACCOUNT_REQUEST,
+  REMOVE_ACCOUNT_SUCCESS,
   RESET_PASSWORD_FAILED,
   RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
@@ -183,6 +186,29 @@ export const resetPassword = (state = {}, action) => {
         data: action.payload,
       };
     case RESET_PASSWORD_FAILED:
+      return {
+        loading: false,
+        error: action.payload,
+      };
+    default:
+      return state;
+  }
+};
+
+//remove Account
+
+export const RemoveAccount = (state = {}, action) => {
+  switch (action.type) {
+    case REMOVE_ACCOUNT_REQUEST:
+      return {
+        loading: true,
+      };
+    case REMOVE_ACCOUNT_SUCCESS:
+      return {
+        loading: false,
+        data: action.payload,
+      };
+    case REMOVE_ACCOUNT_FAILED:
       return {
         loading: false,
         error: action.payload,

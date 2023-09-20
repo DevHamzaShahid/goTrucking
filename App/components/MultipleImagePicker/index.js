@@ -19,7 +19,6 @@ const MultipleImagePicker = ({ setIsImageSelected }) => {
     const navigation = useNavigation()
     const param = parameter?.params;
 
-    console.log("hehehhehehhehehhe", param);
     const [imageList, setImageList] = useState([])
     const [isModalVisible, setModalVisible] = useState(false);
     const [reFresh, setRefresh] = useState(0);
@@ -44,7 +43,6 @@ const MultipleImagePicker = ({ setIsImageSelected }) => {
     const { loading: RawPhotosresponseLoader } =
         truckingState?.uploadIMagesPath || {};
     const photoresponse = uploadedPhotosPathResponse
-    console.log("photoresponse?.messagephotoresponse?.messagephotoresponse?.message", photoresponse?.message);
     useEffect(() => {
         (async () => {
             if (sendPhotosPath && photo?.paths) {
@@ -181,8 +179,8 @@ const MultipleImagePicker = ({ setIsImageSelected }) => {
                 </ScrollView>
             </View>
             {showDeliveredAlert && <DeliveredAlert setShowDeliveredAlert={setShowDeliveredAlert} />}
-            <CustomButton title={'Take a Picture'} onPress={openCamera} buttonStyle={{ marginVertical: 20, backgroundColor: color.appLightBlue, height: 50, width: '70%', borderRadius: 50 }} textStyle={{ color: color.white, fontSize: 19, fontWeight: '500' }} />
-            <CustomButton title={'Choose a Picture'} onPress={openPicker} buttonStyle={{ backgroundColor: color.white, height: 50, width: '70%', borderRadius: 50, borderWidth: 2, borderColor: color.appBlue }} textStyle={{ color: color.appBlue, fontSize: 19, fontWeight: '500' }} />
+            <CustomButton title={'Take a Picture'} onPress={openCamera} buttonStyle={{ marginVertical: 10, backgroundColor: color.appLightBlue, height: 50, width: '70%', borderRadius: 50 }} textStyle={{ color: color.white, fontSize: 19, fontWeight: '500' }} />
+            {/* <CustomButton title={'Choose a Picture'} onPress={openPicker} buttonStyle={{ backgroundColor: color.white, height: 50, width: '70%', borderRadius: 50, borderWidth: 2, borderColor: color.appBlue }} textStyle={{ color: color.appBlue, fontSize: 19, fontWeight: '500' }} /> */}
             <CustomButton title={delivered ? 'Delivered' : "Deliver"} onPress={() => {
                 if (!delivered) {
                     if (imageList?.length == 0) {

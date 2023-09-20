@@ -8,7 +8,7 @@ const CustomTextInput = ({leftIcon, rightIcon, ContainerStyle, ...props}) => {
       {leftIcon && (
         <Icon name={leftIcon} size={18} color={color.textGrey} style={styles.icon} />
       )}
-      <TextInput {...props} style={styles.input} />
+      <TextInput {...props} placeholderTextColor={color.textGrey} style={styles.input} />
       {rightIcon && (
         <Icon name={rightIcon} size={18} color={color.textGrey} style={styles.icon} />
       )}

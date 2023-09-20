@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomText from '../../components/CustomText';
 import Block from '../../components/Block';
 import RoundTop from '../../asset/svgs/Round top.svg';
@@ -10,54 +10,56 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { route } from '../../Routes';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProfile } from '../../redux/actions/auth';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
 import CustomActivityIndicator from '../../components/CustomLoader';
 import { resetDirectionLineState } from '../../redux/actions/getDirectionLine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { defaultImage } from '../../utils/helperFunction';
-
+import RemoveAccountAlert from '../../components/RemoveAccountAlert'
 const arrDummy = [
-  {
-    id: '12',
-    iconName: 'car',
-    heading: 'ID Card',
-    description: 'Verifications',
-    rightIcon: 'arrow-right',
-  },
+  // {
+  //   id: '12',
+  //   iconName: 'car',
+  //   heading: 'ID Card',
+  //   description: 'Verifications',
+  //   rightIcon: 'arrow-right',
+  // },
+  // {
+  //   id: '123',
+  //   iconName: 'card',
+  //   heading: 'fdsfdsfgs',
+  //   description: 'dcsfcsds',
+  //   rightIcon: 'arrow-right',
+  // },
+  // {
+  //   id: '124',
+  //   iconName: 'pencil',
+  //   heading: 'Responsible Service Alcohol',
+  //   description: 'Responsible Service Alcohol',
+  //   rightIcon: 'arrow-right',
+  // },
+
   {
     id: '123',
-    iconName: 'card',
-    heading: 'fdsfdsfgs',
-    description: 'dcsfcsds',
-    rightIcon: 'arrow-right',
-  },
-  {
-    id: '124',
-    iconName: 'pencil',
-    heading: 'Responsible Service Alcohol',
-    description: 'Responsible Service Alcohol',
-    rightIcon: 'arrow-right',
-  },
-  {
-    id: '125',
-    iconName: 'bucket',
-    heading: 'Responsible Service Alcohol',
-    description: 'Responsible Service Alcohol',
-    rightIcon: 'arrow-right',
-  },
-  {
-    id: 'signout',
     iconName: 'logout',
     heading: 'Logout',
     description: 'Logout',
     rightIcon: 'arrow-right',
   },
+  {
+    id: '125',
+    iconName: 'delete',
+    heading: 'Remove Account',
+    description: 'Account will be deleted permanently',
+    rightIcon: 'arrow-right',
+  },
 ];
-const index = ({ navigation }) => {
-  const rating = 4;
-
+const index = () => {
+  const rating = 4.5;
+  const [showRemoveAccountAlert, setShowRemoveAccountAlert] = useState(false)
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
+  const navigation=useNavigation()
   useEffect(() => {
     dispatch(getProfile());
   }, [isFocused]);
@@ -65,7 +67,7 @@ const index = ({ navigation }) => {
   //selectors
   // get profile
   const ProfileData = useSelector(profile => profile);
-  
+
   const {
     fullName,
     email,
@@ -76,9 +78,27 @@ const index = ({ navigation }) => {
     mobileNumber,
   } = ProfileData?.getProfile.data || {};
   const { loading: getProfileLoader } = ProfileData?.getProfile || {};
+
+
+
+  // const { loading, error } = ProfileData?.removeAccount
+  const data = ProfileData?.removeAccount?.data
+
+  useEffect(() => {
+    (async () => {
+      if (data?.message == "Deleted Successfully") {
+        setShowRemoveAccountAlert(false)
+        dispatch({ type: 'USER_TOKEN', payload: null });
+        dispatch(resetDirectionLineState());
+        await AsyncStorage.removeItem('alertShown');
+        // navigation.navigate(route.Login)
+      }
+    })()
+  }, [data && data,isFocused])
   return (
     <Block>
-      {getProfileLoader && <CustomActivityIndicator />}
+      {(getProfileLoader || (data&&ProfileData?.removeAccount?.loading)) && <CustomActivityIndicator />}
+      {showRemoveAccountAlert && <RemoveAccountAlert setRemoveAccount={setShowRemoveAccountAlert} />}
       {/* nav header */}
       <View
         style={{
@@ -150,7 +170,17 @@ const index = ({ navigation }) => {
       <ScrollView>
         <View style={{ width: '80%', alignSelf: 'center', marginVertical: 50 }}>
           {arrDummy?.map(item => (
-            <View
+            <TouchableOpacity
+              onPress={async () => {
+                if (item.description == 'Logout') {
+                  dispatch({ type: 'USER_TOKEN', payload: null });
+                  dispatch(resetDirectionLineState());
+                  await AsyncStorage.removeItem('alertShown');
+                }
+                else if (item.heading == 'Remove Account') {
+                  setShowRemoveAccountAlert(true)
+                }
+              }}
               style={{
                 flexDirection: 'row',
                 height: 60,
@@ -174,15 +204,9 @@ const index = ({ navigation }) => {
                 </CustomText>
               </View>
               <View style={{ width: '10%', height: 60, justifyContent: 'center' }}>
-                <Icon onPress={async () => {
-                  if (item.description == 'Logout') {
-                    dispatch({ type: 'USER_TOKEN', payload: null });
-                    dispatch(resetDirectionLineState());
-                    await AsyncStorage.removeItem('alertShown');
-                  }
-                }} name={item.rightIcon} color={color.appBlue} size={30} />
+                <Icon name={item.rightIcon} color={color.appBlue} size={30} />
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>

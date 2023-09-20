@@ -76,7 +76,6 @@ const index = () => {
   const [showImagePickerModal, setShowImagePickerModal] = useState(false);
   const [pickerType, setPickerType] = useState('');
   const [dataFetched, setDataFetched] = useState(false);
-  console.log("image selected", imageSelected);
   const dispatch = useDispatch();
 
   // onClick Save button

@@ -6,6 +6,9 @@ import {
   GET_PROFILE_FAILED,
   GET_PROFILE_REQUEST,
   GET_PROFILE_SUCCESS,
+  REMOVE_ACCOUNT_FAILED,
+  REMOVE_ACCOUNT_REQUEST,
+  REMOVE_ACCOUNT_SUCCESS,
   RESET_PASSWORD_FAILED,
   RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
@@ -135,8 +138,7 @@ export const forgetPassword = (email) => async dispatch => {
     dispatch({
       type: FORGET_PASSWORD_REQUEST,
     });
-    const { data } = await Axios.post(`${config.SERVER_IP}api/users/forgotpassword`,{ email});
-    console.log("after sending emial to forgot pasword", data);
+    const { data } = await Axios.post(`${config.SERVER_IP}api/users/forgotpassword`, { email });
     dispatch({
       type: FORGET_PASSWORD_SUCCESS,
       payload: data,
@@ -158,7 +160,6 @@ export const resetPassword = (resetData) => async dispatch => {
       type: RESET_PASSWORD_REQUEST,
     });
     const { data } = await Axios.patch(`${config.SERVER_IP}api/users/resetpassword`, resetData);
-    console.log("after sending otp and passwords to rest pasword", data);
     dispatch({
       type: RESET_PASSWORD_SUCCESS,
       payload: data,
@@ -167,6 +168,27 @@ export const resetPassword = (resetData) => async dispatch => {
     // alert(error)
     dispatch({
       type: RESET_PASSWORD_FAILED,
+      payload: error.message,
+    });
+  }
+};
+
+//remove account
+
+export const removeAccount = () => async dispatch => {
+  try {
+    dispatch({
+      type: REMOVE_ACCOUNT_REQUEST,
+    });
+    const { data } = await Axios.post(`${config.SERVER_IP}api/users/delete-account`);
+    dispatch({
+      type: REMOVE_ACCOUNT_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    // alert(error)
+    dispatch({
+      type: REMOVE_ACCOUNT_FAILED,
       payload: error.message,
     });
   }

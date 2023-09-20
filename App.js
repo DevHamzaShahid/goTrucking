@@ -23,7 +23,6 @@ const App = () => {
   const [notificationKey, setNotificationKey] = useState(0);
   const truckingState = store.getState(state => state);
   const { token } = truckingState?.userToken
-  console.log("tolkiiiii", token);
 
   useEffect(() => {
     // Must be outside of any component LifeCycle (such as `componentDidMount`).
@@ -79,7 +78,6 @@ const App = () => {
 
 
     messaging().onMessage(remoteMessage => {
-      console.log("ntoifiifiifif>>>", remoteMessage);
       setNotification(remoteMessage.notification);
       // Increment the notification key to trigger a re-render
       setNotificationKey(prevKey => prevKey + 1);

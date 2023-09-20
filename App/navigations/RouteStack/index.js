@@ -10,9 +10,18 @@ import Receipt from '../../screens/Receipt'
 import { TouchableOpacity } from 'react-native';
 import BackIcon from 'react-native-vector-icons/MaterialIcons'
 import { route } from '../../Routes';
+import CustomText from '../../components/CustomText'
+import { useDispatch, useSelector } from 'react-redux';
 const Stack = createStackNavigator();
 
-const index = ({navigation}) => {
+const index = ({ navigation }) => {
+    //dispatch
+    const dispatch = useDispatch()
+    //selectors
+
+    const truckingState = useSelector(state => state);
+
+    const continueBtn = truckingState?.ContinueBtnAvail?.continueBtn;
     return (
         <Stack.Navigator>
             <Stack.Screen name="MyRoutes" component={MyRoutes} options={
@@ -29,14 +38,27 @@ const index = ({navigation}) => {
                     headerTintColor: color.appBlue,
                     headerTitleAlign: 'center',
                     title: 'Package Details',
-                    headerRight: () => (
-                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                    ),
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
-                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                        </TouchableOpacity>
-                    )
+                    // headerRight: () => (
+                    //     <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    // ),
+                    // headerLeft: () => (
+                    //     <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
+                    //         <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    //     </TouchableOpacity>
+                    // )
+                    headerRight: () => {
+                       return continueBtn && (
+                            <TouchableOpacity style={{ flexDirection: 'row', alignSelf: 'center', alignItems: 'center' }} onPress={async() => {
+                               await dispatch({ type: 'SET_CONTINUE_BTN', payload: false })
+                                navigation.navigate(route.MyRoutes)
+                            }}>
+                                <CustomText
+                                    size={14}
+                                    style={{ color: color.appBlue, fontWeight: '600' }}>Continue</CustomText>
+                                <BackIcon name='arrow-forward' size={24} color={color.appBlue} style={{ padding: 5 }} />
+                            </TouchableOpacity>
+                        )
+                    }
                 }
                 }
             />
@@ -50,14 +72,27 @@ const index = ({navigation}) => {
                     headerTintColor: color.appBlue,
                     headerTitleAlign: 'center',
                     title: 'Package Details',
-                    headerRight: () => (
-                        <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                    ),
-                    headerLeft: () => (
-                        <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
-                            <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
-                        </TouchableOpacity>
-                    )
+                    // headerRight: () => (
+                    //     <Icon name='bell' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    // ),
+                    // headerLeft: () => (
+                    //     <TouchableOpacity onPress={() => navigation.navigate(route.MyRoutes)}>
+                    //         <BackIcon name='arrow-back-ios-new' size={30} color={color.appBlue} style={{ padding: 5 }} />
+                    //     </TouchableOpacity>
+                    // )
+                    headerRight: () => {
+                       return continueBtn && (
+                            <TouchableOpacity style={{ flexDirection: 'row', alignSelf: 'center', alignItems: 'center' }} onPress={async() => {
+                              await navigation.navigate(route.MyRoutes)
+                                dispatch({ type: 'SET_CONTINUE_BTN', payload: false })
+                            }}>
+                                <CustomText
+                                    size={14}
+                                    style={{ color: color.appBlue, fontWeight: '600' }}>Continue</CustomText>
+                                <BackIcon name='arrow-forward' size={24} color={color.appBlue} style={{ padding: 5 }} />
+                            </TouchableOpacity>
+                        )
+                    }
                 }
                 }
             />

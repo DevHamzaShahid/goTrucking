@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import UserToken, { GetProfile, UpdateProfile, UploadPhoto, forgotPassword, resetPassword, userLoginReducer, userSignupReducer } from './auth';
+import UserToken, { GetProfile, RemoveAccount, UpdateProfile, UploadPhoto, forgotPassword, resetPassword, userLoginReducer, userSignupReducer } from './auth';
 import {
   GetAllShifts,
   GetSingleShift,
@@ -19,6 +19,7 @@ import { uploadMultipleImages } from './uploadMultipleImages';
 import { UploadImagesPath } from './getAllPickupPackages copy 2';
 import { pickupDelayReport } from './PickupDelayReport';
 import { deliveryDelayReport } from './deliveryDelayReport';
+import showContinueBtnWhenAllPickedUp from './helperCheckReducers';
 
 export default combineReducers({
   userToken: UserToken,
@@ -45,5 +46,7 @@ export default combineReducers({
   PickupDelayReport: pickupDelayReport,
   DeliveryDelayReport: deliveryDelayReport,
   ForgetPassword: forgotPassword,
-  ResetPassword: resetPassword
+  ResetPassword: resetPassword,
+  ContinueBtnAvail: showContinueBtnWhenAllPickedUp,
+  removeAccount:RemoveAccount
 });

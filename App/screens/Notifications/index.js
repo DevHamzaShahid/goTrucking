@@ -70,9 +70,10 @@ const index = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView>
-        <View style={{zIndex:999,position:'absolute',alignSelf:'center',top:300}}>
-        {!notifications && <CustomActivityIndicator />}
-       </View>
+        <View style={{ zIndex: 999, position: 'absolute', alignSelf: 'center', top: 300 }}>
+          {!notifications && <CustomActivityIndicator />}
+        </View>
+        <View style={{ marginTop: 10 }} />
         {reversedNotifications?.map((item) =>
           <View style={styles.notificationItem}>
             <View style={styles.icon}>
