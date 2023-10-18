@@ -22,7 +22,7 @@ import { acceptOrRejectJob } from '../../redux/actions/acceptOrRejectJob';
 import { resetState } from '../../redux/actions/resetReduxState';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NoJobs from '../../asset/svgs/noJobAssigned.svg'
-import { defaultImage } from '../../utils/helperFunction';
+import { defaultImage, getDriversLocationCity } from '../../utils/helperFunction';
 import { Axios } from '../../utils/AxiosInstance';
 import { config } from '../../config';
 import messaging from '@react-native-firebase/messaging'
@@ -33,13 +33,23 @@ const Index = ({ navigation }) => {
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
+  ///////////////////////////////////////////////////////on notification rerender home//////////////////////////////
+  const [messages, setMessages] = useState([]);
+
+  const handleNotification = (remoteMessage) => {
+    console.log("came>>>>>>>>>>>>", remoteMessage);
+    setMessages([...messages, remoteMessage]);
+  };
+  useEffect(() => {
+    messaging().onMessage(handleNotification);
+  }, [])
   // getallshipments and profile
 
   useEffect(() => {
     dispatch(getProfile());
     dispatch(getAllShifts());
-  }, [isFocused, navigation, dispatch, allShifts]);
-
+  }, [isFocused, navigation, dispatch, allShifts, messages]);
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   //selectors
 
   const truckingState = useSelector(state => state);
@@ -106,13 +116,15 @@ const Index = ({ navigation }) => {
   }
   // save shipment if any of the shipment in progress status==start >>>> this id will be used when directly click on myRoutes tab
   useEffect(() => {
-   if(isFocused){ const startShift = allShifts?.find(shift => shift.status === "start" || shift.status === "delivering");
-    if (startShift?._id) {
-      dispatch({ type: 'SET_SHIPMENT_ID', payload: startShift?._id });
-    } else {
-      dispatch({ type: 'SET_SHIPMENT_ID', payload: null });
-    }}
-  }, [allShifts, dispatch,isFocused])
+    if (isFocused) {
+      const startShift = allShifts?.find(shift => shift.status === "start" || shift.status === "delivering");
+      if (startShift?._id) {
+        dispatch({ type: 'SET_SHIPMENT_ID', payload: startShift?._id });
+      } else {
+        dispatch({ type: 'SET_SHIPMENT_ID', payload: null });
+      }
+    }
+  }, [allShifts, dispatch, isFocused])
 
   const onClickShipmentButton = item => {
     setShipmentId(item?._id)
@@ -174,7 +186,12 @@ const Index = ({ navigation }) => {
   useEffect(() => {
     getFCMToken()
   }, [])
-
+  useEffect(() => {
+    (async () => {
+      const city = await getDriversLocationCity()
+      console.log("cityyyyy", city);
+    })()
+  }, [])
   return (
     <Block>
       {(getProfileLoader || getAllShiftsLoader) && <CustomActivityIndicator />}
@@ -337,7 +354,7 @@ const Index = ({ navigation }) => {
             <Icon name="bell" size={30} color={color.white} />
           </TouchableOpacity>
           <View style={styles.buttonContainer}>
-            <Text style={styles.buttonText}>{totalJobs||'-'} Jobs Completed</Text>
+            <Text style={styles.buttonText}>{totalJobs || '-'} Jobs Completed</Text>
           </View>
         </View>
         <View style={styles.rightContainer}>

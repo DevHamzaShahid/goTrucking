@@ -51,9 +51,7 @@ const index = ({ navigation }) => {
         if (snapshot.exists()) {
           // Loop through the child nodes (random keys)
           snapshot.forEach(function (childSnapshot) {
-            // Get the data associated with the random key
             var data = childSnapshot.val();
-            // console.log("data", data);
             notiArray.push(data)
           });
           setNotifications(notiArray)
@@ -65,7 +63,30 @@ const index = ({ navigation }) => {
         console.error("Error getting data: " + error);
       });
   }, [])
-
+  
+  const deleteNotification = (index, time) => {
+    const updatedNotifications = [...notifications];
+    updatedNotifications.splice(index, 1); // Remove the notification at the specified index
+    setNotifications(updatedNotifications);
+  
+    // Delete the notification from the database based on the timestamp
+    const specificId = userData?._id;
+    const specificIdRef = database().ref(specificId);
+  
+    specificIdRef
+      .orderByChild('time')
+      .equalTo(time)
+      .once('value')
+      .then((snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+          childSnapshot.ref.remove();
+        });
+      })
+      .catch((error) => {
+        console.error('Error deleting data: ' + error);
+      });
+  };
+  
 
   return (
     <View style={{ flex: 1 }}>
@@ -83,7 +104,7 @@ const index = ({ navigation }) => {
               <Text style={styles.heading}>{item.title}</Text>
               <Text style={styles.description}>{item.description}</Text>
             </View>
-            <TouchableOpacity style={styles.closeIcon}>
+            <TouchableOpacity style={styles.closeIcon} onPress={() => deleteNotification(index, item.time)}>
               <Icon name='close' color={'red'} size={20} />
             </TouchableOpacity>
           </View>

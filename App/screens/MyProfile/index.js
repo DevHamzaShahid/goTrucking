@@ -80,7 +80,6 @@ const index = () => {
   const { loading: getProfileLoader } = ProfileData?.getProfile || {};
 
 
-
   // const { loading, error } = ProfileData?.removeAccount
   const data = ProfileData?.removeAccount?.data
 
@@ -215,3 +214,22 @@ const index = () => {
 };
 
 export default index;
+
+// import { View, Text } from 'react-native'
+// import React from 'react'
+// import MapView from 'react-native-maps'
+
+// const index = () => {
+//   return (
+//     <View style={{ flex: 1 }}>
+//       <MapView
+//         provider={undefined}
+//         style={{ flex: 1 }}
+//       >
+
+//       </MapView>
+//     </View>
+//   )
+// }
+
+// export default index

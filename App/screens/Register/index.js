@@ -52,7 +52,7 @@ const index = ({ navigation }) => {
                     setSetSignedup(true)
                 }
                 else {
-                    alert('Make sure password is 8-digit and alphanumeric')
+                    alert('Password must be at least 8 characters long, contain at least one uppercase letter, and only consist of alphanumeric characters.')
                 }
             } else {
                 alert('Please enter email in correct format. abc@example.com')

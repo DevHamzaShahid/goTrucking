@@ -1,5 +1,6 @@
 import { Linking, Platform } from "react-native";
 import GetLocation from "react-native-get-location"
+import { GoogleMapKey } from "./keys";
 
 export const fetchMyLocation = async () => {
   try {
@@ -24,9 +25,9 @@ export const openGoogleMaps = (latitude, longitude) => {
   } else if (Platform.OS === 'ios') {
     Linking.openURL(`maps://app?daddr=${latitude},${longitude}&dirflg=d&t=m`)
   }
-
 };
 
+// default account image
 export const defaultImage =
   'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
@@ -66,3 +67,34 @@ export const defaultImage =
 
 //   throw new Error(`Failed to fetch location after ${maxRetries} attempts.`);
 // };
+
+
+
+export const getDriversLocationCity = async () => {
+  try {
+    const location = await GetLocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 30000,
+    });
+
+    const { latitude, longitude } = location;
+
+    const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMapKey}`);
+    const result = await response.json();
+    console.log("result<<<<<", result);
+    const cityComponent = result.results[0].address_components.find(
+      (component) => component.types.includes('locality')
+    );
+
+    if (cityComponent) {
+      const city = cityComponent.long_name;
+      return city;
+    } else {
+      console.error('City not found in geocoding data');
+      return null; // Return null or handle the error appropriately
+    }
+  } catch (error) {
+    console.error('Error fetching geocoding data:', error);
+    return null; // Return null or handle the error appropriately
+  }
+};

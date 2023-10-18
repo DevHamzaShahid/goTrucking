@@ -86,7 +86,7 @@ const index = ({ navigation }) => {
                         dispatch(resetPassword({ otp: otpValues.join(''), password: inputData.password, confirmPassword: inputData.confirmPassword }))
                     }
                     else {
-                        alert('Make sure password is 8-digit and alphanumeric')
+                        alert('Password must be at least 8 characters long, contain at least one uppercase letter, and only consist of alphanumeric characters.')
                     }
                 }
             }
@@ -194,7 +194,6 @@ const index = ({ navigation }) => {
                             value={inputData.confirmPassword}
                             onChangeText={text => setInputData({ ...inputData, confirmPassword: text })}
                         />
-
 
                         <CustomButton onPress={Reset} title={"Reset"} buttonStyle={{ height: 50, width: '80%', backgroundColor: color.appBlue, marginVertical: 30 }} textStyle={{ color: color.white, fontWeight: '700' }} />
 

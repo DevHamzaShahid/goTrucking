@@ -186,12 +186,12 @@ const index = ({
               <CustomText
                 size={12}
                 style={{ color: color.textGrey, fontWeight: '500' }}>
-                Package Volume
+                Package Weight
               </CustomText>
               <CustomText
                 size={13}
                 style={{ color: color.appBlue, fontWeight: '600' }}>
-                {item.totalPackageWeight} Kg
+                {item.totalPackageWeight}
               </CustomText>
             </View>
           </View>

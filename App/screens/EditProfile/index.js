@@ -16,39 +16,8 @@ import axios from 'axios';
 import { GoogleMapKey } from '../../utils/keys';
 import { dimensions, dimensionsWidth } from '../../Dimensions';
 import { defaultImage } from '../../utils/helperFunction';
-
+import CustomAlert from '../../components/CustomAlert'
 const index = () => {
-  //   const startLatitude = 31.5497;
-  //   const startLongitude = 74.3436;
-  //   const endLatitude = 32.1877;
-  //   const endLongitude = 74.1945;
-  //   const apiKey = GoogleMapKey;
-
-  //   const handleOpenGoogleMaps = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `https://maps.googleapis.com/maps/api/directions/json?origin=${startLatitude},${startLongitude}&destination=${endLatitude},${endLongitude}&alternatives=false&key=${apiKey}`,
-  //       );
-
-  //       const encodedPolyline = response.data.routes[0].overview_polyline.points;
-  //       const decodedPolyline = polyline.decode(encodedPolyline);
-  //       const waypoints = decodedPolyline
-  //         .map(point => `${point[0]},${point[1]}`)
-  //         .join('|');
-
-  //       const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&dir_action=navigate&destination=${endLatitude},${endLongitude}&waypoints=${waypoints}`;
-
-  //       Linking.canOpenURL(googleMapsUrl).then(supported => {
-  //         if (supported) {
-  //           Linking.openURL(googleMapsUrl);
-  //         } else {
-  //           console.log('Cannot open Google Maps.');
-  //         }
-  //       });
-  //     } catch (error) {
-  //       console.error('Error fetching directions:', error);
-  //     }
-  //   };
 
   //selectors
   // get profile
@@ -57,7 +26,7 @@ const index = () => {
     Profile?.getProfile.data || {};
   const { loading: getProfileLoader } = Profile?.getProfile || {};
   // update Profile
-  const { loading: updateProfileLoader } = Profile?.updateProfile || {};
+  const { loading: updateProfileLoader ,data:profileUpdated} = Profile?.updateProfile || {};
   const [inputData, setInputData] = useState({
     fullName: fullName || '',
     email: email || '',
@@ -76,6 +45,8 @@ const index = () => {
   const [showImagePickerModal, setShowImagePickerModal] = useState(false);
   const [pickerType, setPickerType] = useState('');
   const [dataFetched, setDataFetched] = useState(false);
+  const [profileUpdatedSuccess, setProfileUpdatedSuccess] = useState(false);
+  const [showAlert,setShowAlert]=useState(false)
   const dispatch = useDispatch();
 
   // onClick Save button
@@ -84,14 +55,22 @@ const index = () => {
     const formData = new FormData();
     formData.append('image', imageSelected);
     dispatch(uploadPhoto(formData));
+    setProfileUpdatedSuccess(true)
   };
 
   useEffect(() => {
+
     if (!dataFetched) {
       dispatch(getProfile());
       setDataFetched(true);
     }
   }, [Profile]);
+
+  useEffect(() => {
+    if (profileUpdated&&profileUpdatedSuccess&&updatedResponseImage) {
+      setShowAlert(true)
+    }
+  }, [profileUpdated,updatedResponseImage]);
 
   // will call when photo is uploaded
   useEffect(() => {
@@ -118,12 +97,23 @@ const index = () => {
     }
     return defaultImage;
   };
-
+  const closeSuccessErrorAlert = async () => {
+    setShowAlert(false);
+  }
   return (
     <Block>
       {(getProfileLoader || updateProfileLoader || uploadPhotoLoader) && (
         <CustomActivityIndicator />
       )}
+      {showAlert && (
+          <CustomAlert
+            closeSuccessErrorAlert={closeSuccessErrorAlert}
+            alertType="success"
+            buttonText="OK"
+            Title="Success"
+            description="Profile Updated Succesfully"
+          />
+        )}
       <View
         style={{
           alignItems: 'center',

@@ -20,6 +20,7 @@ import { UploadImagesPath } from './getAllPickupPackages copy 2';
 import { pickupDelayReport } from './PickupDelayReport';
 import { deliveryDelayReport } from './deliveryDelayReport';
 import showContinueBtnWhenAllPickedUp from './helperCheckReducers';
+import { shipmentDetails } from './ShipmentDetails';
 
 export default combineReducers({
   userToken: UserToken,
@@ -48,5 +49,6 @@ export default combineReducers({
   ForgetPassword: forgotPassword,
   ResetPassword: resetPassword,
   ContinueBtnAvail: showContinueBtnWhenAllPickedUp,
-  removeAccount:RemoveAccount
+  removeAccount: RemoveAccount,
+  shipmentDTL:shipmentDetails
 });
