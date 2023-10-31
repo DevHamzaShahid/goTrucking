@@ -12,8 +12,8 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		501ED81C2AE93C320044DF28 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 501ED81B2AE93C320044DF28 /* GoogleService-Info.plist */; };
 		50D190B42A5C258F0036E9FD /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 50D190B32A5C258F0036E9FD /* Fonts */; };
-		50E9625E2AA74A3F0004C55E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 50E9625D2AA74A3F0004C55E /* GoogleService-Info.plist */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		DF36C5609AE0D08215C22515 /* Pods_GoTrucking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EEA4BACB014337A967D80C2 /* Pods_GoTrucking.framework */; };
 /* End PBXBuildFile section */
@@ -53,12 +53,12 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GoTrucking/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = GoTrucking/main.m; sourceTree = "<group>"; };
 		26A5D2C443DA2B56F8443548 /* Pods-GoTrucking.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoTrucking.release.xcconfig"; path = "Target Support Files/Pods-GoTrucking/Pods-GoTrucking.release.xcconfig"; sourceTree = "<group>"; };
+		501ED81B2AE93C320044DF28 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		50BA7A002A9DE709001390B0 /* GoTrucking.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = GoTrucking.entitlements; path = GoTrucking/GoTrucking.entitlements; sourceTree = "<group>"; };
 		50BA7A092A9E133F001390B0 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		50BA7A0A2A9E133F001390B0 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		50BA7A0C2A9E133F001390B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50D190B32A5C258F0036E9FD /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
-		50E9625D2AA74A3F0004C55E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6EEA4BACB014337A967D80C2 /* Pods_GoTrucking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GoTrucking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GoTrucking/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8323691DDB40A7A6C0BCD563 /* Pods-GoTrucking-GoTruckingTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoTrucking-GoTruckingTests.release.xcconfig"; path = "Target Support Files/Pods-GoTrucking-GoTruckingTests/Pods-GoTrucking-GoTruckingTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -107,7 +107,6 @@
 		13B07FAE1A68108700A75B9A /* GoTrucking */ = {
 			isa = PBXGroup;
 			children = (
-				50E9625D2AA74A3F0004C55E /* GoogleService-Info.plist */,
 				50BA7A002A9DE709001390B0 /* GoTrucking.entitlements */,
 				50D190B32A5C258F0036E9FD /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -150,6 +149,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				501ED81B2AE93C320044DF28 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* GoTrucking */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* GoTruckingTests */,
@@ -278,7 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				50D190B42A5C258F0036E9FD /* Fonts in Resources */,
-				50E9625E2AA74A3F0004C55E /* GoogleService-Info.plist in Resources */,
+				501ED81C2AE93C320044DF28 /* GoogleService-Info.plist in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 			);
@@ -520,7 +520,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.eleven.goTrucking;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elevendev.goTrucking;
 				PRODUCT_NAME = GoTrucking;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -552,7 +552,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.eleven.goTrucking;
+				PRODUCT_BUNDLE_IDENTIFIER = com.elevendev.goTrucking;
 				PRODUCT_NAME = GoTrucking;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;

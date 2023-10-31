@@ -2,24 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>We require access to speech recognition to transcribe spoken words and enable voice commands within the app.</string>
-	<key>NSMotionUsageDescription</key>
-	<string>Access to motion data is essential for certain app functionalities like fitness tracking.</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>We need access to your photo library to allow you to upload and view photos .</string>
-	<key>NSSiriUsageDescription</key>
-	<string>We need access to Siri for voice commands and hands-free interaction with the app.</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Access to Bluetooth is necessary for connecting to external devices and peripherals</string>
-	<key>kTCCServiceMediaLibrary</key>
-	<string>Access to your music library is necessary for playing and managing audio content within the app.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>We need access to your microphone for recording audio and enabling voice commands within the app.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>We require access to your contacts to provide social sharing .</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>To manage time, we need access to your calendar</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -42,8 +24,16 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>We need access to your photo library to allow you to upload and view photos .</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Access to Bluetooth is necessary for connecting to external devices and peripherals</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>To manage time, we need access to your calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>We need access to your camera to capture photos for delivery and profile.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>We require access to your contacts to provide social sharing .</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>We require access to your location even when the app is in the background to track the driver.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -57,10 +47,18 @@
 	<string></string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location while the app is in use to provide location while pickups and deliveries.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone for recording audio and enabling voice commands within the app.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Access to motion data is essential for certain app functionalities like fitness tracking.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We require access to add photos to your library, enabling you to save and share content from the app.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need access to your photo library to allow you to upload and view photos.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>We need access to Siri for voice commands and hands-free interaction with the app.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We require access to speech recognition to transcribe spoken words and enable voice commands within the app.</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>Your app needs this permission to receive push notifications.</string>
 	<key>NSUserNotificationsUsageDescription</key>
@@ -92,5 +90,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>kTCCServiceMediaLibrary</key>
+	<string>Access to your music library is necessary for playing and managing audio content within the app.</string>
 </dict>
 </plist>

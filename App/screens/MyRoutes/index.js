@@ -63,6 +63,7 @@ const geolib = require("geolib");
 import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { gyroscope, orientation, magnetometer } from 'react-native-sensors';
 import { shipmentDetail } from '../../redux/actions/shipmentDetails';
+import { sendLiveLocation } from '../../redux/actions/liveLocation';
 
 
 
@@ -371,7 +372,8 @@ const index = ({ navigation }) => {
           setMyLiveLocation({ latitude, longitude, direction: course || bearing });
 
           console.log('Live Location:', location);
-
+          const bodyy = { driverId: userData?._id, shiftId: param?.shipment_Id || shipment_Id, lat: location?.latitude, lng: location?.longitude }
+          dispatch(sendLiveLocation(bodyy))
           //send city of current location
           // (async () => {
           //   fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GoogleMapKey}`)
@@ -388,10 +390,10 @@ const index = ({ navigation }) => {
 
           // Accumulate location data in locationArray
 
-          let database = firebase.database();
-          let userLocationRef = database.ref('Driver_livelocation');
-          let compoundKey = userData?._id + '-' + (param?.shipment_Id || shipment_Id);
-          let userRef = userLocationRef.child(compoundKey);
+          // let database = firebase.database();
+          // let userLocationRef = database.ref('Driver_livelocation');
+          // let compoundKey = userData?._id + '-' + (param?.shipment_Id || shipment_Id);
+          // let userRef = userLocationRef.child(compoundKey);
           // database exceed
           // if (userData?._id != undefined && (param?.shipment_Id || shipment_Id)) {
           //   userRef.once('value')

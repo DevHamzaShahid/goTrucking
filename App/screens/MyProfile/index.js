@@ -59,7 +59,7 @@ const index = () => {
   const [showRemoveAccountAlert, setShowRemoveAccountAlert] = useState(false)
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
-  const navigation=useNavigation()
+  const navigation = useNavigation()
   useEffect(() => {
     dispatch(getProfile());
   }, [isFocused]);
@@ -93,10 +93,10 @@ const index = () => {
         // navigation.navigate(route.Login)
       }
     })()
-  }, [data && data,isFocused])
+  }, [data && data, isFocused])
   return (
     <Block>
-      {(getProfileLoader || (data&&ProfileData?.removeAccount?.loading)) && <CustomActivityIndicator />}
+      {(getProfileLoader || (data && ProfileData?.removeAccount?.loading)) && <CustomActivityIndicator />}
       {showRemoveAccountAlert && <RemoveAccountAlert setRemoveAccount={setShowRemoveAccountAlert} />}
       {/* nav header */}
       <View
@@ -161,7 +161,7 @@ const index = () => {
           <CustomText size={15} style={{ fontWeight: '400', color: color.white }}>
             {mobileNumber}
           </CustomText>
-          <RatingStars rating={rating} />
+          {/* <RatingStars rating={rating} /> */}
         </View>
       </View>
 

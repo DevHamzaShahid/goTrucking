@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "341130354387",
+    "firebase_url": "https://gotruckingnew-d3860-default-rtdb.firebaseio.com",
+    "project_id": "gotruckingnew-d3860",
+    "storage_bucket": "gotruckingnew-d3860.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341130354387:android:e29520931f988da7d23e26",
+        "android_client_info": {
+          "package_name": "com.eleven.goTrucking"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQ8ybl6A183SQKB7dxTWKqDteGtFuQIMk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
