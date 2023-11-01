@@ -13,6 +13,8 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		501ED81C2AE93C320044DF28 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 501ED81B2AE93C320044DF28 /* GoogleService-Info.plist */; };
+		5032B8342AF23C81008E4F28 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5032B8322AF22E5E008E4F28 /* CoreLocation.framework */; };
+		5032B83C2AF27AE1008E4F28 /* CustomModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 5032B83B2AF27AE1008E4F28 /* CustomModule.m */; };
 		50D190B42A5C258F0036E9FD /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = 50D190B32A5C258F0036E9FD /* Fonts */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		DF36C5609AE0D08215C22515 /* Pods_GoTrucking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EEA4BACB014337A967D80C2 /* Pods_GoTrucking.framework */; };
@@ -54,6 +56,9 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = GoTrucking/main.m; sourceTree = "<group>"; };
 		26A5D2C443DA2B56F8443548 /* Pods-GoTrucking.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoTrucking.release.xcconfig"; path = "Target Support Files/Pods-GoTrucking/Pods-GoTrucking.release.xcconfig"; sourceTree = "<group>"; };
 		501ED81B2AE93C320044DF28 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		5032B8322AF22E5E008E4F28 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		5032B8382AF27A6D008E4F28 /* CustomModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CustomModule.h; sourceTree = "<group>"; };
+		5032B83B2AF27AE1008E4F28 /* CustomModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = CustomModule.m; path = goTrucking/CustomModule.m; sourceTree = "<group>"; };
 		50BA7A002A9DE709001390B0 /* GoTrucking.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = GoTrucking.entitlements; path = GoTrucking/GoTrucking.entitlements; sourceTree = "<group>"; };
 		50BA7A092A9E133F001390B0 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		50BA7A0A2A9E133F001390B0 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
@@ -80,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5032B8342AF23C81008E4F28 /* CoreLocation.framework in Frameworks */,
 				DF36C5609AE0D08215C22515 /* Pods_GoTrucking.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -115,6 +121,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				5032B8382AF27A6D008E4F28 /* CustomModule.h */,
+				5032B83B2AF27AE1008E4F28 /* CustomModule.m */,
 			);
 			name = GoTrucking;
 			sourceTree = "<group>";
@@ -122,6 +130,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5032B8322AF22E5E008E4F28 /* CoreLocation.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				6EEA4BACB014337A967D80C2 /* Pods_GoTrucking.framework */,
 				BD15E3F7BC9067DA2662955E /* Pods_GoTrucking_GoTruckingTests.framework */,
@@ -430,6 +439,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				5032B83C2AF27AE1008E4F28 /* CustomModule.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

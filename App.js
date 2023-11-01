@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import { persistedStore, store } from './App/redux/store';
-import { ActivityIndicator, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, NativeModules, SafeAreaView, Text, NativeEventEmitter, TouchableOpacity, View } from 'react-native';
 import { PersistGate } from 'redux-persist/integration/react';
 import Index from './App/screens/auth';
 import { MyStack } from './App/navigations';
@@ -23,6 +23,9 @@ const App = () => {
   const [notificationKey, setNotificationKey] = useState(0);
   const truckingState = store.getState(state => state);
   const { token } = truckingState?.userToken
+
+  const { CustomModule } = NativeModules;
+
 
   useEffect(() => {
     // Must be outside of any component LifeCycle (such as `componentDidMount`).
@@ -87,6 +90,16 @@ const App = () => {
   const closeNotification = () => {
     setNotification(null);
   };
+
+  useEffect(() => {
+
+    // Get your token and userId
+    const token = 'yourTokenHere>>>token';
+    const userId = 'yourUserIdHere>>>>userid';
+
+    // Call the native method with token and userId
+    CustomModule.setToken(token, userId);
+  }, [])
 
   return (
     <Provider store={store}>
