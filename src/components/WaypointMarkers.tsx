@@ -15,6 +15,7 @@ interface UserLocationMarkerProps {
     longitude: number;
   };
   heading: number;
+  compassHeading?: number;
   isNavigating?: boolean;
 }
 
@@ -121,30 +122,38 @@ export const WaypointMarker: React.FC<WaypointMarkerProps> = ({
 export const UserLocationMarker: React.FC<UserLocationMarkerProps> = ({ 
   coordinate, 
   heading,
+  compassHeading,
   isNavigating = false
 }) => {
+  // Use compass heading if available, otherwise fall back to GPS heading
+  const displayHeading = compassHeading !== undefined ? compassHeading : heading;
+  
   return (
     <Marker
       coordinate={coordinate}
       anchor={{ x: 0.5, y: 0.5 }}
       flat={true}
-      rotation={heading}
+      rotation={displayHeading}
       zIndex={2000}
     >
       <View style={[
         styles.userLocationMarker,
         isNavigating && styles.navigatingMarker
       ]}>
-        <View style={styles.userLocationInner}>
-          <Text style={styles.userLocationIcon}>
-            {isNavigating ? '🧭' : '📍'}
-          </Text>
+        {/* Blue circle background like Google Maps */}
+        <View style={styles.userLocationBackground}>
+          <View style={styles.userLocationInner}>
+            {/* Direction arrow that rotates with compass */}
+            <View style={styles.directionArrowContainer}>
+              <View style={styles.directionArrow}>
+                <Text style={styles.arrowIcon}>▲</Text>
+              </View>
+            </View>
+          </View>
         </View>
         
-        {/* Direction arrow */}
-        <View style={[styles.directionArrow, { transform: [{ rotate: '0deg' }] }]}>
-          <Text style={styles.arrowIcon}>↑</Text>
-        </View>
+        {/* Accuracy circle */}
+        <View style={styles.accuracyRing} />
         
         {/* Navigation pulse effect */}
         {isNavigating && (
@@ -290,20 +299,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   userLocationMarker: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
   navigatingMarker: {
-    width: 60,
-    height: 60,
+    width: 70,
+    height: 70,
+  },
+  userLocationBackground: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(66, 133, 244, 0.2)', // Google blue with transparency
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   userLocationInner: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#007AFF',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#4285F4', // Google blue
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -314,29 +333,33 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
   },
-  userLocationIcon: {
-    fontSize: 20,
-    color: 'white',
-  },
-  directionArrow: {
-    position: 'absolute',
-    top: -5,
-    backgroundColor: '#FF6B6B',
-    borderRadius: 15,
-    width: 30,
-    height: 30,
+  directionArrowContainer: {
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
+  },
+  directionArrow: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   arrowIcon: {
-    fontSize: 18,
+    fontSize: 16,
     color: 'white',
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  accuracyRing: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(66, 133, 244, 0.3)',
+    top: -8,
+    left: -8,
   },
   pulseRing: {
     position: 'absolute',

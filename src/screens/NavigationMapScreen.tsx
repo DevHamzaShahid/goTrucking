@@ -15,7 +15,7 @@ import { useNavigationCamera } from '../hooks/useNavigationCamera';
 import { useWaypointNavigation } from '../hooks/useWaypointNavigation';
 import { navigationWaypoints, NAVIGATION_SETTINGS } from '../data/waypointsData';
 import DirectionsService from '../services/DirectionsService';
-import { calculateBearing } from '../utils/locationUtils';
+import { calculateBearing, calculateDistance } from '../utils/locationUtils';
 
 const { width, height } = Dimensions.get('window');
 
@@ -90,7 +90,9 @@ const NavigationMapScreen: React.FC = () => {
       });
 
       // Calculate bearing for compass
-      if (location.heading) {
+      if (location.compassHeading !== undefined) {
+        setCompassBearing(location.compassHeading);
+      } else if (location.heading) {
         setCompassBearing(location.heading);
       }
 
@@ -98,11 +100,43 @@ const NavigationMapScreen: React.FC = () => {
       if (navigationState.isNavigating) {
         followLocation(
           { latitude: location.latitude, longitude: location.longitude },
-          location.heading
+          location.compassHeading || location.heading
         );
       }
     }
   }, [location, navigationState.isNavigating, updateUserLocation, followLocation]);
+
+  // Initial map centering on nearest waypoint
+  useEffect(() => {
+    if (location && !navigationState.isNavigating && mapRef.current) {
+      const nearestWaypoint = findNearestWaypoint({
+        latitude: location.latitude,
+        longitude: location.longitude,
+      });
+
+      if (nearestWaypoint) {
+        // Center map to show both user location and nearest waypoint
+        const centerLat = (location.latitude + nearestWaypoint.latitude) / 2;
+        const centerLng = (location.longitude + nearestWaypoint.longitude) / 2;
+        const deltaLat = Math.abs(location.latitude - nearestWaypoint.latitude) * 1.5;
+        const deltaLng = Math.abs(location.longitude - nearestWaypoint.longitude) * 1.5;
+
+        const region = {
+          latitude: centerLat,
+          longitude: centerLng,
+          latitudeDelta: Math.max(deltaLat, 0.01),
+          longitudeDelta: Math.max(deltaLng, 0.01),
+        };
+
+        mapRef.current.animateToRegion(region, 1000);
+        
+        // Auto-start navigation to nearest waypoint
+        setTimeout(() => {
+          selectWaypoint(nearestWaypoint.id);
+        }, 1500);
+      }
+    }
+  }, [location, navigationState.isNavigating, findNearestWaypoint, selectWaypoint]);
 
   // Auto-rotate camera to north after turns
   useEffect(() => {
@@ -117,6 +151,31 @@ const NavigationMapScreen: React.FC = () => {
       }
     }
   }, [location?.heading, navigationState.isNavigating, rotateToNorth, compassBearing]);
+
+  // Find nearest waypoint to user location
+  const findNearestWaypoint = useCallback((userLocation: { latitude: number; longitude: number }) => {
+    if (!waypoints.length) return null;
+    
+    let nearest = waypoints[0];
+    let minDistance = calculateDistance(userLocation, {
+      latitude: nearest.latitude,
+      longitude: nearest.longitude,
+    });
+
+    for (const waypoint of waypoints.slice(1)) {
+      const distance = calculateDistance(userLocation, {
+        latitude: waypoint.latitude,
+        longitude: waypoint.longitude,
+      });
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearest = waypoint;
+      }
+    }
+
+    return nearest;
+  }, [waypoints]);
 
   // Handle waypoint marker press
   const handleWaypointPress = useCallback((waypointId: string) => {
@@ -139,36 +198,33 @@ const NavigationMapScreen: React.FC = () => {
     );
   }, [waypoints, selectWaypoint, markWaypointCompleted, markWaypointSkipped]);
 
-  // Start auto navigation
-  const handleStartAutoNavigation = useCallback(() => {
+  // Recenter button behavior
+  const handleRecenter = useCallback(() => {
     if (!location) {
       Alert.alert('Location Required', 'Please wait for location to be available.');
       return;
     }
-    startNavigation('auto');
-  }, [location, startNavigation]);
 
-  // Start manual navigation
-  const handleStartManualNavigation = useCallback(() => {
-    if (!location) {
-      Alert.alert('Location Required', 'Please wait for location to be available.');
-      return;
-    }
-    startNavigation('manual');
-  }, [location, startNavigation]);
+    // Find nearest waypoint
+    const nearestWaypoint = findNearestWaypoint({
+      latitude: location.latitude,
+      longitude: location.longitude,
+    });
 
-  // Focus on current route
-  const handleFocusRoute = useCallback(() => {
-    if (location && navigationState.currentWaypoint) {
-      focusOnRoute(
-        { latitude: location.latitude, longitude: location.longitude },
-        {
-          latitude: navigationState.currentWaypoint.latitude,
-          longitude: navigationState.currentWaypoint.longitude,
-        }
-      );
+    // Center on user location with same behavior as initial view
+    followLocation(
+      { latitude: location.latitude, longitude: location.longitude },
+      location.compassHeading || location.heading
+    );
+
+    // Start navigation to nearest waypoint
+    if (nearestWaypoint && !navigationState.isNavigating) {
+      selectWaypoint(nearestWaypoint.id);
+    } else if (navigationState.isNavigating) {
+      // Recalculate current route
+      recalculateRoute();
     }
-  }, [location, navigationState.currentWaypoint, focusOnRoute]);
+  }, [location, findNearestWaypoint, followLocation, selectWaypoint, navigationState.isNavigating, recalculateRoute]);
 
   // Get route polyline color
   const getRouteColor = () => {
@@ -205,6 +261,7 @@ const NavigationMapScreen: React.FC = () => {
                 longitude: location.longitude,
               }}
               heading={location.heading}
+              compassHeading={location.compassHeading}
               isNavigating={navigationState.isNavigating}
             />
           )}
@@ -232,112 +289,42 @@ const NavigationMapScreen: React.FC = () => {
         </MapView>
       </Animated.View>
 
-      {/* Navigation Controls */}
+      {/* Recenter Button */}
       <Animated.View 
         style={[
-          styles.controlsContainer, 
+          styles.recenterContainer, 
           { transform: [{ translateY: slideAnim }] }
         ]}
       >
         <TouchableOpacity
-          style={[
-            styles.controlButton,
-            { backgroundColor: navigationState.isNavigating ? '#E74C3C' : '#27AE60' }
-          ]}
-          onPress={navigationState.isNavigating ? stopNavigation : handleStartAutoNavigation}
+          style={styles.recenterButton}
+          onPress={handleRecenter}
         >
-          <Text style={styles.controlButtonText}>
-            {navigationState.isNavigating ? '⏹️ Stop' : '🎯 Auto Nav'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.controlButton, { backgroundColor: '#3498DB' }]}
-          onPress={handleStartManualNavigation}
-          disabled={navigationState.isNavigating}
-        >
-          <Text style={styles.controlButtonText}>📍 Manual</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.controlButton, { backgroundColor: '#9B59B6' }]}
-          onPress={rotateToNorth}
-        >
-          <Text style={styles.controlButtonText}>🧭 North</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.controlButton, { backgroundColor: '#F39C12' }]}
-          onPress={handleFocusRoute}
-          disabled={!navigationState.activeRoute}
-        >
-          <Text style={styles.controlButtonText}>🗺️ Route</Text>
+          <Text style={styles.recenterButtonText}>📍 Recenter</Text>
         </TouchableOpacity>
       </Animated.View>
 
-      {/* Navigation Status */}
-      <View style={styles.statusContainer}>
-        <View style={styles.statusBar}>
-          <Text style={styles.statusText}>
-            🎯 Mode: {navigationState.navigationMode.toUpperCase()} | 
-            📍 Waypoints: {waypoints.filter(wp => wp.status === 'pending').length} pending
-          </Text>
-          
-          {navigationState.currentWaypoint && (
+      {/* Minimal Status Display */}
+      {navigationState.currentWaypoint && (
+        <View style={styles.statusContainer}>
+          <View style={styles.statusBar}>
             <Text style={styles.activeWaypointText}>
               → {navigationState.currentWaypoint.name}
             </Text>
-          )}
-          
-          {navigationState.routeInfo && (
-            <Text style={styles.routeInfoText}>
-              📏 {navigationState.routeInfo.distance} • ⏱️ {navigationState.routeInfo.duration}
-            </Text>
-          )}
-          
-          {location && (
-            <Text style={styles.locationText}>
-              📊 Accuracy: {location.accuracy.toFixed(0)}m | 
-              🧭 Bearing: {location.heading.toFixed(0)}°
-            </Text>
-          )}
-          
-          {error && (
-            <Text style={styles.errorText}>⚠️ {error}</Text>
-          )}
+            
+            {navigationState.routeInfo && (
+              <Text style={styles.routeInfoText}>
+                📏 {navigationState.routeInfo.distance} • ⏱️ {navigationState.routeInfo.duration}
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
+      )}
 
-      {/* Compass */}
-      <View style={styles.compassContainer}>
-        <View style={[styles.compass, { transform: [{ rotate: `${-compassBearing}deg` }] }]}>
-          <Text style={styles.compassText}>N</Text>
-          <View style={styles.compassNeedle} />
-        </View>
-      </View>
-
-      {/* Waypoint Progress */}
-      <View style={styles.progressContainer}>
-        <Text style={styles.progressTitle}>Progress</Text>
-        <View style={styles.progressBar}>
-          <View 
-            style={[
-              styles.progressFill, 
-              { 
-                width: `${(waypoints.filter(wp => wp.status === 'completed').length / waypoints.length) * 100}%` 
-              }
-            ]} 
-          />
-        </View>
-        <Text style={styles.progressText}>
-          {waypoints.filter(wp => wp.status === 'completed').length} / {waypoints.length} completed
-        </Text>
-      </View>
-
-      {/* Camera Animation Indicator */}
-      {isAnimating && (
-        <View style={styles.animationIndicator}>
-          <Text style={styles.animationText}>📹 Adjusting camera...</Text>
+      {/* Error Display */}
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>⚠️ {error}</Text>
         </View>
       )}
     </View>
@@ -366,41 +353,40 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  controlsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  recenterContainer: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    alignItems: 'center',
+  },
+  recenterButton: {
+    backgroundColor: '#4285F4', // Google blue
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    elevation: 5,
-  },
-  controlButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 25,
-    minWidth: 80,
+    borderRadius: 30,
     alignItems: 'center',
-    elevation: 3,
+    justifyContent: 'center',
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 4,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
-  controlButtonText: {
+  recenterButtonText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   statusContainer: {
     position: 'absolute',
-    bottom: 120,
-    left: 10,
-    right: 10,
+    top: 60,
+    left: 20,
+    right: 20,
   },
   statusBar: {
     backgroundColor: 'rgba(0, 0, 0, 0.85)',
@@ -408,122 +394,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
   },
-  statusText: {
-    color: 'white',
-    fontSize: 12,
-    textAlign: 'center',
-    marginBottom: 4,
-  },
   activeWaypointText: {
     color: '#FFD700',
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 4,
   },
   routeInfoText: {
     color: '#4ECDC4',
-    fontSize: 12,
+    fontSize: 14,
     textAlign: 'center',
-    marginBottom: 4,
   },
-  locationText: {
-    color: '#ccc',
-    fontSize: 10,
-    textAlign: 'center',
-    marginBottom: 2,
+  errorContainer: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    right: 20,
+    backgroundColor: 'rgba(244, 67, 54, 0.9)',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
   },
   errorText: {
-    color: '#FF6B6B',
-    fontSize: 11,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  compassContainer: {
-    position: 'absolute',
-    top: 60,
-    right: 20,
-    width: 60,
-    height: 60,
-  },
-  compass: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    borderWidth: 2,
-    borderColor: '#007AFF',
-  },
-  compassText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#E74C3C',
-    position: 'absolute',
-    top: 8,
-  },
-  compassNeedle: {
-    width: 2,
-    height: 20,
-    backgroundColor: '#E74C3C',
-    position: 'absolute',
-  },
-  progressContainer: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 12,
-    padding: 12,
-    minWidth: 150,
-    elevation: 5,
-  },
-  progressTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#2C3E50',
-    marginBottom: 6,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#ECF0F1',
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 4,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#27AE60',
-    borderRadius: 4,
-  },
-  progressText: {
-    fontSize: 10,
-    color: '#7F8C8D',
-    textAlign: 'center',
-  },
-  animationIndicator: {
-    position: 'absolute',
-    top: 140,
-    left: 20,
-    right: 20,
-    backgroundColor: 'rgba(52, 152, 219, 0.9)',
-    borderRadius: 8,
-    padding: 8,
-    alignItems: 'center',
-  },
-  animationText: {
     color: 'white',
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

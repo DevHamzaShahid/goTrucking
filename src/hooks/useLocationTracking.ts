@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import Geolocation from '@react-native-community/geolocation';
-import { PermissionsAndroid, Platform, Alert } from 'react-native';
+import { PermissionsAndroid, Platform, Alert, DeviceEventEmitter } from 'react-native';
 import { calculateBearing } from '../utils/locationUtils';
 
 interface LocationState {
@@ -9,6 +9,7 @@ interface LocationState {
   heading: number;
   accuracy: number;
   timestamp: number;
+  compassHeading?: number; // Device compass heading (0-360)
 }
 
 interface UseLocationTrackingReturn {
@@ -24,7 +25,9 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
   const [isTracking, setIsTracking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const watchIdRef = useRef<number | null>(null);
+  const compassWatchId = useRef<number | null>(null);
   const previousLocationRef = useRef<LocationState | null>(null);
+  const currentCompassHeading = useRef<number>(0);
 
   const requestLocationPermission = async (): Promise<boolean> => {
     if (Platform.OS === 'android') {
@@ -48,6 +51,36 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
     return true; // iOS permissions are handled through Info.plist
   };
 
+  // Start compass tracking
+  const startCompassTracking = () => {
+    try {
+      // Start watching device heading/compass
+      compassWatchId.current = Geolocation.watchPosition(
+        (position) => {
+          if (position.coords.heading !== null && position.coords.heading !== undefined) {
+            currentCompassHeading.current = position.coords.heading;
+            // Update location with compass heading
+            setLocation(prev => prev ? {
+              ...prev,
+              compassHeading: position.coords.heading || prev.compassHeading || 0
+            } : null);
+          }
+        },
+        (error) => {
+          console.warn('Compass tracking error:', error);
+        },
+        {
+          enableHighAccuracy: true,
+          distanceFilter: 0, // Get all updates for heading
+          interval: 100, // Fast updates for smooth rotation
+          fastestInterval: 50,
+        }
+      );
+    } catch (error) {
+      console.warn('Compass not supported, using GPS heading fallback');
+    }
+  };
+
   const startTracking = async () => {
     const hasPermission = await requestLocationPermission();
     
@@ -62,6 +95,9 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
 
     setError(null);
     setIsTracking(true);
+    
+    // Start compass tracking
+    startCompassTracking();
 
     // Get initial position
     Geolocation.getCurrentPosition(
@@ -72,6 +108,7 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
           heading: position.coords.heading || 0,
           accuracy: position.coords.accuracy,
           timestamp: position.timestamp,
+          compassHeading: currentCompassHeading.current || position.coords.heading || 0,
         };
         setLocation(newLocation);
         previousLocationRef.current = newLocation;
@@ -97,6 +134,7 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
           heading: position.coords.heading || 0,
           accuracy: position.coords.accuracy,
           timestamp: position.timestamp,
+          compassHeading: currentCompassHeading.current || position.coords.heading || 0,
         };
 
         // Calculate bearing if heading is not available
@@ -134,6 +172,10 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
     if (watchIdRef.current !== null) {
       Geolocation.clearWatch(watchIdRef.current);
       watchIdRef.current = null;
+    }
+    if (compassWatchId.current !== null) {
+      Geolocation.clearWatch(compassWatchId.current);
+      compassWatchId.current = null;
     }
     setIsTracking(false);
   };
