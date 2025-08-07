@@ -4,7 +4,7 @@ import {
   StatusBar,
   StyleSheet,
 } from 'react-native';
-import MapScreen from './src/screens/MapScreen';
+import NavigationMapScreen from './src/screens/NavigationMapScreen';
 
 function App(): JSX.Element {
   return (
@@ -14,7 +14,7 @@ function App(): JSX.Element {
         backgroundColor="transparent"
         translucent
       />
-      <MapScreen />
+      <NavigationMapScreen />
     </SafeAreaView>
   );
 }
