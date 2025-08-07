@@ -51,19 +51,25 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
     return true; // iOS permissions are handled through Info.plist
   };
 
-  // Start compass tracking
+  // Start compass tracking with enhanced heading detection
   const startCompassTracking = () => {
     try {
-      // Start watching device heading/compass
+      // Start watching device heading/compass with high frequency updates
       compassWatchId.current = Geolocation.watchPosition(
         (position) => {
           if (position.coords.heading !== null && position.coords.heading !== undefined) {
-            currentCompassHeading.current = position.coords.heading;
-            // Update location with compass heading
-            setLocation(prev => prev ? {
-              ...prev,
-              compassHeading: position.coords.heading || prev.compassHeading || 0
-            } : null);
+            const newHeading = position.coords.heading;
+            
+            // Smooth heading updates to prevent jitter
+            if (Math.abs(newHeading - currentCompassHeading.current) > 2) {
+              currentCompassHeading.current = newHeading;
+              
+              // Update location with compass heading immediately for smooth rotation
+              setLocation(prev => prev ? {
+                ...prev,
+                compassHeading: newHeading
+              } : null);
+            }
           }
         },
         (error) => {
@@ -72,8 +78,8 @@ export const useLocationTracking = (): UseLocationTrackingReturn => {
         {
           enableHighAccuracy: true,
           distanceFilter: 0, // Get all updates for heading
-          interval: 100, // Fast updates for smooth rotation
-          fastestInterval: 50,
+          interval: 50, // Very fast updates for smooth rotation (50ms)
+          fastestInterval: 25, // Even faster for compass
         }
       );
     } catch (error) {

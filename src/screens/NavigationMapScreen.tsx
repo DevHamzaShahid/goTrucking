@@ -9,7 +9,8 @@ import {
   Dimensions,
 } from 'react-native';
 import MapView, { Polyline, Region } from 'react-native-maps';
-import { WaypointMarker, UserLocationMarker } from '../components/WaypointMarkers';
+import { WaypointMarker } from '../components/WaypointMarkers';
+import { CompassLocationMarker } from '../components/CompassLocationMarkerSimple';
 import { useLocationTracking } from '../hooks/useLocationTracking';
 import { useNavigationCamera } from '../hooks/useNavigationCamera';
 import { useWaypointNavigation } from '../hooks/useWaypointNavigation';
@@ -106,7 +107,7 @@ const NavigationMapScreen: React.FC = () => {
     }
   }, [location, navigationState.isNavigating, updateUserLocation, followLocation]);
 
-  // Initial map centering on nearest waypoint
+  // Enhanced initial map centering with compass awareness
   useEffect(() => {
     if (location && !navigationState.isNavigating && mapRef.current) {
       const nearestWaypoint = findNearestWaypoint({
@@ -115,25 +116,26 @@ const NavigationMapScreen: React.FC = () => {
       });
 
       if (nearestWaypoint) {
-        // Center map to show both user location and nearest waypoint
+        // Center map to show both user location and nearest waypoint with optimal view
         const centerLat = (location.latitude + nearestWaypoint.latitude) / 2;
         const centerLng = (location.longitude + nearestWaypoint.longitude) / 2;
-        const deltaLat = Math.abs(location.latitude - nearestWaypoint.latitude) * 1.5;
-        const deltaLng = Math.abs(location.longitude - nearestWaypoint.longitude) * 1.5;
+        const deltaLat = Math.abs(location.latitude - nearestWaypoint.latitude) * 1.8;
+        const deltaLng = Math.abs(location.longitude - nearestWaypoint.longitude) * 1.8;
 
         const region = {
           latitude: centerLat,
           longitude: centerLng,
-          latitudeDelta: Math.max(deltaLat, 0.01),
-          longitudeDelta: Math.max(deltaLng, 0.01),
+          latitudeDelta: Math.max(deltaLat, 0.015), // Slightly wider view for better FOV visibility
+          longitudeDelta: Math.max(deltaLng, 0.015),
         };
 
-        mapRef.current.animateToRegion(region, 1000);
+        // Smooth initial animation
+        mapRef.current.animateToRegion(region, 1500);
         
-        // Auto-start navigation to nearest waypoint
+        // Auto-start navigation to nearest waypoint with compass-aware delay
         setTimeout(() => {
           selectWaypoint(nearestWaypoint.id);
-        }, 1500);
+        }, 2000); // Longer delay for compass to stabilize
       }
     }
   }, [location, navigationState.isNavigating, findNearestWaypoint, selectWaypoint]);
@@ -198,7 +200,7 @@ const NavigationMapScreen: React.FC = () => {
     );
   }, [waypoints, selectWaypoint, markWaypointCompleted, markWaypointSkipped]);
 
-  // Recenter button behavior
+  // Enhanced recenter button behavior
   const handleRecenter = useCallback(() => {
     if (!location) {
       Alert.alert('Location Required', 'Please wait for location to be available.');
@@ -211,20 +213,30 @@ const NavigationMapScreen: React.FC = () => {
       longitude: location.longitude,
     });
 
-    // Center on user location with same behavior as initial view
+    // Center on user location with compass-aware camera behavior
+    const currentHeading = location.compassHeading !== undefined ? location.compassHeading : location.heading;
+    
+    // Smooth camera animation to user location
     followLocation(
       { latitude: location.latitude, longitude: location.longitude },
-      location.compassHeading || location.heading
+      currentHeading
     );
 
-    // Start navigation to nearest waypoint
+    // Auto-start navigation to nearest waypoint if not already navigating
     if (nearestWaypoint && !navigationState.isNavigating) {
-      selectWaypoint(nearestWaypoint.id);
+      setTimeout(() => {
+        selectWaypoint(nearestWaypoint.id);
+      }, 500); // Small delay for smooth camera transition
     } else if (navigationState.isNavigating) {
-      // Recalculate current route
+      // Recalculate current route to ensure accuracy
       recalculateRoute();
     }
-  }, [location, findNearestWaypoint, followLocation, selectWaypoint, navigationState.isNavigating, recalculateRoute]);
+
+    // Ensure compass tracking is active
+    if (!isTracking) {
+      startTracking();
+    }
+  }, [location, findNearestWaypoint, followLocation, selectWaypoint, navigationState.isNavigating, recalculateRoute, isTracking, startTracking]);
 
   // Get route polyline color
   const getRouteColor = () => {
@@ -253,16 +265,18 @@ const NavigationMapScreen: React.FC = () => {
           zoomEnabled={true}
           scrollEnabled={true}
         >
-          {/* User location marker */}
+          {/* Enhanced Compass Location Marker */}
           {location && (
-            <UserLocationMarker
+            <CompassLocationMarker
               coordinate={{
                 latitude: location.latitude,
                 longitude: location.longitude,
               }}
               heading={location.heading}
               compassHeading={location.compassHeading}
+              accuracy={location.accuracy}
               isNavigating={navigationState.isNavigating}
+              showFOV={true}
             />
           )}
 
@@ -361,26 +375,28 @@ const styles = StyleSheet.create({
   },
   recenterButton: {
     backgroundColor: '#4285F4', // Google blue
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderRadius: 30,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 8,
-    shadowColor: '#000',
+    elevation: 12,
+    shadowColor: '#4285F4',
     shadowOffset: {
       width: 0,
-      height: 4,
+      height: 6,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    borderWidth: 2,
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    borderWidth: 3,
     borderColor: '#FFFFFF',
+    minWidth: 120,
   },
   recenterButtonText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
   statusContainer: {
     position: 'absolute',
